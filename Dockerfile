@@ -32,7 +32,8 @@ WORKDIR /app
 
 # System binaries the pipeline shells out to.
 #   - ffmpeg + libass  : video concat / subtitle burn-in
-#   - imagemagick      : attribution overlay
+#     (Debian's ffmpeg is built with --enable-libass; libass9 pulled as dep)
+#   - imagemagick      : attribution overlay (IM6 on bookworm -> use `convert`)
 #   - chromium + deps  : @remotion/renderer headless rendering
 #   - libvips          : sharp image processing
 #   - python3 + venv   : optional yt-dlp scripts
@@ -40,7 +41,6 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends \
       ffmpeg \
       libass9 \
-      libavfilter-extra7 \
       imagemagick \
       chromium \
       fonts-noto-color-emoji \
@@ -76,7 +76,7 @@ ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
     PORT=3000 \
     HOSTNAME=0.0.0.0 \
-    MAGICK_BIN=/usr/bin/magick \
+    MAGICK_BIN=/usr/bin/convert \
     WHISPER_CLI_PATH=/usr/local/bin/whisper-cli \
     REMOTION_CHROME_EXECUTABLE=/usr/bin/chromium \
     PUPPETEER_SKIP_DOWNLOAD=true
