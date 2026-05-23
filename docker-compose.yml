@@ -1,18 +1,40 @@
+# Docker Compose for Freedom Factory.
+#
+# Two deployment modes supported:
+#
+#  1. Dokploy (recommended for this VPS) — "Docker Compose" project type.
+#     Dokploy reads this file as-is, manages Traefik + Let's Encrypt for
+#     the public domain, and injects env vars from its UI. Volumes are
+#     persisted under /etc/dokploy/projects/<project>/files/.
+#
+#  2. Bare `docker compose up -d` — uncomment the `ports` line below to
+#     expose the app on the host and use deploy/nginx.conf as a separate
+#     reverse proxy.
+
 services:
   app:
     build:
       context: .
       dockerfile: Dockerfile
     image: freedom-factory:latest
-    container_name: freedom-factory
     restart: unless-stopped
-    env_file:
-      - .env.production
-    ports:
-      # Listen only on localhost — nginx reverse-proxies the public port.
-      - "127.0.0.1:3000:3000"
+    # Internal port for Traefik / nginx to target. Don't bind to a host
+    # port under Dokploy — its router exposes the app on 80/443 instead.
+    expose:
+      - "3000"
+    # ports:
+    #   - "127.0.0.1:3000:3000"   # uncomment for bare docker-compose mode
+    environment:
+      NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: "1"
+      PORT: "3000"
+      HOSTNAME: "0.0.0.0"
+      # API keys are NOT defined here — set them in the Dokploy UI
+      # (Environment tab) or in an `.env` file mounted by docker-compose.
     volumes:
-      # Persistent state — survive container rebuilds.
+      # Persistent outputs / uploads. Dokploy creates host-side bind
+      # mounts under /etc/dokploy/projects/<slug>/files/<volume>/ so
+      # everything survives container rebuilds.
       - generated:/app/public/generated
       - uploads:/app/public/uploads
       - style-refs:/app/public/style-refs
@@ -20,11 +42,8 @@ services:
       - outputs:/app/outputs
       - audio:/app/audio
       - mp3:/app/mp3
-      # JSON config (settings.json, custom-presets.json, pipeline-queue.json)
-      - ./config:/app/config
-      # Prompt JSONs at repo root (galveston_1900_veo3_prompts.json, etc.)
-      - ./prompts:/app/prompts:ro
-    # Give Remotion / ffmpeg breathing room. Adjust to fit your VPS.
+      # Runtime settings.json + queue state (kept out of git for security)
+      - config:/app/config
     deploy:
       resources:
         limits:
@@ -34,7 +53,7 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
-      start_period: 30s
+      start_period: 60s
 
 volumes:
   generated:
@@ -44,3 +63,4 @@ volumes:
   outputs:
   audio:
   mp3:
+  config:
