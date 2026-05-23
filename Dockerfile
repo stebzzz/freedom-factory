@@ -15,6 +15,10 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends \
       python3 make g++ ca-certificates \
     && rm -rf /var/lib/apt/lists/*
+# Match npm version used to generate package-lock.json on dev machine.
+# (node:20 ships npm 10.8.2 which rejects lockfileVersion-3 metadata
+# written by npm 11; locally the lock was generated with npm 11.)
+RUN npm install -g npm@11
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
 
@@ -22,6 +26,7 @@ RUN npm ci --no-audit --no-fund
 FROM node:20-bookworm-slim AS builder
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
+RUN npm install -g npm@11
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build
