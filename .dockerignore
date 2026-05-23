@@ -1,0 +1,47 @@
+# Heavy / generated content that must NOT end up in the build context
+node_modules
+.next
+.venv
+.git
+.DS_Store
+
+# Per-project outputs (mounted as volumes at runtime instead)
+public/generated
+public/old
+public/uploads
+public/style-refs
+public/sourcing
+outputs
+audio
+mp3
+dentist
+
+# Workbench junk
+old
+.concat-work
+ref-style
+
+# Standalone media at the repo root (huge, irrelevant to the app)
+*.mp3
+*.mp4
+*.wav
+*.pdf
+*.jpeg
+*.jpg
+*.png
+!public/9665235-hd_1920_1080_25fps.mp4
+!avatar.png
+
+# Scripts / notes that don't ship
+*.txt
+!next-env.d.ts
+
+# Local env (provided at runtime via docker-compose env_file)
+.env
+.env.local
+.env.*.local
+
+# Editor / OS noise
+.vscode
+.idea
+*.tsbuildinfo

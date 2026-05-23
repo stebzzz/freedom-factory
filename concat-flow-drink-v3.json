@@ -1,0 +1,1408 @@
+{
+  "project": {
+    "name": "Drink",
+    "outputPath": "public/generated/Drink/drink.aligned.v3.mp4"
+  },
+  "images": {
+    "dir": "public/generated/Drink/images",
+    "count": 275,
+    "order": "scene_index",
+    "list": [
+      "scene_000.png",
+      "scene_001.png",
+      "scene_002.png",
+      "scene_003.png",
+      "scene_004.png",
+      "scene_005.png",
+      "scene_006.png",
+      "scene_007.png",
+      "scene_008.png",
+      "scene_009.png",
+      "scene_010.png",
+      "scene_011.png",
+      "scene_012.png",
+      "scene_013.png",
+      "scene_014.png",
+      "scene_015.png",
+      "scene_016.png",
+      "scene_017.png",
+      "scene_018.png",
+      "scene_019.png",
+      "scene_020.png",
+      "scene_021.png",
+      "scene_022.png",
+      "scene_023.png",
+      "scene_024.png",
+      "scene_025.png",
+      "scene_026.png",
+      "scene_027.png",
+      "scene_028.png",
+      "scene_029.png",
+      "scene_030.png",
+      "scene_031.png",
+      "scene_032.png",
+      "scene_033.png",
+      "scene_034.png",
+      "scene_035.png",
+      "scene_036.png",
+      "scene_037.png",
+      "scene_038.png",
+      "scene_039.png",
+      "scene_040.png",
+      "scene_041.png",
+      "scene_042.png",
+      "scene_043.png",
+      "scene_044.png",
+      "scene_045.png",
+      "scene_046.png",
+      "scene_047.png",
+      "scene_048.png",
+      "scene_049.png",
+      "scene_050.png",
+      "scene_051.png",
+      "scene_052.png",
+      "scene_053.png",
+      "scene_054.png",
+      "scene_055.png",
+      "scene_056.png",
+      "scene_057.png",
+      "scene_058.png",
+      "scene_059.png",
+      "scene_060.png",
+      "scene_061.png",
+      "scene_062.png",
+      "scene_063.png",
+      "scene_064.png",
+      "scene_065.png",
+      "scene_066.png",
+      "scene_067.png",
+      "scene_068.png",
+      "scene_069.png",
+      "scene_070.png",
+      "scene_071.png",
+      "scene_072.png",
+      "scene_073.png",
+      "scene_074.png",
+      "scene_075.png",
+      "scene_076.png",
+      "scene_077.png",
+      "scene_078.png",
+      "scene_079.png",
+      "scene_080.png",
+      "scene_081.png",
+      "scene_082.png",
+      "scene_083.png",
+      "scene_084.png",
+      "scene_085.png",
+      "scene_086.png",
+      "scene_087.png",
+      "scene_088.png",
+      "scene_089.png",
+      "scene_090.png",
+      "scene_091.png",
+      "scene_092.png",
+      "scene_093.png",
+      "scene_094.png",
+      "scene_095.png",
+      "scene_096.png",
+      "scene_097.png",
+      "scene_098.png",
+      "scene_099.png",
+      "scene_100.png",
+      "scene_101.png",
+      "scene_102.png",
+      "scene_103.png",
+      "scene_104.png",
+      "scene_105.png",
+      "scene_106.png",
+      "scene_107.png",
+      "scene_108.png",
+      "scene_109.png",
+      "scene_110.png",
+      "scene_111.png",
+      "scene_112.png",
+      "scene_113.png",
+      "scene_114.png",
+      "scene_115.png",
+      "scene_116.png",
+      "scene_117.png",
+      "scene_118.png",
+      "scene_119.png",
+      "scene_120.png",
+      "scene_121.png",
+      "scene_122.png",
+      "scene_123.png",
+      "scene_124.png",
+      "scene_125.png",
+      "scene_126.png",
+      "scene_127.png",
+      "scene_128.png",
+      "scene_129.png",
+      "scene_130.png",
+      "scene_131.png",
+      "scene_132.png",
+      "scene_133.png",
+      "scene_134.png",
+      "scene_135.png",
+      "scene_136.png",
+      "scene_137.png",
+      "scene_138.png",
+      "scene_139.png",
+      "scene_140.png",
+      "scene_141.png",
+      "scene_142.png",
+      "scene_143.png",
+      "scene_144.png",
+      "scene_145.png",
+      "scene_146.png",
+      "scene_147.png",
+      "scene_148.png",
+      "scene_149.png",
+      "scene_150.png",
+      "scene_151.png",
+      "scene_152.png",
+      "scene_153.png",
+      "scene_154.png",
+      "scene_155.png",
+      "scene_156.png",
+      "scene_157.png",
+      "scene_158.png",
+      "scene_159.png",
+      "scene_160.png",
+      "scene_161.png",
+      "scene_162.png",
+      "scene_163.png",
+      "scene_164.png",
+      "scene_165.png",
+      "scene_166.png",
+      "scene_167.png",
+      "scene_168.png",
+      "scene_169.png",
+      "scene_170.png",
+      "scene_171.png",
+      "scene_172.png",
+      "scene_173.png",
+      "scene_174.png",
+      "scene_175.png",
+      "scene_176.png",
+      "scene_177.png",
+      "scene_178.png",
+      "scene_179.png",
+      "scene_180.png",
+      "scene_181.png",
+      "scene_182.png",
+      "scene_183.png",
+      "scene_184.png",
+      "scene_185.png",
+      "scene_186.png",
+      "scene_187.png",
+      "scene_188.png",
+      "scene_189.png",
+      "scene_190.png",
+      "scene_191.png",
+      "scene_192.png",
+      "scene_193.png",
+      "scene_194.png",
+      "scene_195.png",
+      "scene_196.png",
+      "scene_197.png",
+      "scene_198.png",
+      "scene_199.png",
+      "scene_200.png",
+      "scene_201.png",
+      "scene_202.png",
+      "scene_203.png",
+      "scene_204.png",
+      "scene_205.png",
+      "scene_206.png",
+      "scene_207.png",
+      "scene_208.png",
+      "scene_209.png",
+      "scene_210.png",
+      "scene_211.png",
+      "scene_212.png",
+      "scene_213.png",
+      "scene_214.png",
+      "scene_215.png",
+      "scene_216.png",
+      "scene_217.png",
+      "scene_218.png",
+      "scene_219.png",
+      "scene_220.png",
+      "scene_221.png",
+      "scene_222.png",
+      "scene_223.png",
+      "scene_224.png",
+      "scene_225.png",
+      "scene_226.png",
+      "scene_227.png",
+      "scene_228.png",
+      "scene_229.png",
+      "scene_230.png",
+      "scene_231.png",
+      "scene_232.png",
+      "scene_233.png",
+      "scene_234.png",
+      "scene_235.png",
+      "scene_236.png",
+      "scene_237.png",
+      "scene_238.png",
+      "scene_239.png",
+      "scene_240.png",
+      "scene_241.png",
+      "scene_242.png",
+      "scene_243.png",
+      "scene_244.png",
+      "scene_245.png",
+      "scene_246.png",
+      "scene_247.png",
+      "scene_248.png",
+      "scene_249.png",
+      "scene_250.png",
+      "scene_251.png",
+      "scene_252.png",
+      "scene_253.png",
+      "scene_254.png",
+      "scene_255.png",
+      "scene_256.png",
+      "scene_257.png",
+      "scene_258.png",
+      "scene_259.png",
+      "scene_260.png",
+      "scene_261.png",
+      "scene_262.png",
+      "scene_263.png",
+      "scene_264.png",
+      "scene_265.png",
+      "scene_266.png",
+      "scene_267.png",
+      "scene_268.png",
+      "scene_269.png",
+      "scene_270.png",
+      "scene_271.png",
+      "scene_272.png",
+      "scene_273.png",
+      "scene_274.png"
+    ]
+  },
+  "timing": {
+    "mode": "whisper_trigger_text",
+    "matchMode": "fuzzy_text",
+    "fallbackMode": "interpolate",
+    "cutRule": "start_at_trigger_end_at_next_trigger",
+    "minImageDurationSec": 1,
+    "maxImageDurationSec": 6,
+    "perImage": [
+      {
+        "image": "scene_000.png",
+        "triggerText": "You wake up."
+      },
+      {
+        "image": "scene_001.png",
+        "triggerText": "You walk to the kitchen."
+      },
+      {
+        "image": "scene_002.png",
+        "triggerText": "You pour a glass of water from the tap,"
+      },
+      {
+        "image": "scene_003.png",
+        "triggerText": "or you grab a coffee,"
+      },
+      {
+        "image": "scene_004.png",
+        "triggerText": "or a soda,"
+      },
+      {
+        "image": "scene_005.png",
+        "triggerText": "or a juice."
+      },
+      {
+        "image": "scene_006.png",
+        "triggerText": "You don't think about it."
+      },
+      {
+        "image": "scene_007.png",
+        "triggerText": "The liquid in your hand is sterile,"
+      },
+      {
+        "image": "scene_008.png",
+        "triggerText": "measured,"
+      },
+      {
+        "image": "scene_009.png",
+        "triggerText": "and infinitely available. But for 99% of human history,"
+      },
+      {
+        "image": "scene_010.png",
+        "triggerText": "this moment didn't exist."
+      },
+      {
+        "image": "scene_011.png",
+        "triggerText": "There were no taps."
+      },
+      {
+        "image": "scene_012.png",
+        "triggerText": "No bottles."
+      },
+      {
+        "image": "scene_013.png",
+        "triggerText": "No purified anything."
+      },
+      {
+        "image": "scene_014.png",
+        "triggerText": "Every sip your ancestors took was a gamble."
+      },
+      {
+        "image": "scene_015.png",
+        "triggerText": "The water could carry parasites."
+      },
+      {
+        "image": "scene_016.png",
+        "triggerText": "The milk could make them violently sick."
+      },
+      {
+        "image": "scene_017.png",
+        "triggerText": "The wine didn't exist yet."
+      },
+      {
+        "image": "scene_018.png",
+        "triggerText": "So what did they actually drink?"
+      },
+      {
+        "image": "scene_019.png",
+        "triggerText": "For 300,000 years,"
+      },
+      {
+        "image": "scene_020.png",
+        "triggerText": "every single one of your ancestors had to solve the same problem every day."
+      },
+      {
+        "image": "scene_021.png",
+        "triggerText": "Stay hydrated."
+      },
+      {
+        "image": "scene_022.png",
+        "triggerText": "Don't die."
+      },
+      {
+        "image": "scene_023.png",
+        "triggerText": "And the answer they came up with is way stranger than what you'd guess."
+      },
+      {
+        "image": "scene_024.png",
+        "triggerText": "The story of what humans drank is also the story of how we became human."
+      },
+      {
+        "image": "scene_025.png",
+        "triggerText": "Let's start with the obvious one."
+      },
+      {
+        "image": "scene_026.png",
+        "triggerText": "Water. For most of human history,"
+      },
+      {
+        "image": "scene_027.png",
+        "triggerText": "water was the default drink,"
+      },
+      {
+        "image": "scene_028.png",
+        "triggerText": "and it came from one of three places."
+      },
+      {
+        "image": "scene_029.png",
+        "triggerText": "A river."
+      },
+      {
+        "image": "scene_030.png",
+        "triggerText": "A spring."
+      },
+      {
+        "image": "scene_031.png",
+        "triggerText": "Or a hand-dug pit in the ground."
+      },
+      {
+        "image": "scene_032.png",
+        "triggerText": "Hunter-gatherers had no choice."
+      },
+      {
+        "image": "scene_033.png",
+        "triggerText": "They followed the water."
+      },
+      {
+        "image": "scene_034.png",
+        "triggerText": "Anthropologists studying the Hadza of Tanzania,"
+      },
+      {
+        "image": "scene_035.png",
+        "triggerText": "one of the last hunter-gatherer groups on Earth,"
+      },
+      {
+        "image": "scene_036.png",
+        "triggerText": "have documented that they drink from waterholes used by elephants,"
+      },
+      {
+        "image": "scene_037.png",
+        "triggerText": "baboons,"
+      },
+      {
+        "image": "scene_038.png",
+        "triggerText": "and wild dogs. The water is brown."
+      },
+      {
+        "image": "scene_039.png",
+        "triggerText": "It's gritty."
+      },
+      {
+        "image": "scene_040.png",
+        "triggerText": "Sometimes it has visible organic matter floating in it."
+      },
+      {
+        "image": "scene_041.png",
+        "triggerText": "And the Hadza drink it anyway,"
+      },
+      {
+        "image": "scene_042.png",
+        "triggerText": "because they have to."
+      },
+      {
+        "image": "scene_043.png",
+        "triggerText": "This was the reality for nearly every human who has ever lived."
+      },
+      {
+        "image": "scene_044.png",
+        "triggerText": "The water was rarely clean by modern standards."
+      },
+      {
+        "image": "scene_045.png",
+        "triggerText": "It carried bacteria,"
+      },
+      {
+        "image": "scene_046.png",
+        "triggerText": "amoebas,"
+      },
+      {
+        "image": "scene_047.png",
+        "triggerText": "and parasitic worms. Studies of ancient skeletons routinely find evidence of chronic intestinal infections."
+      },
+      {
+        "image": "scene_048.png",
+        "triggerText": "Children died young."
+      },
+      {
+        "image": "scene_049.png",
+        "triggerText": "Adults lived with constant low-grade gut illness."
+      },
+      {
+        "image": "scene_050.png",
+        "triggerText": "But the body adapted."
+      },
+      {
+        "image": "scene_051.png",
+        "triggerText": "The human immune system,"
+      },
+      {
+        "image": "scene_052.png",
+        "triggerText": "exposed daily to a flood of microbes,"
+      },
+      {
+        "image": "scene_053.png",
+        "triggerText": "learned to handle them."
+      },
+      {
+        "image": "scene_054.png",
+        "triggerText": "We're descendants of the people who survived the water."
+      },
+      {
+        "image": "scene_055.png",
+        "triggerText": "Every other lineage died out."
+      },
+      {
+        "image": "scene_056.png",
+        "triggerText": "Then humans figured out something that changed everything."
+      },
+      {
+        "image": "scene_057.png",
+        "triggerText": "Fermentation. Around 13,000 years ago,"
+      },
+      {
+        "image": "scene_058.png",
+        "triggerText": "in a cave in modern-day Israel called Raqefet,"
+      },
+      {
+        "image": "scene_059.png",
+        "triggerText": "near Mount Carmel,"
+      },
+      {
+        "image": "scene_060.png",
+        "triggerText": "semi-nomadic people called the Natufians did something nobody had done before."
+      },
+      {
+        "image": "scene_061.png",
+        "triggerText": "They took wild wheat and barley,"
+      },
+      {
+        "image": "scene_062.png",
+        "triggerText": "soaked it in water,"
+      },
+      {
+        "image": "scene_063.png",
+        "triggerText": "let it germinate,"
+      },
+      {
+        "image": "scene_064.png",
+        "triggerText": "mashed it in stone mortars,"
+      },
+      {
+        "image": "scene_065.png",
+        "triggerText": "and waited."
+      },
+      {
+        "image": "scene_066.png",
+        "triggerText": "After a few days,"
+      },
+      {
+        "image": "scene_067.png",
+        "triggerText": "the liquid started bubbling."
+      },
+      {
+        "image": "scene_068.png",
+        "triggerText": "Wild yeast had landed in it,"
+      },
+      {
+        "image": "scene_069.png",
+        "triggerText": "eaten the sugar,"
+      },
+      {
+        "image": "scene_070.png",
+        "triggerText": "and produced alcohol."
+      },
+      {
+        "image": "scene_071.png",
+        "triggerText": "They had invented beer."
+      },
+      {
+        "image": "scene_072.png",
+        "triggerText": "In 2018,"
+      },
+      {
+        "image": "scene_073.png",
+        "triggerText": "archaeologist Li Liu of Stanford University published a study in the Journal of Archaeological Science analyzing the residues stuck inside three 13,000-year-old stone mortars from Raqefet."
+      },
+      {
+        "image": "scene_074.png",
+        "triggerText": "The chemistry was unmistakable."
+      },
+      {
+        "image": "scene_075.png",
+        "triggerText": "Starch granules of germinated grain."
+      },
+      {
+        "image": "scene_076.png",
+        "triggerText": "Microscopic plant traces."
+      },
+      {
+        "image": "scene_077.png",
+        "triggerText": "This was the oldest evidence of man-made alcohol on Earth."
+      },
+      {
+        "image": "scene_078.png",
+        "triggerText": "And the Natufians weren't even farmers yet."
+      },
+      {
+        "image": "scene_079.png",
+        "triggerText": "They were still hunter-gatherers."
+      },
+      {
+        "image": "scene_080.png",
+        "triggerText": "The wild cereals they used to brew beer would only be domesticated thousands of years later."
+      },
+      {
+        "image": "scene_081.png",
+        "triggerText": "Some archaeologists now argue that humans may have invented agriculture not to make bread,"
+      },
+      {
+        "image": "scene_082.png",
+        "triggerText": "but to make more beer."
+      },
+      {
+        "image": "scene_083.png",
+        "triggerText": "The Natufian beer would taste nothing like what you'd order at a bar today."
+      },
+      {
+        "image": "scene_084.png",
+        "triggerText": "It looked like thin porridge."
+      },
+      {
+        "image": "scene_085.png",
+        "triggerText": "It was cloudy,"
+      },
+      {
+        "image": "scene_086.png",
+        "triggerText": "sour,"
+      },
+      {
+        "image": "scene_087.png",
+        "triggerText": "low in alcohol, probably around 2 to 3 percent."
+      },
+      {
+        "image": "scene_088.png",
+        "triggerText": "But it had something water didn't."
+      },
+      {
+        "image": "scene_089.png",
+        "triggerText": "Fermentation killed pathogens."
+      },
+      {
+        "image": "scene_090.png",
+        "triggerText": "The alcohol,"
+      },
+      {
+        "image": "scene_091.png",
+        "triggerText": "the acidity,"
+      },
+      {
+        "image": "scene_092.png",
+        "triggerText": "and the live yeast made the liquid safer to drink than the water it was made from."
+      },
+      {
+        "image": "scene_093.png",
+        "triggerText": "For the first time in human history,"
+      },
+      {
+        "image": "scene_094.png",
+        "triggerText": "our ancestors had a beverage they could trust."
+      },
+      {
+        "image": "scene_095.png",
+        "triggerText": "And they didn't stop with beer."
+      },
+      {
+        "image": "scene_096.png",
+        "triggerText": "Here's where it gets fascinating."
+      },
+      {
+        "image": "scene_097.png",
+        "triggerText": "In 2004,"
+      },
+      {
+        "image": "scene_098.png",
+        "triggerText": "archaeochemist Patrick McGovern at the University of Pennsylvania Museum analyzed pottery shards from a Neolithic village called Jiahu,"
+      },
+      {
+        "image": "scene_099.png",
+        "triggerText": "in central China."
+      },
+      {
+        "image": "scene_100.png",
+        "triggerText": "The shards were 9,000 years old."
+      },
+      {
+        "image": "scene_101.png",
+        "triggerText": "Inside them,"
+      },
+      {
+        "image": "scene_102.png",
+        "triggerText": "he found chemical traces of rice,"
+      },
+      {
+        "image": "scene_103.png",
+        "triggerText": "honey, hawthorn fruit,"
+      },
+      {
+        "image": "scene_104.png",
+        "triggerText": "and grape."
+      },
+      {
+        "image": "scene_105.png",
+        "triggerText": "Someone had been fermenting all of them together."
+      },
+      {
+        "image": "scene_106.png",
+        "triggerText": "Not beer."
+      },
+      {
+        "image": "scene_107.png",
+        "triggerText": "Not wine."
+      },
+      {
+        "image": "scene_108.png",
+        "triggerText": "Not mead."
+      },
+      {
+        "image": "scene_109.png",
+        "triggerText": "A hybrid drink that combined every fermentable thing they could find."
+      },
+      {
+        "image": "scene_110.png",
+        "triggerText": "McGovern later worked with the Dogfish Head brewery to recreate it,"
+      },
+      {
+        "image": "scene_111.png",
+        "triggerText": "calling it Chateau Jiahu."
+      },
+      {
+        "image": "scene_112.png",
+        "triggerText": "It tasted,"
+      },
+      {
+        "image": "scene_113.png",
+        "triggerText": "by all accounts,"
+      },
+      {
+        "image": "scene_114.png",
+        "triggerText": "strange. Sweet,"
+      },
+      {
+        "image": "scene_115.png",
+        "triggerText": "sour, earthy."
+      },
+      {
+        "image": "scene_116.png",
+        "triggerText": "But it was the oldest fermented beverage ever discovered."
+      },
+      {
+        "image": "scene_117.png",
+        "triggerText": "And it suggests that humans,"
+      },
+      {
+        "image": "scene_118.png",
+        "triggerText": "on opposite sides of the planet,"
+      },
+      {
+        "image": "scene_119.png",
+        "triggerText": "figured out fermentation at roughly the same time."
+      },
+      {
+        "image": "scene_120.png",
+        "triggerText": "Israel. China."
+      },
+      {
+        "image": "scene_121.png",
+        "triggerText": "Two cradles of civilization,"
+      },
+      {
+        "image": "scene_122.png",
+        "triggerText": "both discovering that yeast could turn anything into something safer to drink."
+      },
+      {
+        "image": "scene_123.png",
+        "triggerText": "Then came wine."
+      },
+      {
+        "image": "scene_124.png",
+        "triggerText": "In 2017,"
+      },
+      {
+        "image": "scene_125.png",
+        "triggerText": "McGovern published another study,"
+      },
+      {
+        "image": "scene_126.png",
+        "triggerText": "this time in the Proceedings of the National Academy of Sciences."
+      },
+      {
+        "image": "scene_127.png",
+        "triggerText": "His team had analyzed pottery jars from two Neolithic villages in modern-day Georgia,"
+      },
+      {
+        "image": "scene_128.png",
+        "triggerText": "in the Caucasus mountains."
+      },
+      {
+        "image": "scene_129.png",
+        "triggerText": "The chemical signatures were clear."
+      },
+      {
+        "image": "scene_130.png",
+        "triggerText": "Tartaric acid."
+      },
+      {
+        "image": "scene_131.png",
+        "triggerText": "Grape pollen."
+      },
+      {
+        "image": "scene_132.png",
+        "triggerText": "Fermentation residues."
+      },
+      {
+        "image": "scene_133.png",
+        "triggerText": "The jars were 8,000 years old."
+      },
+      {
+        "image": "scene_134.png",
+        "triggerText": "They held the oldest grape wine ever found."
+      },
+      {
+        "image": "scene_135.png",
+        "triggerText": "The Georgians stored the wine in giant clay vessels called qvevri,"
+      },
+      {
+        "image": "scene_136.png",
+        "triggerText": "some big enough to hold 300 liters."
+      },
+      {
+        "image": "scene_137.png",
+        "triggerText": "They buried them in the ground to keep them cool."
+      },
+      {
+        "image": "scene_138.png",
+        "triggerText": "Eight thousand years later,"
+      },
+      {
+        "image": "scene_139.png",
+        "triggerText": "Georgian winemakers still use the same vessels."
+      },
+      {
+        "image": "scene_140.png",
+        "triggerText": "The same technique."
+      },
+      {
+        "image": "scene_141.png",
+        "triggerText": "The same grape,"
+      },
+      {
+        "image": "scene_142.png",
+        "triggerText": "Vitis vinifera,"
+      },
+      {
+        "image": "scene_143.png",
+        "triggerText": "which now accounts for 99.9% of all wine produced on Earth today."
+      },
+      {
+        "image": "scene_144.png",
+        "triggerText": "Every Cabernet."
+      },
+      {
+        "image": "scene_145.png",
+        "triggerText": "Every Pinot Noir."
+      },
+      {
+        "image": "scene_146.png",
+        "triggerText": "Every Chardonnay."
+      },
+      {
+        "image": "scene_147.png",
+        "triggerText": "All of it descends,"
+      },
+      {
+        "image": "scene_148.png",
+        "triggerText": "biologically, from the wild grapes that grew in those mountains eight millennia ago."
+      },
+      {
+        "image": "scene_149.png",
+        "triggerText": "But the strangest drink of the ancient world wasn't beer or wine."
+      },
+      {
+        "image": "scene_150.png",
+        "triggerText": "It was milk."
+      },
+      {
+        "image": "scene_151.png",
+        "triggerText": "And the story of how humans started drinking milk is one of the wildest examples of evolution ever recorded."
+      },
+      {
+        "image": "scene_152.png",
+        "triggerText": "Until about 10,000 years ago,"
+      },
+      {
+        "image": "scene_153.png",
+        "triggerText": "no adult human on the planet could digest milk."
+      },
+      {
+        "image": "scene_154.png",
+        "triggerText": "Like every other mammal,"
+      },
+      {
+        "image": "scene_155.png",
+        "triggerText": "humans produced the enzyme lactase as babies,"
+      },
+      {
+        "image": "scene_156.png",
+        "triggerText": "then stopped making it after weaning."
+      },
+      {
+        "image": "scene_157.png",
+        "triggerText": "Drinking milk as an adult caused cramps,"
+      },
+      {
+        "image": "scene_158.png",
+        "triggerText": "diarrhea, and nausea."
+      },
+      {
+        "image": "scene_159.png",
+        "triggerText": "Then humans domesticated cattle,"
+      },
+      {
+        "image": "scene_160.png",
+        "triggerText": "sheep, and goats."
+      },
+      {
+        "image": "scene_161.png",
+        "triggerText": "And something extraordinary happened."
+      },
+      {
+        "image": "scene_162.png",
+        "triggerText": "A single genetic mutation,"
+      },
+      {
+        "image": "scene_163.png",
+        "triggerText": "located 13,910 base pairs upstream from the lactase gene,"
+      },
+      {
+        "image": "scene_164.png",
+        "triggerText": "appeared somewhere in central Europe."
+      },
+      {
+        "image": "scene_165.png",
+        "triggerText": "The mutation kept the lactase enzyme switched on for life."
+      },
+      {
+        "image": "scene_166.png",
+        "triggerText": "The first humans with this mutation could drink fresh milk as adults without getting sick."
+      },
+      {
+        "image": "scene_167.png",
+        "triggerText": "They had a massive survival advantage."
+      },
+      {
+        "image": "scene_168.png",
+        "triggerText": "In times of famine,"
+      },
+      {
+        "image": "scene_169.png",
+        "triggerText": "they had access to liquid calories no one else could digest."
+      },
+      {
+        "image": "scene_170.png",
+        "triggerText": "They had more children."
+      },
+      {
+        "image": "scene_171.png",
+        "triggerText": "Their children had more children."
+      },
+      {
+        "image": "scene_172.png",
+        "triggerText": "And the mutation spread,"
+      },
+      {
+        "image": "scene_173.png",
+        "triggerText": "faster than almost any genetic change ever documented in our species."
+      },
+      {
+        "image": "scene_174.png",
+        "triggerText": "Today, about 35% of adults worldwide can digest fresh milk."
+      },
+      {
+        "image": "scene_175.png",
+        "triggerText": "In northern Europe,"
+      },
+      {
+        "image": "scene_176.png",
+        "triggerText": "it's over 90%."
+      },
+      {
+        "image": "scene_177.png",
+        "triggerText": "In East Asia,"
+      },
+      {
+        "image": "scene_178.png",
+        "triggerText": "it's almost zero."
+      },
+      {
+        "image": "scene_179.png",
+        "triggerText": "The map of who can drink milk is a map of where dairy farming arrived first."
+      },
+      {
+        "image": "scene_180.png",
+        "triggerText": "Before the mutation spread,"
+      },
+      {
+        "image": "scene_181.png",
+        "triggerText": "ancient humans found another way around the lactose problem."
+      },
+      {
+        "image": "scene_182.png",
+        "triggerText": "They fermented the milk."
+      },
+      {
+        "image": "scene_183.png",
+        "triggerText": "Cheese, yogurt,"
+      },
+      {
+        "image": "scene_184.png",
+        "triggerText": "and kefir all have most of their lactose broken down by bacteria during fermentation."
+      },
+      {
+        "image": "scene_185.png",
+        "triggerText": "Archaeologists have found cheese residues on pottery from Poland dating back 7,500 years."
+      },
+      {
+        "image": "scene_186.png",
+        "triggerText": "The same trick the Natufians used for beer,"
+      },
+      {
+        "image": "scene_187.png",
+        "triggerText": "our ancestors used for milk."
+      },
+      {
+        "image": "scene_188.png",
+        "triggerText": "If you can't drink it safely,"
+      },
+      {
+        "image": "scene_189.png",
+        "triggerText": "ferment it."
+      },
+      {
+        "image": "scene_190.png",
+        "triggerText": "Now here's the part that's going to surprise you."
+      },
+      {
+        "image": "scene_191.png",
+        "triggerText": "There's a myth,"
+      },
+      {
+        "image": "scene_192.png",
+        "triggerText": "repeated everywhere,"
+      },
+      {
+        "image": "scene_193.png",
+        "triggerText": "that medieval people didn't drink water."
+      },
+      {
+        "image": "scene_194.png",
+        "triggerText": "The story goes that water was so polluted,"
+      },
+      {
+        "image": "scene_195.png",
+        "triggerText": "everyone drank beer or wine instead,"
+      },
+      {
+        "image": "scene_196.png",
+        "triggerText": "even children,"
+      },
+      {
+        "image": "scene_197.png",
+        "triggerText": "all day long."
+      },
+      {
+        "image": "scene_198.png",
+        "triggerText": "This is wrong."
+      },
+      {
+        "image": "scene_199.png",
+        "triggerText": "Medical texts from medieval Europe consistently describe water as the basis of healthy drinking."
+      },
+      {
+        "image": "scene_200.png",
+        "triggerText": "The 7th-century Byzantine physician Paul of Aegina wrote that water was \"of most use in every mode of regimen.\""
+      },
+      {
+        "image": "scene_201.png",
+        "triggerText": "A 9th-century French abbot named Lupus Servatus described drinking from \"a clear well or the current of a transparent brook.\""
+      },
+      {
+        "image": "scene_202.png",
+        "triggerText": "Cities built infrastructure to bring clean water in."
+      },
+      {
+        "image": "scene_203.png",
+        "triggerText": "London constructed the Great Conduit in 1237,"
+      },
+      {
+        "image": "scene_204.png",
+        "triggerText": "piping fresh spring water from Tyburn into the city center."
+      },
+      {
+        "image": "scene_205.png",
+        "triggerText": "Rome built 11 major aqueducts over 500 years,"
+      },
+      {
+        "image": "scene_206.png",
+        "triggerText": "delivering nearly a million cubic meters of water per day to its citizens."
+      },
+      {
+        "image": "scene_207.png",
+        "triggerText": "The Romans understood that running water from a high source was safer than stagnant water in the city."
+      },
+      {
+        "image": "scene_208.png",
+        "triggerText": "They were right,"
+      },
+      {
+        "image": "scene_209.png",
+        "triggerText": "even though they had no germ theory and no idea why."
+      },
+      {
+        "image": "scene_210.png",
+        "triggerText": "Ancient people drank water constantly."
+      },
+      {
+        "image": "scene_211.png",
+        "triggerText": "They preferred it."
+      },
+      {
+        "image": "scene_212.png",
+        "triggerText": "They built civilizations around it."
+      },
+      {
+        "image": "scene_213.png",
+        "triggerText": "Beer and wine were food,"
+      },
+      {
+        "image": "scene_214.png",
+        "triggerText": "social glue,"
+      },
+      {
+        "image": "scene_215.png",
+        "triggerText": "ritual, calories."
+      },
+      {
+        "image": "scene_216.png",
+        "triggerText": "Water was life."
+      },
+      {
+        "image": "scene_217.png",
+        "triggerText": "And every culture that didn't have grapes or grain found something else to ferment."
+      },
+      {
+        "image": "scene_218.png",
+        "triggerText": "In the Andes,"
+      },
+      {
+        "image": "scene_219.png",
+        "triggerText": "indigenous people brewed chicha,"
+      },
+      {
+        "image": "scene_220.png",
+        "triggerText": "a beer made from corn,"
+      },
+      {
+        "image": "scene_221.png",
+        "triggerText": "sometimes from corn that had been chewed and spit out to start fermentation with saliva enzymes."
+      },
+      {
+        "image": "scene_222.png",
+        "triggerText": "In Russia and Eastern Europe,"
+      },
+      {
+        "image": "scene_223.png",
+        "triggerText": "kvass was made from fermented stale bread."
+      },
+      {
+        "image": "scene_224.png",
+        "triggerText": "In Mexico,"
+      },
+      {
+        "image": "scene_225.png",
+        "triggerText": "pulque came from the sap of the agave plant."
+      },
+      {
+        "image": "scene_226.png",
+        "triggerText": "In sub-Saharan Africa,"
+      },
+      {
+        "image": "scene_227.png",
+        "triggerText": "palm wine was tapped directly from palm trees and fermented in days."
+      },
+      {
+        "image": "scene_228.png",
+        "triggerText": "The Vikings drank mead,"
+      },
+      {
+        "image": "scene_229.png",
+        "triggerText": "fermented honey water that may predate beer in some regions."
+      },
+      {
+        "image": "scene_230.png",
+        "triggerText": "Across the world,"
+      },
+      {
+        "image": "scene_231.png",
+        "triggerText": "on every inhabited continent,"
+      },
+      {
+        "image": "scene_232.png",
+        "triggerText": "humans independently discovered the same principle."
+      },
+      {
+        "image": "scene_233.png",
+        "triggerText": "If a liquid bubbles,"
+      },
+      {
+        "image": "scene_234.png",
+        "triggerText": "it's probably safer to drink than the source it came from."
+      },
+      {
+        "image": "scene_235.png",
+        "triggerText": "But the deepest truth about ancient drinks isn't about safety."
+      },
+      {
+        "image": "scene_236.png",
+        "triggerText": "It's about meaning."
+      },
+      {
+        "image": "scene_237.png",
+        "triggerText": "The Natufians at Raqefet weren't brewing beer for hydration."
+      },
+      {
+        "image": "scene_238.png",
+        "triggerText": "The site is a burial ground."
+      },
+      {
+        "image": "scene_239.png",
+        "triggerText": "The beer was made for funerals."
+      },
+      {
+        "image": "scene_240.png",
+        "triggerText": "The grain was crushed in mortars carved into the rock right next to the graves."
+      },
+      {
+        "image": "scene_241.png",
+        "triggerText": "The dead were honored with a drink."
+      },
+      {
+        "image": "scene_242.png",
+        "triggerText": "In ancient Sumer,"
+      },
+      {
+        "image": "scene_243.png",
+        "triggerText": "the goddess Ninkasi was the patron of beer,"
+      },
+      {
+        "image": "scene_244.png",
+        "triggerText": "and the hymn praising her,"
+      },
+      {
+        "image": "scene_245.png",
+        "triggerText": "written around 1800 BC,"
+      },
+      {
+        "image": "scene_246.png",
+        "triggerText": "is essentially a recipe."
+      },
+      {
+        "image": "scene_247.png",
+        "triggerText": "The Egyptians paid workers in beer."
+      },
+      {
+        "image": "scene_248.png",
+        "triggerText": "The Greeks held religious festivals built around wine."
+      },
+      {
+        "image": "scene_249.png",
+        "triggerText": "The Chinese filled bronze vessels with rice beverages and sealed them in tombs for the afterlife."
+      },
+      {
+        "image": "scene_250.png",
+        "triggerText": "Drinking together,"
+      },
+      {
+        "image": "scene_251.png",
+        "triggerText": "around a fire,"
+      },
+      {
+        "image": "scene_252.png",
+        "triggerText": "around a table,"
+      },
+      {
+        "image": "scene_253.png",
+        "triggerText": "around a grave,"
+      },
+      {
+        "image": "scene_254.png",
+        "triggerText": "was how humans built communities."
+      },
+      {
+        "image": "scene_255.png",
+        "triggerText": "Beer didn't just feed us."
+      },
+      {
+        "image": "scene_256.png",
+        "triggerText": "It bound us."
+      },
+      {
+        "image": "scene_257.png",
+        "triggerText": "For 300,000 years,"
+      },
+      {
+        "image": "scene_258.png",
+        "triggerText": "your ancestors drank from rivers and waited for their stomachs to forgive them."
+      },
+      {
+        "image": "scene_259.png",
+        "triggerText": "They watched their children get sick from water and they buried the ones who didn't recover."
+      },
+      {
+        "image": "scene_260.png",
+        "triggerText": "Then they figured out how to soak grain."
+      },
+      {
+        "image": "scene_261.png",
+        "triggerText": "How to crush grapes."
+      },
+      {
+        "image": "scene_262.png",
+        "triggerText": "How to coax bacteria and yeast into doing the work their immune systems couldn't."
+      },
+      {
+        "image": "scene_263.png",
+        "triggerText": "They invented hydration,"
+      },
+      {
+        "image": "scene_264.png",
+        "triggerText": "and somewhere along the way,"
+      },
+      {
+        "image": "scene_265.png",
+        "triggerText": "they invented celebration."
+      },
+      {
+        "image": "scene_266.png",
+        "triggerText": "Every glass you've ever raised,"
+      },
+      {
+        "image": "scene_267.png",
+        "triggerText": "every cup passed around a table,"
+      },
+      {
+        "image": "scene_268.png",
+        "triggerText": "every toast made at a wedding,"
+      },
+      {
+        "image": "scene_269.png",
+        "triggerText": "every cold beer at the end of a long day,"
+      },
+      {
+        "image": "scene_270.png",
+        "triggerText": "is the same gesture they made thirteen thousand years ago in a cave by Mount Carmel."
+      },
+      {
+        "image": "scene_271.png",
+        "triggerText": "Different liquid."
+      },
+      {
+        "image": "scene_272.png",
+        "triggerText": "Same instinct."
+      },
+      {
+        "image": "scene_273.png",
+        "triggerText": "We thought we invented drinks to stay alive."
+      },
+      {
+        "image": "scene_274.png",
+        "triggerText": "We invented them to stay together."
+      }
+    ]
+  },
+  "video": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30
+  },
+  "encoder": {
+    "codec": "libx264",
+    "preset": "medium",
+    "crf": 20
+  }
+}

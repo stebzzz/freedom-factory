@@ -1,0 +1,22 @@
+{
+  "projects": [
+    {
+      "slug": "galveston_1900_veo3",
+      "label": "Galveston 1900 — Veo3",
+      "description": "146 scènes text-to-video Veo3, ouragan du 8 septembre 1900",
+      "icon": "Waves",
+      "script": "scripts/gen-galveston-t2v.mjs",
+      "promptsFile": "galveston_1900_veo3_prompts.json",
+      "kind": "t2v"
+    },
+    {
+      "slug": "galveston_1900",
+      "label": "Galveston 1900 — I2V (legacy)",
+      "description": "Pipeline image+vidéo (45 scènes, obsolète au profit du Veo3)",
+      "icon": "History",
+      "script": "scripts/gen-galveston.mjs",
+      "promptsFile": "galveston_1900_prompts.json",
+      "kind": "i2v"
+    }
+  ]
+}

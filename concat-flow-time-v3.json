@@ -1,0 +1,1243 @@
+{
+  "project": {
+    "name": "Time",
+    "outputPath": "public/generated/Time/time.aligned.v3.mp4"
+  },
+  "images": {
+    "dir": "public/generated/Time/images",
+    "count": 242,
+    "order": "scene_index",
+    "list": [
+      "scene_000.png",
+      "scene_001.png",
+      "scene_002.png",
+      "scene_003.png",
+      "scene_004.png",
+      "scene_005.png",
+      "scene_006.png",
+      "scene_007.png",
+      "scene_008.png",
+      "scene_009.png",
+      "scene_010.png",
+      "scene_011.png",
+      "scene_012.png",
+      "scene_013.png",
+      "scene_014.png",
+      "scene_015.png",
+      "scene_016.png",
+      "scene_017.png",
+      "scene_018.png",
+      "scene_019.png",
+      "scene_020.png",
+      "scene_021.png",
+      "scene_022.png",
+      "scene_023.png",
+      "scene_024.png",
+      "scene_025.png",
+      "scene_026.png",
+      "scene_027.png",
+      "scene_028.png",
+      "scene_029.png",
+      "scene_030.png",
+      "scene_031.png",
+      "scene_032.png",
+      "scene_033.png",
+      "scene_034.png",
+      "scene_035.png",
+      "scene_036.png",
+      "scene_037.png",
+      "scene_038.png",
+      "scene_039.png",
+      "scene_040.png",
+      "scene_041.png",
+      "scene_042.png",
+      "scene_043.png",
+      "scene_044.png",
+      "scene_045.png",
+      "scene_046.png",
+      "scene_047.png",
+      "scene_048.png",
+      "scene_049.png",
+      "scene_050.png",
+      "scene_051.png",
+      "scene_052.png",
+      "scene_053.png",
+      "scene_054.png",
+      "scene_055.png",
+      "scene_056.png",
+      "scene_057.png",
+      "scene_058.png",
+      "scene_059.png",
+      "scene_060.png",
+      "scene_061.png",
+      "scene_062.png",
+      "scene_063.png",
+      "scene_064.png",
+      "scene_065.png",
+      "scene_066.png",
+      "scene_067.png",
+      "scene_068.png",
+      "scene_069.png",
+      "scene_070.png",
+      "scene_071.png",
+      "scene_072.png",
+      "scene_073.png",
+      "scene_074.png",
+      "scene_075.png",
+      "scene_076.png",
+      "scene_077.png",
+      "scene_078.png",
+      "scene_079.png",
+      "scene_080.png",
+      "scene_081.png",
+      "scene_082.png",
+      "scene_083.png",
+      "scene_084.png",
+      "scene_085.png",
+      "scene_086.png",
+      "scene_087.png",
+      "scene_088.png",
+      "scene_089.png",
+      "scene_090.png",
+      "scene_091.png",
+      "scene_092.png",
+      "scene_093.png",
+      "scene_094.png",
+      "scene_095.png",
+      "scene_096.png",
+      "scene_097.png",
+      "scene_098.png",
+      "scene_099.png",
+      "scene_100.png",
+      "scene_101.png",
+      "scene_102.png",
+      "scene_103.png",
+      "scene_104.png",
+      "scene_105.png",
+      "scene_106.png",
+      "scene_107.png",
+      "scene_108.png",
+      "scene_109.png",
+      "scene_110.png",
+      "scene_111.png",
+      "scene_112.png",
+      "scene_113.png",
+      "scene_114.png",
+      "scene_115.png",
+      "scene_116.png",
+      "scene_117.png",
+      "scene_118.png",
+      "scene_119.png",
+      "scene_120.png",
+      "scene_121.png",
+      "scene_122.png",
+      "scene_123.png",
+      "scene_124.png",
+      "scene_125.png",
+      "scene_126.png",
+      "scene_127.png",
+      "scene_128.png",
+      "scene_129.png",
+      "scene_130.png",
+      "scene_131.png",
+      "scene_132.png",
+      "scene_133.png",
+      "scene_134.png",
+      "scene_135.png",
+      "scene_136.png",
+      "scene_137.png",
+      "scene_138.png",
+      "scene_139.png",
+      "scene_140.png",
+      "scene_141.png",
+      "scene_142.png",
+      "scene_143.png",
+      "scene_144.png",
+      "scene_145.png",
+      "scene_146.png",
+      "scene_147.png",
+      "scene_148.png",
+      "scene_149.png",
+      "scene_150.png",
+      "scene_151.png",
+      "scene_152.png",
+      "scene_153.png",
+      "scene_154.png",
+      "scene_155.png",
+      "scene_156.png",
+      "scene_157.png",
+      "scene_158.png",
+      "scene_159.png",
+      "scene_160.png",
+      "scene_161.png",
+      "scene_162.png",
+      "scene_163.png",
+      "scene_164.png",
+      "scene_165.png",
+      "scene_166.png",
+      "scene_167.png",
+      "scene_168.png",
+      "scene_169.png",
+      "scene_170.png",
+      "scene_171.png",
+      "scene_172.png",
+      "scene_173.png",
+      "scene_174.png",
+      "scene_175.png",
+      "scene_176.png",
+      "scene_177.png",
+      "scene_178.png",
+      "scene_179.png",
+      "scene_180.png",
+      "scene_181.png",
+      "scene_182.png",
+      "scene_183.png",
+      "scene_184.png",
+      "scene_185.png",
+      "scene_186.png",
+      "scene_187.png",
+      "scene_188.png",
+      "scene_189.png",
+      "scene_190.png",
+      "scene_191.png",
+      "scene_192.png",
+      "scene_193.png",
+      "scene_194.png",
+      "scene_195.png",
+      "scene_196.png",
+      "scene_197.png",
+      "scene_198.png",
+      "scene_199.png",
+      "scene_200.png",
+      "scene_201.png",
+      "scene_202.png",
+      "scene_203.png",
+      "scene_204.png",
+      "scene_205.png",
+      "scene_206.png",
+      "scene_207.png",
+      "scene_208.png",
+      "scene_209.png",
+      "scene_210.png",
+      "scene_211.png",
+      "scene_212.png",
+      "scene_213.png",
+      "scene_214.png",
+      "scene_215.png",
+      "scene_216.png",
+      "scene_217.png",
+      "scene_218.png",
+      "scene_219.png",
+      "scene_220.png",
+      "scene_221.png",
+      "scene_222.png",
+      "scene_223.png",
+      "scene_224.png",
+      "scene_225.png",
+      "scene_226.png",
+      "scene_227.png",
+      "scene_228.png",
+      "scene_229.png",
+      "scene_230.png",
+      "scene_231.png",
+      "scene_232.png",
+      "scene_233.png",
+      "scene_234.png",
+      "scene_235.png",
+      "scene_236.png",
+      "scene_237.png",
+      "scene_238.png",
+      "scene_239.png",
+      "scene_240.png",
+      "scene_241.png"
+    ]
+  },
+  "timing": {
+    "mode": "whisper_trigger_text",
+    "matchMode": "fuzzy_text",
+    "fallbackMode": "interpolate",
+    "cutRule": "start_at_trigger_end_at_next_trigger",
+    "minImageDurationSec": 1,
+    "maxImageDurationSec": 15,
+    "perImage": [
+      {
+        "image": "scene_000.png",
+        "triggerText": "You glance at your phone."
+      },
+      {
+        "image": "scene_001.png",
+        "triggerText": "9:47 AM."
+      },
+      {
+        "image": "scene_002.png",
+        "triggerText": "You know the exact second."
+      },
+      {
+        "image": "scene_003.png",
+        "triggerText": "You know the day,"
+      },
+      {
+        "image": "scene_004.png",
+        "triggerText": "the month,"
+      },
+      {
+        "image": "scene_005.png",
+        "triggerText": "the year."
+      },
+      {
+        "image": "scene_006.png",
+        "triggerText": "You know what time the sun will set,"
+      },
+      {
+        "image": "scene_007.png",
+        "triggerText": "what time your alarm will ring,"
+      },
+      {
+        "image": "scene_008.png",
+        "triggerText": "what time the meeting starts."
+      },
+      {
+        "image": "scene_009.png",
+        "triggerText": "The number is everywhere."
+      },
+      {
+        "image": "scene_010.png",
+        "triggerText": "On your wrist."
+      },
+      {
+        "image": "scene_011.png",
+        "triggerText": "On your wall."
+      },
+      {
+        "image": "scene_012.png",
+        "triggerText": "On every screen you own."
+      },
+      {
+        "image": "scene_013.png",
+        "triggerText": "But for 99% of human history,"
+      },
+      {
+        "image": "scene_014.png",
+        "triggerText": "this moment didn't exist."
+      },
+      {
+        "image": "scene_015.png",
+        "triggerText": "No clocks."
+      },
+      {
+        "image": "scene_016.png",
+        "triggerText": "No calendars."
+      },
+      {
+        "image": "scene_017.png",
+        "triggerText": "No numbers attached to days."
+      },
+      {
+        "image": "scene_018.png",
+        "triggerText": "The sun rose and set."
+      },
+      {
+        "image": "scene_019.png",
+        "triggerText": "The moon grew and shrank."
+      },
+      {
+        "image": "scene_020.png",
+        "triggerText": "Seasons changed."
+      },
+      {
+        "image": "scene_021.png",
+        "triggerText": "And that was it."
+      },
+      {
+        "image": "scene_022.png",
+        "triggerText": "So how did your ancestors know what month it was?"
+      },
+      {
+        "image": "scene_023.png",
+        "triggerText": "How did they know when to plant,"
+      },
+      {
+        "image": "scene_024.png",
+        "triggerText": "when to harvest,"
+      },
+      {
+        "image": "scene_025.png",
+        "triggerText": "when winter was coming?"
+      },
+      {
+        "image": "scene_026.png",
+        "triggerText": "How did they coordinate hunts,"
+      },
+      {
+        "image": "scene_027.png",
+        "triggerText": "ceremonies, and migrations across hundreds of people who had no way to say \"meet me at six\"?"
+      },
+      {
+        "image": "scene_028.png",
+        "triggerText": "For 300,000 years,"
+      },
+      {
+        "image": "scene_029.png",
+        "triggerText": "every single human on Earth solved this problem without a single clock."
+      },
+      {
+        "image": "scene_030.png",
+        "triggerText": "And the way they did it is one of the most underrated achievements in human history."
+      },
+      {
+        "image": "scene_031.png",
+        "triggerText": "Let's start with the obvious."
+      },
+      {
+        "image": "scene_032.png",
+        "triggerText": "The sky."
+      },
+      {
+        "image": "scene_033.png",
+        "triggerText": "For most of human history,"
+      },
+      {
+        "image": "scene_034.png",
+        "triggerText": "the sky was the only clock anyone had."
+      },
+      {
+        "image": "scene_035.png",
+        "triggerText": "The sun rose."
+      },
+      {
+        "image": "scene_036.png",
+        "triggerText": "That was morning."
+      },
+      {
+        "image": "scene_037.png",
+        "triggerText": "The sun was overhead."
+      },
+      {
+        "image": "scene_038.png",
+        "triggerText": "That was midday."
+      },
+      {
+        "image": "scene_039.png",
+        "triggerText": "The sun set."
+      },
+      {
+        "image": "scene_040.png",
+        "triggerText": "That was evening."
+      },
+      {
+        "image": "scene_041.png",
+        "triggerText": "The stars came out."
+      },
+      {
+        "image": "scene_042.png",
+        "triggerText": "That was night."
+      },
+      {
+        "image": "scene_043.png",
+        "triggerText": "This sounds simple,"
+      },
+      {
+        "image": "scene_044.png",
+        "triggerText": "but think about what it actually requires."
+      },
+      {
+        "image": "scene_045.png",
+        "triggerText": "You had to know which direction the sun rose."
+      },
+      {
+        "image": "scene_046.png",
+        "triggerText": "You had to notice that the position shifted slightly every day."
+      },
+      {
+        "image": "scene_047.png",
+        "triggerText": "You had to remember,"
+      },
+      {
+        "image": "scene_048.png",
+        "triggerText": "across an entire year,"
+      },
+      {
+        "image": "scene_049.png",
+        "triggerText": "where the sun was last time the rivers flooded,"
+      },
+      {
+        "image": "scene_050.png",
+        "triggerText": "last time the berries ripened,"
+      },
+      {
+        "image": "scene_051.png",
+        "triggerText": "last time the herds moved north."
+      },
+      {
+        "image": "scene_052.png",
+        "triggerText": "Hunter-gatherers tracked all of this in their heads."
+      },
+      {
+        "image": "scene_053.png",
+        "triggerText": "Every day."
+      },
+      {
+        "image": "scene_054.png",
+        "triggerText": "Without writing."
+      },
+      {
+        "image": "scene_055.png",
+        "triggerText": "Without numbers."
+      },
+      {
+        "image": "scene_056.png",
+        "triggerText": "And they were astonishingly good at it."
+      },
+      {
+        "image": "scene_057.png",
+        "triggerText": "Modern anthropologists studying the San people of the Kalahari have documented hunters who can predict the seasonal migration of antelope herds within days,"
+      },
+      {
+        "image": "scene_058.png",
+        "triggerText": "just by watching the angle of sunset shadows and the position of constellations."
+      },
+      {
+        "image": "scene_059.png",
+        "triggerText": "But the sun is hard to track precisely."
+      },
+      {
+        "image": "scene_060.png",
+        "triggerText": "The real clock of the ancient world was the moon."
+      },
+      {
+        "image": "scene_061.png",
+        "triggerText": "The moon goes through a complete cycle,"
+      },
+      {
+        "image": "scene_062.png",
+        "triggerText": "new to full and back,"
+      },
+      {
+        "image": "scene_063.png",
+        "triggerText": "every 29.5 days."
+      },
+      {
+        "image": "scene_064.png",
+        "triggerText": "It's the most obvious recurring pattern in nature."
+      },
+      {
+        "image": "scene_065.png",
+        "triggerText": "And it's the first thing humans started counting."
+      },
+      {
+        "image": "scene_066.png",
+        "triggerText": "In 1973,"
+      },
+      {
+        "image": "scene_067.png",
+        "triggerText": "archaeologists working in the Lebombo mountains,"
+      },
+      {
+        "image": "scene_068.png",
+        "triggerText": "on the border of South Africa and Eswatini,"
+      },
+      {
+        "image": "scene_069.png",
+        "triggerText": "found something that changed our understanding of prehistoric humanity."
+      },
+      {
+        "image": "scene_070.png",
+        "triggerText": "A small bone,"
+      },
+      {
+        "image": "scene_071.png",
+        "triggerText": "carved from the fibula of a baboon,"
+      },
+      {
+        "image": "scene_072.png",
+        "triggerText": "marked with 29 carefully cut notches."
+      },
+      {
+        "image": "scene_073.png",
+        "triggerText": "The bone was 42,000 years old."
+      },
+      {
+        "image": "scene_074.png",
+        "triggerText": "Some researchers believe the notches were a tally of the lunar cycle,"
+      },
+      {
+        "image": "scene_075.png",
+        "triggerText": "possibly used by a woman to track her menstrual phases against the phases of the moon."
+      },
+      {
+        "image": "scene_076.png",
+        "triggerText": "Others think it counted hunting trips,"
+      },
+      {
+        "image": "scene_077.png",
+        "triggerText": "or moons until winter,"
+      },
+      {
+        "image": "scene_078.png",
+        "triggerText": "or anything that came in groups of 29."
+      },
+      {
+        "image": "scene_079.png",
+        "triggerText": "We can't know for sure."
+      },
+      {
+        "image": "scene_080.png",
+        "triggerText": "But what we do know is this."
+      },
+      {
+        "image": "scene_081.png",
+        "triggerText": "Forty-two thousand years ago,"
+      },
+      {
+        "image": "scene_082.png",
+        "triggerText": "before agriculture,"
+      },
+      {
+        "image": "scene_083.png",
+        "triggerText": "before cities,"
+      },
+      {
+        "image": "scene_084.png",
+        "triggerText": "before writing,"
+      },
+      {
+        "image": "scene_085.png",
+        "triggerText": "someone sat down with a bone and a piece of stone and decided that time was worth recording."
+      },
+      {
+        "image": "scene_086.png",
+        "triggerText": "A similar bone was found in the Democratic Republic of Congo in 1960,"
+      },
+      {
+        "image": "scene_087.png",
+        "triggerText": "by Belgian geologist Jean de Heinzelin."
+      },
+      {
+        "image": "scene_088.png",
+        "triggerText": "It's called the Ishango bone,"
+      },
+      {
+        "image": "scene_089.png",
+        "triggerText": "and it's about 20,000 years old."
+      },
+      {
+        "image": "scene_090.png",
+        "triggerText": "The notches are arranged in groups,"
+      },
+      {
+        "image": "scene_091.png",
+        "triggerText": "with mathematical patterns that some scholars believe represent a six-month lunar calendar."
+      },
+      {
+        "image": "scene_092.png",
+        "triggerText": "The American researcher Alexander Marshack spent years studying these bones under a microscope."
+      },
+      {
+        "image": "scene_093.png",
+        "triggerText": "He concluded that the marks weren't random scratches."
+      },
+      {
+        "image": "scene_094.png",
+        "triggerText": "They were measurements."
+      },
+      {
+        "image": "scene_095.png",
+        "triggerText": "Records."
+      },
+      {
+        "image": "scene_096.png",
+        "triggerText": "Memory made visible. Humans had been counting time for at least 42,000 years before anyone built a single calendar."
+      },
+      {
+        "image": "scene_097.png",
+        "triggerText": "But counting moons isn't enough to run a civilization."
+      },
+      {
+        "image": "scene_098.png",
+        "triggerText": "To plant crops,"
+      },
+      {
+        "image": "scene_099.png",
+        "triggerText": "you need to know the year."
+      },
+      {
+        "image": "scene_100.png",
+        "triggerText": "And the year is hard."
+      },
+      {
+        "image": "scene_101.png",
+        "triggerText": "It doesn't divide cleanly into months."
+      },
+      {
+        "image": "scene_102.png",
+        "triggerText": "The sun and the moon don't agree."
+      },
+      {
+        "image": "scene_103.png",
+        "triggerText": "So humans started building things to track them."
+      },
+      {
+        "image": "scene_104.png",
+        "triggerText": "Around 3,000 BC,"
+      },
+      {
+        "image": "scene_105.png",
+        "triggerText": "in a field in southern England,"
+      },
+      {
+        "image": "scene_106.png",
+        "triggerText": "a group of Neolithic farmers began constructing one of the strangest objects in human history."
+      },
+      {
+        "image": "scene_107.png",
+        "triggerText": "Stonehenge. We still don't know everything about why it was built,"
+      },
+      {
+        "image": "scene_108.png",
+        "triggerText": "but we know one thing with certainty."
+      },
+      {
+        "image": "scene_109.png",
+        "triggerText": "On the morning of the summer solstice,"
+      },
+      {
+        "image": "scene_110.png",
+        "triggerText": "the longest day of the year,"
+      },
+      {
+        "image": "scene_111.png",
+        "triggerText": "the sun rises directly over the Heel Stone,"
+      },
+      {
+        "image": "scene_112.png",
+        "triggerText": "sending a beam of light straight through the center of the monument."
+      },
+      {
+        "image": "scene_113.png",
+        "triggerText": "On the evening of the winter solstice,"
+      },
+      {
+        "image": "scene_114.png",
+        "triggerText": "the shortest day of the year,"
+      },
+      {
+        "image": "scene_115.png",
+        "triggerText": "the sun sets along the same axis in the opposite direction."
+      },
+      {
+        "image": "scene_116.png",
+        "triggerText": "This is not coincidence."
+      },
+      {
+        "image": "scene_117.png",
+        "triggerText": "The monument was deliberately oriented to capture the two most important moments of the solar year."
+      },
+      {
+        "image": "scene_118.png",
+        "triggerText": "Whoever built Stonehenge had been tracking the sun for generations."
+      },
+      {
+        "image": "scene_119.png",
+        "triggerText": "They knew exactly when the longest and shortest days fell."
+      },
+      {
+        "image": "scene_120.png",
+        "triggerText": "And they wanted to build something that would freeze that knowledge in stone forever."
+      },
+      {
+        "image": "scene_121.png",
+        "triggerText": "Stonehenge wasn't unique."
+      },
+      {
+        "image": "scene_122.png",
+        "triggerText": "Across the ancient world,"
+      },
+      {
+        "image": "scene_123.png",
+        "triggerText": "humans built astronomical observatories."
+      },
+      {
+        "image": "scene_124.png",
+        "triggerText": "Nabta Playa in southern Egypt,"
+      },
+      {
+        "image": "scene_125.png",
+        "triggerText": "dating back over 7,000 years,"
+      },
+      {
+        "image": "scene_126.png",
+        "triggerText": "is a circle of stones aligned with the summer solstice."
+      },
+      {
+        "image": "scene_127.png",
+        "triggerText": "Newgrange in Ireland,"
+      },
+      {
+        "image": "scene_128.png",
+        "triggerText": "5,200 years old,"
+      },
+      {
+        "image": "scene_129.png",
+        "triggerText": "has a passage that fills with sunlight at dawn on the winter solstice."
+      },
+      {
+        "image": "scene_130.png",
+        "triggerText": "The Goseck Circle in Germany,"
+      },
+      {
+        "image": "scene_131.png",
+        "triggerText": "7,000 years old,"
+      },
+      {
+        "image": "scene_132.png",
+        "triggerText": "marks both solstices and the equinoxes."
+      },
+      {
+        "image": "scene_133.png",
+        "triggerText": "Every continent,"
+      },
+      {
+        "image": "scene_134.png",
+        "triggerText": "every climate,"
+      },
+      {
+        "image": "scene_135.png",
+        "triggerText": "every isolated culture invented some version of the same idea."
+      },
+      {
+        "image": "scene_136.png",
+        "triggerText": "If you build the right stones in the right places,"
+      },
+      {
+        "image": "scene_137.png",
+        "triggerText": "the sky will tell you when the year turns."
+      },
+      {
+        "image": "scene_138.png",
+        "triggerText": "Then came the Egyptians,"
+      },
+      {
+        "image": "scene_139.png",
+        "triggerText": "and time became technology."
+      },
+      {
+        "image": "scene_140.png",
+        "triggerText": "Around 1400 BC,"
+      },
+      {
+        "image": "scene_141.png",
+        "triggerText": "during the reign of Pharaoh Amenhotep III,"
+      },
+      {
+        "image": "scene_142.png",
+        "triggerText": "an alabaster vessel was placed inside the Temple of Amen-Re at Karnak."
+      },
+      {
+        "image": "scene_143.png",
+        "triggerText": "It looked like a large flowerpot."
+      },
+      {
+        "image": "scene_144.png",
+        "triggerText": "Carved on the inside were twelve columns of small marks."
+      },
+      {
+        "image": "scene_145.png",
+        "triggerText": "A tiny hole was drilled into the center of the bottom."
+      },
+      {
+        "image": "scene_146.png",
+        "triggerText": "The vessel was filled with water,"
+      },
+      {
+        "image": "scene_147.png",
+        "triggerText": "and as the water dripped out through the hole,"
+      },
+      {
+        "image": "scene_148.png",
+        "triggerText": "the level fell past each mark in sequence."
+      },
+      {
+        "image": "scene_149.png",
+        "triggerText": "This was the clepsydra."
+      },
+      {
+        "image": "scene_150.png",
+        "triggerText": "The water clock."
+      },
+      {
+        "image": "scene_151.png",
+        "triggerText": "The oldest physical timekeeping device ever found."
+      },
+      {
+        "image": "scene_152.png",
+        "triggerText": "It's now in the Egyptian Museum in Cairo."
+      },
+      {
+        "image": "scene_153.png",
+        "triggerText": "For the first time in history,"
+      },
+      {
+        "image": "scene_154.png",
+        "triggerText": "time was not just observed."
+      },
+      {
+        "image": "scene_155.png",
+        "triggerText": "It was measured."
+      },
+      {
+        "image": "scene_156.png",
+        "triggerText": "The Egyptians divided the day into twelve hours of daylight and twelve hours of night."
+      },
+      {
+        "image": "scene_157.png",
+        "triggerText": "But here's the strange part."
+      },
+      {
+        "image": "scene_158.png",
+        "triggerText": "Their hours weren't equal in length."
+      },
+      {
+        "image": "scene_159.png",
+        "triggerText": "In summer,"
+      },
+      {
+        "image": "scene_160.png",
+        "triggerText": "the daytime hours were longer than the nighttime hours."
+      },
+      {
+        "image": "scene_161.png",
+        "triggerText": "In winter,"
+      },
+      {
+        "image": "scene_162.png",
+        "triggerText": "the opposite."
+      },
+      {
+        "image": "scene_163.png",
+        "triggerText": "The hour stretched and shrank with the seasons."
+      },
+      {
+        "image": "scene_164.png",
+        "triggerText": "Time,"
+      },
+      {
+        "image": "scene_165.png",
+        "triggerText": "to the Egyptians, was a living thing that changed with the sun."
+      },
+      {
+        "image": "scene_166.png",
+        "triggerText": "And then there were the Maya."
+      },
+      {
+        "image": "scene_167.png",
+        "triggerText": "While Europe was still using a rough lunar calendar in the early centuries AD,"
+      },
+      {
+        "image": "scene_168.png",
+        "triggerText": "the Maya of Central America had built three interlocking calendars at the same time."
+      },
+      {
+        "image": "scene_169.png",
+        "triggerText": "The Tzolkin,"
+      },
+      {
+        "image": "scene_170.png",
+        "triggerText": "a sacred 260-day cycle used for rituals and divination."
+      },
+      {
+        "image": "scene_171.png",
+        "triggerText": "The Haab,"
+      },
+      {
+        "image": "scene_172.png",
+        "triggerText": "a civil 365-day cycle of 18 months of 20 days each,"
+      },
+      {
+        "image": "scene_173.png",
+        "triggerText": "plus 5 unlucky days at the end."
+      },
+      {
+        "image": "scene_174.png",
+        "triggerText": "And the Long Count,"
+      },
+      {
+        "image": "scene_175.png",
+        "triggerText": "which tracked the absolute number of days since a mythical creation event in the year 3114 BC."
+      },
+      {
+        "image": "scene_176.png",
+        "triggerText": "The Maya didn't just count time."
+      },
+      {
+        "image": "scene_177.png",
+        "triggerText": "They counted it backwards."
+      },
+      {
+        "image": "scene_178.png",
+        "triggerText": "They wrote dates on their monuments in five-digit numbers that recorded the precise day,"
+      },
+      {
+        "image": "scene_179.png",
+        "triggerText": "accurate to within a single sunrise,"
+      },
+      {
+        "image": "scene_180.png",
+        "triggerText": "since the beginning of their universe."
+      },
+      {
+        "image": "scene_181.png",
+        "triggerText": "And the most stunning part?"
+      },
+      {
+        "image": "scene_182.png",
+        "triggerText": "They calculated the length of the solar year as 365.2420 days."
+      },
+      {
+        "image": "scene_183.png",
+        "triggerText": "The actual length is 365.2422."
+      },
+      {
+        "image": "scene_184.png",
+        "triggerText": "The Maya were off by less than two ten-thousandths of a day."
+      },
+      {
+        "image": "scene_185.png",
+        "triggerText": "Their astronomers had achieved a level of precision that European calendars wouldn't match until the Gregorian reform in 1582."
+      },
+      {
+        "image": "scene_186.png",
+        "triggerText": "They did it without telescopes."
+      },
+      {
+        "image": "scene_187.png",
+        "triggerText": "Without metal tools."
+      },
+      {
+        "image": "scene_188.png",
+        "triggerText": "Without paper."
+      },
+      {
+        "image": "scene_189.png",
+        "triggerText": "Just observation,"
+      },
+      {
+        "image": "scene_190.png",
+        "triggerText": "patience, and bone-deep mathematical discipline passed down across centuries."
+      },
+      {
+        "image": "scene_191.png",
+        "triggerText": "But the most fascinating thing about ancient time isn't the technology."
+      },
+      {
+        "image": "scene_192.png",
+        "triggerText": "It's how different time felt back then."
+      },
+      {
+        "image": "scene_193.png",
+        "triggerText": "For most of human history,"
+      },
+      {
+        "image": "scene_194.png",
+        "triggerText": "time wasn't a number."
+      },
+      {
+        "image": "scene_195.png",
+        "triggerText": "It was a feeling."
+      },
+      {
+        "image": "scene_196.png",
+        "triggerText": "You woke when it was light."
+      },
+      {
+        "image": "scene_197.png",
+        "triggerText": "You ate when you were hungry."
+      },
+      {
+        "image": "scene_198.png",
+        "triggerText": "You worked until the task was done."
+      },
+      {
+        "image": "scene_199.png",
+        "triggerText": "You slept when you were tired."
+      },
+      {
+        "image": "scene_200.png",
+        "triggerText": "You didn't have minutes."
+      },
+      {
+        "image": "scene_201.png",
+        "triggerText": "You didn't have seconds."
+      },
+      {
+        "image": "scene_202.png",
+        "triggerText": "Even hours,"
+      },
+      {
+        "image": "scene_203.png",
+        "triggerText": "when they existed,"
+      },
+      {
+        "image": "scene_204.png",
+        "triggerText": "were vague."
+      },
+      {
+        "image": "scene_205.png",
+        "triggerText": "A medieval European peasant might describe a task as taking \"half an Ave Maria,\""
+      },
+      {
+        "image": "scene_206.png",
+        "triggerText": "the time it took to recite a prayer."
+      },
+      {
+        "image": "scene_207.png",
+        "triggerText": "A Roman soldier marched at \"watches,\""
+      },
+      {
+        "image": "scene_208.png",
+        "triggerText": "shifts of about three hours measured by sundials."
+      },
+      {
+        "image": "scene_209.png",
+        "triggerText": "A Greek philosopher debated for \"candles,\""
+      },
+      {
+        "image": "scene_210.png",
+        "triggerText": "meaning until the wick burned down."
+      },
+      {
+        "image": "scene_211.png",
+        "triggerText": "Time was elastic."
+      },
+      {
+        "image": "scene_212.png",
+        "triggerText": "It flowed with the body,"
+      },
+      {
+        "image": "scene_213.png",
+        "triggerText": "the weather,"
+      },
+      {
+        "image": "scene_214.png",
+        "triggerText": "the season."
+      },
+      {
+        "image": "scene_215.png",
+        "triggerText": "The idea that 11:43 AM is fundamentally different from 11:44 AM would have been absurd to almost every human who ever lived before the year 1800."
+      },
+      {
+        "image": "scene_216.png",
+        "triggerText": "It took the industrial revolution to break that."
+      },
+      {
+        "image": "scene_217.png",
+        "triggerText": "Factories needed workers to start and stop at the same moment."
+      },
+      {
+        "image": "scene_218.png",
+        "triggerText": "Trains needed schedules."
+      },
+      {
+        "image": "scene_219.png",
+        "triggerText": "Telegraphs needed synchronized signals."
+      },
+      {
+        "image": "scene_220.png",
+        "triggerText": "In 1884,"
+      },
+      {
+        "image": "scene_221.png",
+        "triggerText": "the international community agreed to a global time standard centered on Greenwich,"
+      },
+      {
+        "image": "scene_222.png",
+        "triggerText": "England. Suddenly,"
+      },
+      {
+        "image": "scene_223.png",
+        "triggerText": "every city on Earth was forced to align its clocks to a single invisible grid."
+      },
+      {
+        "image": "scene_224.png",
+        "triggerText": "The local sundials of every village,"
+      },
+      {
+        "image": "scene_225.png",
+        "triggerText": "every monastery,"
+      },
+      {
+        "image": "scene_226.png",
+        "triggerText": "every tribe were overruled by a single number broadcast from a single tower."
+      },
+      {
+        "image": "scene_227.png",
+        "triggerText": "Time stopped belonging to nature."
+      },
+      {
+        "image": "scene_228.png",
+        "triggerText": "It started belonging to machines."
+      },
+      {
+        "image": "scene_229.png",
+        "triggerText": "For 300,000 years,"
+      },
+      {
+        "image": "scene_230.png",
+        "triggerText": "your ancestors lived inside a kind of time we will never experience again."
+      },
+      {
+        "image": "scene_231.png",
+        "triggerText": "They watched the moon and knew the month."
+      },
+      {
+        "image": "scene_232.png",
+        "triggerText": "They watched the sun and knew the year."
+      },
+      {
+        "image": "scene_233.png",
+        "triggerText": "They built circles of stone the size of football fields just to capture the moment of solstice and pass it down to their children."
+      },
+      {
+        "image": "scene_234.png",
+        "triggerText": "They notched bones by firelight to remember when the herds had passed."
+      },
+      {
+        "image": "scene_235.png",
+        "triggerText": "They invented water clocks and dripping vessels and calendars more accurate than anything Europe would build for thousands of years."
+      },
+      {
+        "image": "scene_236.png",
+        "triggerText": "And they did all of this without ever needing to ask the question we ask a hundred times a day."
+      },
+      {
+        "image": "scene_237.png",
+        "triggerText": "What time is it?"
+      },
+      {
+        "image": "scene_238.png",
+        "triggerText": "Because they already knew."
+      },
+      {
+        "image": "scene_239.png",
+        "triggerText": "They just looked up."
+      },
+      {
+        "image": "scene_240.png",
+        "triggerText": "We traded the sky for a screen,"
+      },
+      {
+        "image": "scene_241.png",
+        "triggerText": "and most of us never even noticed it was gone."
+      }
+    ]
+  },
+  "video": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30
+  },
+  "encoder": {
+    "codec": "libx264",
+    "preset": "medium",
+    "crf": 20
+  }
+}

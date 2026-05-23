@@ -1,0 +1,18 @@
+{
+  "anthropicKey": "",
+  "siliconflowKey": "",
+  "falKey": "",
+  "elevenlabsKey": "",
+  "elevenlabsVoiceId": "",
+  "mubertKey": "",
+  "sunoKey": "",
+  "pexelsKey": "",
+  "wavespeedKey": "",
+  "voiceModel": "elevenlabs",
+  "scriptModel": "claude-sonnet-4-6",
+  "imageModelMain": "fluxPro",
+  "imageModelPremium": "seedream",
+  "imageModelBulk": "imagenFast",
+  "animationModel": "hailuo-fast",
+  "musicService": "none"
+}

@@ -1,0 +1,1333 @@
+{
+  "project": {
+    "name": "Talking",
+    "outputPath": "public/generated/Talking/talking.aligned.mp4"
+  },
+  "images": {
+    "dir": "public/generated/Talking/images",
+    "count": 260,
+    "order": "scene_index",
+    "list": [
+      "scene_000.png",
+      "scene_001.png",
+      "scene_002.png",
+      "scene_003.png",
+      "scene_004.png",
+      "scene_005.png",
+      "scene_006.png",
+      "scene_007.png",
+      "scene_008.png",
+      "scene_009.png",
+      "scene_010.png",
+      "scene_011.png",
+      "scene_012.png",
+      "scene_013.png",
+      "scene_014.png",
+      "scene_015.png",
+      "scene_016.png",
+      "scene_017.png",
+      "scene_018.png",
+      "scene_019.png",
+      "scene_020.png",
+      "scene_021.png",
+      "scene_022.png",
+      "scene_023.png",
+      "scene_024.png",
+      "scene_025.png",
+      "scene_026.png",
+      "scene_027.png",
+      "scene_028.png",
+      "scene_029.png",
+      "scene_030.png",
+      "scene_031.png",
+      "scene_032.png",
+      "scene_033.png",
+      "scene_034.png",
+      "scene_035.png",
+      "scene_036.png",
+      "scene_037.png",
+      "scene_038.png",
+      "scene_039.png",
+      "scene_040.png",
+      "scene_041.png",
+      "scene_042.png",
+      "scene_043.png",
+      "scene_044.png",
+      "scene_045.png",
+      "scene_046.png",
+      "scene_047.png",
+      "scene_048.png",
+      "scene_049.png",
+      "scene_050.png",
+      "scene_051.png",
+      "scene_052.png",
+      "scene_053.png",
+      "scene_054.png",
+      "scene_055.png",
+      "scene_056.png",
+      "scene_057.png",
+      "scene_058.png",
+      "scene_059.png",
+      "scene_060.png",
+      "scene_061.png",
+      "scene_062.png",
+      "scene_063.png",
+      "scene_064.png",
+      "scene_065.png",
+      "scene_066.png",
+      "scene_067.png",
+      "scene_068.png",
+      "scene_069.png",
+      "scene_070.png",
+      "scene_071.png",
+      "scene_072.png",
+      "scene_073.png",
+      "scene_074.png",
+      "scene_075.png",
+      "scene_076.png",
+      "scene_077.png",
+      "scene_078.png",
+      "scene_079.png",
+      "scene_080.png",
+      "scene_081.png",
+      "scene_082.png",
+      "scene_083.png",
+      "scene_084.png",
+      "scene_085.png",
+      "scene_086.png",
+      "scene_087.png",
+      "scene_088.png",
+      "scene_089.png",
+      "scene_090.png",
+      "scene_091.png",
+      "scene_092.png",
+      "scene_093.png",
+      "scene_094.png",
+      "scene_095.png",
+      "scene_096.png",
+      "scene_097.png",
+      "scene_098.png",
+      "scene_099.png",
+      "scene_100.png",
+      "scene_101.png",
+      "scene_102.png",
+      "scene_103.png",
+      "scene_104.png",
+      "scene_105.png",
+      "scene_106.png",
+      "scene_107.png",
+      "scene_108.png",
+      "scene_109.png",
+      "scene_110.png",
+      "scene_111.png",
+      "scene_112.png",
+      "scene_113.png",
+      "scene_114.png",
+      "scene_115.png",
+      "scene_116.png",
+      "scene_117.png",
+      "scene_118.png",
+      "scene_119.png",
+      "scene_120.png",
+      "scene_121.png",
+      "scene_122.png",
+      "scene_123.png",
+      "scene_124.png",
+      "scene_125.png",
+      "scene_126.png",
+      "scene_127.png",
+      "scene_128.png",
+      "scene_129.png",
+      "scene_130.png",
+      "scene_131.png",
+      "scene_132.png",
+      "scene_133.png",
+      "scene_134.png",
+      "scene_135.png",
+      "scene_136.png",
+      "scene_137.png",
+      "scene_138.png",
+      "scene_139.png",
+      "scene_140.png",
+      "scene_141.png",
+      "scene_142.png",
+      "scene_143.png",
+      "scene_144.png",
+      "scene_145.png",
+      "scene_146.png",
+      "scene_147.png",
+      "scene_148.png",
+      "scene_149.png",
+      "scene_150.png",
+      "scene_151.png",
+      "scene_152.png",
+      "scene_153.png",
+      "scene_154.png",
+      "scene_155.png",
+      "scene_156.png",
+      "scene_157.png",
+      "scene_158.png",
+      "scene_159.png",
+      "scene_160.png",
+      "scene_161.png",
+      "scene_162.png",
+      "scene_163.png",
+      "scene_164.png",
+      "scene_165.png",
+      "scene_166.png",
+      "scene_167.png",
+      "scene_168.png",
+      "scene_169.png",
+      "scene_170.png",
+      "scene_171.png",
+      "scene_172.png",
+      "scene_173.png",
+      "scene_174.png",
+      "scene_175.png",
+      "scene_176.png",
+      "scene_177.png",
+      "scene_178.png",
+      "scene_179.png",
+      "scene_180.png",
+      "scene_181.png",
+      "scene_182.png",
+      "scene_183.png",
+      "scene_184.png",
+      "scene_185.png",
+      "scene_186.png",
+      "scene_187.png",
+      "scene_188.png",
+      "scene_189.png",
+      "scene_190.png",
+      "scene_191.png",
+      "scene_192.png",
+      "scene_193.png",
+      "scene_194.png",
+      "scene_195.png",
+      "scene_196.png",
+      "scene_197.png",
+      "scene_198.png",
+      "scene_199.png",
+      "scene_200.png",
+      "scene_201.png",
+      "scene_202.png",
+      "scene_203.png",
+      "scene_204.png",
+      "scene_205.png",
+      "scene_206.png",
+      "scene_207.png",
+      "scene_208.png",
+      "scene_209.png",
+      "scene_210.png",
+      "scene_211.png",
+      "scene_212.png",
+      "scene_213.png",
+      "scene_214.png",
+      "scene_215.png",
+      "scene_216.png",
+      "scene_217.png",
+      "scene_218.png",
+      "scene_219.png",
+      "scene_220.png",
+      "scene_221.png",
+      "scene_222.png",
+      "scene_223.png",
+      "scene_224.png",
+      "scene_225.png",
+      "scene_226.png",
+      "scene_227.png",
+      "scene_228.png",
+      "scene_229.png",
+      "scene_230.png",
+      "scene_231.png",
+      "scene_232.png",
+      "scene_233.png",
+      "scene_234.png",
+      "scene_235.png",
+      "scene_236.png",
+      "scene_237.png",
+      "scene_238.png",
+      "scene_239.png",
+      "scene_240.png",
+      "scene_241.png",
+      "scene_242.png",
+      "scene_243.png",
+      "scene_244.png",
+      "scene_245.png",
+      "scene_246.png",
+      "scene_247.png",
+      "scene_248.png",
+      "scene_249.png",
+      "scene_250.png",
+      "scene_251.png",
+      "scene_252.png",
+      "scene_253.png",
+      "scene_254.png",
+      "scene_255.png",
+      "scene_256.png",
+      "scene_257.png",
+      "scene_258.png",
+      "scene_259.png"
+    ]
+  },
+  "timing": {
+    "mode": "whisper_trigger_text",
+    "matchMode": "fuzzy_text",
+    "fallbackMode": "interpolate",
+    "cutRule": "start_at_trigger_end_at_next_trigger",
+    "minImageDurationSec": 0.4,
+    "maxImageDurationSec": 6,
+    "perImage": [
+      {
+        "image": "scene_000.png",
+        "triggerText": "You meet a stranger."
+      },
+      {
+        "image": "scene_001.png",
+        "triggerText": "Within seconds,"
+      },
+      {
+        "image": "scene_002.png",
+        "triggerText": "you exchange words."
+      },
+      {
+        "image": "scene_003.png",
+        "triggerText": "\"Hi.\""
+      },
+      {
+        "image": "scene_004.png",
+        "triggerText": "\"How are you?\" \"Where are you from?\""
+      },
+      {
+        "image": "scene_005.png",
+        "triggerText": "You take it for granted."
+      },
+      {
+        "image": "scene_006.png",
+        "triggerText": "You've been doing it your entire life."
+      },
+      {
+        "image": "scene_007.png",
+        "triggerText": "Words flow out of your mouth and into other people's ears and somehow,"
+      },
+      {
+        "image": "scene_008.png",
+        "triggerText": "miraculously, complex ideas transfer from one brain to another without a single physical object passing between you."
+      },
+      {
+        "image": "scene_009.png",
+        "triggerText": "But for 99% of the existence of our genus,"
+      },
+      {
+        "image": "scene_010.png",
+        "triggerText": "this didn't happen."
+      },
+      {
+        "image": "scene_011.png",
+        "triggerText": "There were no words."
+      },
+      {
+        "image": "scene_012.png",
+        "triggerText": "No grammar."
+      },
+      {
+        "image": "scene_013.png",
+        "triggerText": "No abstract sentences."
+      },
+      {
+        "image": "scene_014.png",
+        "triggerText": "No way to say \"the river is dangerous\" or \"I'm angry at you\" or \"let's hunt the deer tomorrow.\""
+      },
+      {
+        "image": "scene_015.png",
+        "triggerText": "For nearly two million years,"
+      },
+      {
+        "image": "scene_016.png",
+        "triggerText": "our ancestors lived,"
+      },
+      {
+        "image": "scene_017.png",
+        "triggerText": "hunted, raised children,"
+      },
+      {
+        "image": "scene_018.png",
+        "triggerText": "fought enemies,"
+      },
+      {
+        "image": "scene_019.png",
+        "triggerText": "and built tools without anything resembling modern speech."
+      },
+      {
+        "image": "scene_020.png",
+        "triggerText": "So how did they survive?"
+      },
+      {
+        "image": "scene_021.png",
+        "triggerText": "How do you organize a hunting party,"
+      },
+      {
+        "image": "scene_022.png",
+        "triggerText": "raise a child,"
+      },
+      {
+        "image": "scene_023.png",
+        "triggerText": "or warn your tribe about a predator if you can't speak?"
+      },
+      {
+        "image": "scene_024.png",
+        "triggerText": "The answer is way more sophisticated than you'd think,"
+      },
+      {
+        "image": "scene_025.png",
+        "triggerText": "and it tells us something profound about what humans were before we became \"us.\""
+      },
+      {
+        "image": "scene_026.png",
+        "triggerText": "Let's start with the timeline."
+      },
+      {
+        "image": "scene_027.png",
+        "triggerText": "The genus Homo,"
+      },
+      {
+        "image": "scene_028.png",
+        "triggerText": "our direct evolutionary line,"
+      },
+      {
+        "image": "scene_029.png",
+        "triggerText": "emerged around 2.5 million years ago."
+      },
+      {
+        "image": "scene_030.png",
+        "triggerText": "Modern fully syntactic human language,"
+      },
+      {
+        "image": "scene_031.png",
+        "triggerText": "the kind you're using to read this sentence,"
+      },
+      {
+        "image": "scene_032.png",
+        "triggerText": "probably didn't exist until somewhere between 150,000 and 200,000 years ago."
+      },
+      {
+        "image": "scene_033.png",
+        "triggerText": "That means for nearly 2 million years,"
+      },
+      {
+        "image": "scene_034.png",
+        "triggerText": "our ancestors lived without it."
+      },
+      {
+        "image": "scene_035.png",
+        "triggerText": "They walked upright."
+      },
+      {
+        "image": "scene_036.png",
+        "triggerText": "They made stone tools."
+      },
+      {
+        "image": "scene_037.png",
+        "triggerText": "They controlled fire."
+      },
+      {
+        "image": "scene_038.png",
+        "triggerText": "They migrated across continents."
+      },
+      {
+        "image": "scene_039.png",
+        "triggerText": "They cared for their wounded."
+      },
+      {
+        "image": "scene_040.png",
+        "triggerText": "And they did all of this without being able to say a single coherent sentence."
+      },
+      {
+        "image": "scene_041.png",
+        "triggerText": "This isn't a wild guess."
+      },
+      {
+        "image": "scene_042.png",
+        "triggerText": "It's based on the physical anatomy of the human throat,"
+      },
+      {
+        "image": "scene_043.png",
+        "triggerText": "the development of specific genes involved in speech,"
+      },
+      {
+        "image": "scene_044.png",
+        "triggerText": "and the appearance in the archaeological record of symbolic behavior."
+      },
+      {
+        "image": "scene_045.png",
+        "triggerText": "Together, these clues converge on the same conclusion."
+      },
+      {
+        "image": "scene_046.png",
+        "triggerText": "Real language is shockingly recent."
+      },
+      {
+        "image": "scene_047.png",
+        "triggerText": "But that doesn't mean our ancestors were silent."
+      },
+      {
+        "image": "scene_048.png",
+        "triggerText": "The first thing they had was sound."
+      },
+      {
+        "image": "scene_049.png",
+        "triggerText": "Every primate alive today communicates with vocal calls."
+      },
+      {
+        "image": "scene_050.png",
+        "triggerText": "Chimpanzees have at least 30 different distinct vocalizations."
+      },
+      {
+        "image": "scene_051.png",
+        "triggerText": "Vervet monkeys have specific alarm calls for leopards,"
+      },
+      {
+        "image": "scene_052.png",
+        "triggerText": "eagles, and snakes,"
+      },
+      {
+        "image": "scene_053.png",
+        "triggerText": "and other monkeys respond to each call appropriately,"
+      },
+      {
+        "image": "scene_054.png",
+        "triggerText": "even without seeing the predator."
+      },
+      {
+        "image": "scene_055.png",
+        "triggerText": "Our ancestors almost certainly did the same."
+      },
+      {
+        "image": "scene_056.png",
+        "triggerText": "A grunt for danger."
+      },
+      {
+        "image": "scene_057.png",
+        "triggerText": "A scream for fear."
+      },
+      {
+        "image": "scene_058.png",
+        "triggerText": "A specific call for \"food found.\""
+      },
+      {
+        "image": "scene_059.png",
+        "triggerText": "A warning shout for \"stranger approaching.\""
+      },
+      {
+        "image": "scene_060.png",
+        "triggerText": "This is not language."
+      },
+      {
+        "image": "scene_061.png",
+        "triggerText": "It's a fixed repertoire of signals,"
+      },
+      {
+        "image": "scene_062.png",
+        "triggerText": "hardwired into the brain,"
+      },
+      {
+        "image": "scene_063.png",
+        "triggerText": "that conveys information without grammar or abstraction."
+      },
+      {
+        "image": "scene_064.png",
+        "triggerText": "And it works."
+      },
+      {
+        "image": "scene_065.png",
+        "triggerText": "Vervet monkeys have used it for millions of years."
+      },
+      {
+        "image": "scene_066.png",
+        "triggerText": "Our ancestors probably had a richer version of it,"
+      },
+      {
+        "image": "scene_067.png",
+        "triggerText": "but the principle was identical."
+      },
+      {
+        "image": "scene_068.png",
+        "triggerText": "Sound was an alarm."
+      },
+      {
+        "image": "scene_069.png",
+        "triggerText": "Not a conversation."
+      },
+      {
+        "image": "scene_070.png",
+        "triggerText": "Then there were gestures."
+      },
+      {
+        "image": "scene_071.png",
+        "triggerText": "And here's where it gets fascinating."
+      },
+      {
+        "image": "scene_072.png",
+        "triggerText": "Many linguists now believe that the first real human communication didn't come from the mouth."
+      },
+      {
+        "image": "scene_073.png",
+        "triggerText": "It came from the hands."
+      },
+      {
+        "image": "scene_074.png",
+        "triggerText": "Long before our throats could shape complex sounds,"
+      },
+      {
+        "image": "scene_075.png",
+        "triggerText": "our hands could already point,"
+      },
+      {
+        "image": "scene_076.png",
+        "triggerText": "mimic, gesture,"
+      },
+      {
+        "image": "scene_077.png",
+        "triggerText": "and demonstrate."
+      },
+      {
+        "image": "scene_078.png",
+        "triggerText": "Even today,"
+      },
+      {
+        "image": "scene_079.png",
+        "triggerText": "every human culture on Earth uses gestures alongside speech."
+      },
+      {
+        "image": "scene_080.png",
+        "triggerText": "Babies point before they can speak."
+      },
+      {
+        "image": "scene_081.png",
+        "triggerText": "Deaf communities spontaneously develop full sign languages with grammar as complex as any spoken tongue."
+      },
+      {
+        "image": "scene_082.png",
+        "triggerText": "In 1980,"
+      },
+      {
+        "image": "scene_083.png",
+        "triggerText": "when the Nicaraguan government brought together deaf children for the first time in a single school,"
+      },
+      {
+        "image": "scene_084.png",
+        "triggerText": "the children,"
+      },
+      {
+        "image": "scene_085.png",
+        "triggerText": "without any teacher,"
+      },
+      {
+        "image": "scene_086.png",
+        "triggerText": "invented an entirely new sign language from scratch within a single generation."
+      },
+      {
+        "image": "scene_087.png",
+        "triggerText": "Linguists watched it happen in real time."
+      },
+      {
+        "image": "scene_088.png",
+        "triggerText": "It suggests that the human brain is hardwired for communication,"
+      },
+      {
+        "image": "scene_089.png",
+        "triggerText": "and that the medium,"
+      },
+      {
+        "image": "scene_090.png",
+        "triggerText": "sound or sign,"
+      },
+      {
+        "image": "scene_091.png",
+        "triggerText": "is almost secondary."
+      },
+      {
+        "image": "scene_092.png",
+        "triggerText": "If our ancestors had powerful hands and expressive faces long before they had complex voice boxes,"
+      },
+      {
+        "image": "scene_093.png",
+        "triggerText": "gesture may have been the original human language."
+      },
+      {
+        "image": "scene_094.png",
+        "triggerText": "Long, silent,"
+      },
+      {
+        "image": "scene_095.png",
+        "triggerText": "watched across firelight."
+      },
+      {
+        "image": "scene_096.png",
+        "triggerText": "Now here's where it gets even stranger."
+      },
+      {
+        "image": "scene_097.png",
+        "triggerText": "The body itself had to evolve before speech was even possible."
+      },
+      {
+        "image": "scene_098.png",
+        "triggerText": "To produce the sounds of modern language,"
+      },
+      {
+        "image": "scene_099.png",
+        "triggerText": "you need a specific anatomy."
+      },
+      {
+        "image": "scene_100.png",
+        "triggerText": "A descended larynx,"
+      },
+      {
+        "image": "scene_101.png",
+        "triggerText": "low in the throat."
+      },
+      {
+        "image": "scene_102.png",
+        "triggerText": "A flexible tongue."
+      },
+      {
+        "image": "scene_103.png",
+        "triggerText": "Fine motor control of the lips and jaw."
+      },
+      {
+        "image": "scene_104.png",
+        "triggerText": "A small bone called the hyoid that anchors the muscles of the tongue."
+      },
+      {
+        "image": "scene_105.png",
+        "triggerText": "In 1989,"
+      },
+      {
+        "image": "scene_106.png",
+        "triggerText": "archaeologists working in Kebara Cave,"
+      },
+      {
+        "image": "scene_107.png",
+        "triggerText": "in modern-day Israel,"
+      },
+      {
+        "image": "scene_108.png",
+        "triggerText": "found something nobody expected."
+      },
+      {
+        "image": "scene_109.png",
+        "triggerText": "A 60,000-year-old Neanderthal skeleton with a complete hyoid bone."
+      },
+      {
+        "image": "scene_110.png",
+        "triggerText": "The shape was almost identical to that of a modern human."
+      },
+      {
+        "image": "scene_111.png",
+        "triggerText": "In 2013,"
+      },
+      {
+        "image": "scene_112.png",
+        "triggerText": "researcher Stephen Wroe of the University of New England published a study in PLoS ONE using micro-biomechanical analysis to model how the bone had been used."
+      },
+      {
+        "image": "scene_113.png",
+        "triggerText": "The internal structure showed the same patterns of stress and strain as a modern human hyoid."
+      },
+      {
+        "image": "scene_114.png",
+        "triggerText": "The conclusion was striking."
+      },
+      {
+        "image": "scene_115.png",
+        "triggerText": "Neanderthals had the anatomical equipment for speech."
+      },
+      {
+        "image": "scene_116.png",
+        "triggerText": "They could probably produce a wide range of sounds."
+      },
+      {
+        "image": "scene_117.png",
+        "triggerText": "They may have spoken some version of language."
+      },
+      {
+        "image": "scene_118.png",
+        "triggerText": "And yet they almost certainly didn't speak like us."
+      },
+      {
+        "image": "scene_119.png",
+        "triggerText": "Because language isn't just anatomy."
+      },
+      {
+        "image": "scene_120.png",
+        "triggerText": "It's grammar."
+      },
+      {
+        "image": "scene_121.png",
+        "triggerText": "It's the brain's ability to assemble infinite sentences out of finite words."
+      },
+      {
+        "image": "scene_122.png",
+        "triggerText": "And the brain takes longer to evolve than bones."
+      },
+      {
+        "image": "scene_123.png",
+        "triggerText": "Genetics tells the rest of the story."
+      },
+      {
+        "image": "scene_124.png",
+        "triggerText": "In 2001,"
+      },
+      {
+        "image": "scene_125.png",
+        "triggerText": "scientists studying a London family with a severe inherited speech disorder identified a single gene that,"
+      },
+      {
+        "image": "scene_126.png",
+        "triggerText": "when mutated,"
+      },
+      {
+        "image": "scene_127.png",
+        "triggerText": "made it almost impossible for them to form coherent sentences."
+      },
+      {
+        "image": "scene_128.png",
+        "triggerText": "They called it FOXP2."
+      },
+      {
+        "image": "scene_129.png",
+        "triggerText": "The press immediately dubbed it \"the language gene.\""
+      },
+      {
+        "image": "scene_130.png",
+        "triggerText": "But the truth is more complicated."
+      },
+      {
+        "image": "scene_131.png",
+        "triggerText": "The human version of FOXP2 has two key mutations that distinguish us from chimpanzees."
+      },
+      {
+        "image": "scene_132.png",
+        "triggerText": "Both mutations are also present in Neanderthals."
+      },
+      {
+        "image": "scene_133.png",
+        "triggerText": "Both probably emerged hundreds of thousands of years ago."
+      },
+      {
+        "image": "scene_134.png",
+        "triggerText": "So FOXP2 alone doesn't explain language."
+      },
+      {
+        "image": "scene_135.png",
+        "triggerText": "What changed in modern humans wasn't the gene itself,"
+      },
+      {
+        "image": "scene_136.png",
+        "triggerText": "but how the gene is regulated."
+      },
+      {
+        "image": "scene_137.png",
+        "triggerText": "Subtle changes in the brain's wiring,"
+      },
+      {
+        "image": "scene_138.png",
+        "triggerText": "in how neurons fire,"
+      },
+      {
+        "image": "scene_139.png",
+        "triggerText": "in how the basal ganglia coordinate with the cortex."
+      },
+      {
+        "image": "scene_140.png",
+        "triggerText": "The hardware was old."
+      },
+      {
+        "image": "scene_141.png",
+        "triggerText": "The software is new."
+      },
+      {
+        "image": "scene_142.png",
+        "triggerText": "But how do you actually run a society without language?"
+      },
+      {
+        "image": "scene_143.png",
+        "triggerText": "Anthropologists have spent decades studying the few remaining hunter-gatherer cultures on Earth,"
+      },
+      {
+        "image": "scene_144.png",
+        "triggerText": "looking for clues."
+      },
+      {
+        "image": "scene_145.png",
+        "triggerText": "What they've found is that even in groups with rich modern language,"
+      },
+      {
+        "image": "scene_146.png",
+        "triggerText": "an enormous amount of communication happens nonverbally."
+      },
+      {
+        "image": "scene_147.png",
+        "triggerText": "The Hadza of Tanzania can coordinate a buffalo hunt for hours using only hand signals and brief whistles."
+      },
+      {
+        "image": "scene_148.png",
+        "triggerText": "The reason isn't that they can't talk."
+      },
+      {
+        "image": "scene_149.png",
+        "triggerText": "It's that talking would scare the prey."
+      },
+      {
+        "image": "scene_150.png",
+        "triggerText": "Silent coordination is more efficient."
+      },
+      {
+        "image": "scene_151.png",
+        "triggerText": "Modern military units,"
+      },
+      {
+        "image": "scene_152.png",
+        "triggerText": "surgical teams,"
+      },
+      {
+        "image": "scene_153.png",
+        "triggerText": "and elite athletes all use the same principle."
+      },
+      {
+        "image": "scene_154.png",
+        "triggerText": "When everyone knows the goal,"
+      },
+      {
+        "image": "scene_155.png",
+        "triggerText": "words become optional."
+      },
+      {
+        "image": "scene_156.png",
+        "triggerText": "Our ancestors may have lived their entire lives in this state."
+      },
+      {
+        "image": "scene_157.png",
+        "triggerText": "A shared understanding so deep that explicit conversation was rarely necessary."
+      },
+      {
+        "image": "scene_158.png",
+        "triggerText": "You knew where the water was."
+      },
+      {
+        "image": "scene_159.png",
+        "triggerText": "Your group knew where the water was."
+      },
+      {
+        "image": "scene_160.png",
+        "triggerText": "There was nothing to say."
+      },
+      {
+        "image": "scene_161.png",
+        "triggerText": "Then came symbols."
+      },
+      {
+        "image": "scene_162.png",
+        "triggerText": "Around 100,000 years ago,"
+      },
+      {
+        "image": "scene_163.png",
+        "triggerText": "in a cave on the southern coast of South Africa called Blombos,"
+      },
+      {
+        "image": "scene_164.png",
+        "triggerText": "something extraordinary happened."
+      },
+      {
+        "image": "scene_165.png",
+        "triggerText": "Someone took a chunk of red ochre,"
+      },
+      {
+        "image": "scene_166.png",
+        "triggerText": "ground it into a fine powder,"
+      },
+      {
+        "image": "scene_167.png",
+        "triggerText": "mixed it with seal fat and crushed bone,"
+      },
+      {
+        "image": "scene_168.png",
+        "triggerText": "and stored the paint in an abalone shell."
+      },
+      {
+        "image": "scene_169.png",
+        "triggerText": "The same cave has yielded shell beads,"
+      },
+      {
+        "image": "scene_170.png",
+        "triggerText": "pierced and worn as ornaments,"
+      },
+      {
+        "image": "scene_171.png",
+        "triggerText": "dating back 75,000 years."
+      },
+      {
+        "image": "scene_172.png",
+        "triggerText": "And in 2018,"
+      },
+      {
+        "image": "scene_173.png",
+        "triggerText": "archaeologist Christopher Henshilwood of the University of Bergen published a study in Nature describing a small stone flake from the same site,"
+      },
+      {
+        "image": "scene_174.png",
+        "triggerText": "marked with a cross-hatched pattern drawn deliberately in red ochre."
+      },
+      {
+        "image": "scene_175.png",
+        "triggerText": "It's 73,000 years old."
+      },
+      {
+        "image": "scene_176.png",
+        "triggerText": "It's the oldest known drawing made by a human being."
+      },
+      {
+        "image": "scene_177.png",
+        "triggerText": "Why does this matter?"
+      },
+      {
+        "image": "scene_178.png",
+        "triggerText": "Because drawing is symbolic communication."
+      },
+      {
+        "image": "scene_179.png",
+        "triggerText": "A pattern of lines,"
+      },
+      {
+        "image": "scene_180.png",
+        "triggerText": "intentionally created,"
+      },
+      {
+        "image": "scene_181.png",
+        "triggerText": "that carries meaning beyond itself."
+      },
+      {
+        "image": "scene_182.png",
+        "triggerText": "If our ancestors were drawing,"
+      },
+      {
+        "image": "scene_183.png",
+        "triggerText": "they were thinking abstractly."
+      },
+      {
+        "image": "scene_184.png",
+        "triggerText": "And if they were thinking abstractly,"
+      },
+      {
+        "image": "scene_185.png",
+        "triggerText": "they were almost certainly communicating abstractly too."
+      },
+      {
+        "image": "scene_186.png",
+        "triggerText": "Whether through words,"
+      },
+      {
+        "image": "scene_187.png",
+        "triggerText": "signs, gestures,"
+      },
+      {
+        "image": "scene_188.png",
+        "triggerText": "or all three combined,"
+      },
+      {
+        "image": "scene_189.png",
+        "triggerText": "they had crossed a threshold."
+      },
+      {
+        "image": "scene_190.png",
+        "triggerText": "They were no longer just signaling."
+      },
+      {
+        "image": "scene_191.png",
+        "triggerText": "They were saying something."
+      },
+      {
+        "image": "scene_192.png",
+        "triggerText": "Once that threshold was crossed,"
+      },
+      {
+        "image": "scene_193.png",
+        "triggerText": "everything changed."
+      },
+      {
+        "image": "scene_194.png",
+        "triggerText": "The same period saw the appearance of long-distance trade,"
+      },
+      {
+        "image": "scene_195.png",
+        "triggerText": "ritual burials with grave goods,"
+      },
+      {
+        "image": "scene_196.png",
+        "triggerText": "body painting,"
+      },
+      {
+        "image": "scene_197.png",
+        "triggerText": "jewelry, and increasingly sophisticated tools."
+      },
+      {
+        "image": "scene_198.png",
+        "triggerText": "Symbolic behavior exploded across Africa,"
+      },
+      {
+        "image": "scene_199.png",
+        "triggerText": "then spread with modern humans into Europe,"
+      },
+      {
+        "image": "scene_200.png",
+        "triggerText": "Asia, and beyond."
+      },
+      {
+        "image": "scene_201.png",
+        "triggerText": "By 40,000 years ago,"
+      },
+      {
+        "image": "scene_202.png",
+        "triggerText": "our ancestors were painting bison on the walls of caves in France and Spain,"
+      },
+      {
+        "image": "scene_203.png",
+        "triggerText": "carving female figurines in mammoth ivory in Germany,"
+      },
+      {
+        "image": "scene_204.png",
+        "triggerText": "and crafting flutes from vulture bone."
+      },
+      {
+        "image": "scene_205.png",
+        "triggerText": "None of this is possible without language,"
+      },
+      {
+        "image": "scene_206.png",
+        "triggerText": "at least in some form."
+      },
+      {
+        "image": "scene_207.png",
+        "triggerText": "You can't teach a child to carve a flute by grunting."
+      },
+      {
+        "image": "scene_208.png",
+        "triggerText": "You can't organize a ritual burial by pointing."
+      },
+      {
+        "image": "scene_209.png",
+        "triggerText": "Somewhere in those tens of thousands of years,"
+      },
+      {
+        "image": "scene_210.png",
+        "triggerText": "the murmurs and gestures of our ancestors crystallized into actual words."
+      },
+      {
+        "image": "scene_211.png",
+        "triggerText": "And then,"
+      },
+      {
+        "image": "scene_212.png",
+        "triggerText": "only 5,000 years ago,"
+      },
+      {
+        "image": "scene_213.png",
+        "triggerText": "came the final step."
+      },
+      {
+        "image": "scene_214.png",
+        "triggerText": "Writing. The Sumerians of ancient Mesopotamia,"
+      },
+      {
+        "image": "scene_215.png",
+        "triggerText": "around 3200 BC,"
+      },
+      {
+        "image": "scene_216.png",
+        "triggerText": "began pressing wedge-shaped marks into clay tablets to record trade,"
+      },
+      {
+        "image": "scene_217.png",
+        "triggerText": "taxes, and stories."
+      },
+      {
+        "image": "scene_218.png",
+        "triggerText": "For the first time in human history,"
+      },
+      {
+        "image": "scene_219.png",
+        "triggerText": "language existed outside of a human throat."
+      },
+      {
+        "image": "scene_220.png",
+        "triggerText": "A sentence could be stored,"
+      },
+      {
+        "image": "scene_221.png",
+        "triggerText": "copied,"
+      },
+      {
+        "image": "scene_222.png",
+        "triggerText": "sent across distances, and read by someone who had never met the speaker."
+      },
+      {
+        "image": "scene_223.png",
+        "triggerText": "Everything we now call civilization,"
+      },
+      {
+        "image": "scene_224.png",
+        "triggerText": "every law,"
+      },
+      {
+        "image": "scene_225.png",
+        "triggerText": "every poem,"
+      },
+      {
+        "image": "scene_226.png",
+        "triggerText": "every scientific paper,"
+      },
+      {
+        "image": "scene_227.png",
+        "triggerText": "every text message you've ever sent,"
+      },
+      {
+        "image": "scene_228.png",
+        "triggerText": "descends from that moment."
+      },
+      {
+        "image": "scene_229.png",
+        "triggerText": "The chain runs unbroken from a Sumerian merchant's clay tablet to your phone screen."
+      },
+      {
+        "image": "scene_230.png",
+        "triggerText": "But the chain is shockingly short."
+      },
+      {
+        "image": "scene_231.png",
+        "triggerText": "Writing is only 5,000 years old."
+      },
+      {
+        "image": "scene_232.png",
+        "triggerText": "Spoken language,"
+      },
+      {
+        "image": "scene_233.png",
+        "triggerText": "maybe 150,000."
+      },
+      {
+        "image": "scene_234.png",
+        "triggerText": "Symbolic thought,"
+      },
+      {
+        "image": "scene_235.png",
+        "triggerText": "maybe 100,000 before that."
+      },
+      {
+        "image": "scene_236.png",
+        "triggerText": "And before all of it,"
+      },
+      {
+        "image": "scene_237.png",
+        "triggerText": "nearly 2 million years of human ancestors raising children,"
+      },
+      {
+        "image": "scene_238.png",
+        "triggerText": "hunting, traveling,"
+      },
+      {
+        "image": "scene_239.png",
+        "triggerText": "and dying,"
+      },
+      {
+        "image": "scene_240.png",
+        "triggerText": "all without ever saying a word."
+      },
+      {
+        "image": "scene_241.png",
+        "triggerText": "For 300,000 years,"
+      },
+      {
+        "image": "scene_242.png",
+        "triggerText": "your ancestors lived in a world we will never enter."
+      },
+      {
+        "image": "scene_243.png",
+        "triggerText": "A world where meaning lived in glances,"
+      },
+      {
+        "image": "scene_244.png",
+        "triggerText": "gestures, calls,"
+      },
+      {
+        "image": "scene_245.png",
+        "triggerText": "and silence."
+      },
+      {
+        "image": "scene_246.png",
+        "triggerText": "They knew each other so deeply that words were sometimes redundant."
+      },
+      {
+        "image": "scene_247.png",
+        "triggerText": "They watched a hand point and understood an entire plan."
+      },
+      {
+        "image": "scene_248.png",
+        "triggerText": "They heard a sound from the dark and knew exactly which animal was coming."
+      },
+      {
+        "image": "scene_249.png",
+        "triggerText": "They sat around fires for hours and communicated not in sentences but in presence."
+      },
+      {
+        "image": "scene_250.png",
+        "triggerText": "We've inherited their language,"
+      },
+      {
+        "image": "scene_251.png",
+        "triggerText": "but we've lost their silence."
+      },
+      {
+        "image": "scene_252.png",
+        "triggerText": "Every text we send,"
+      },
+      {
+        "image": "scene_253.png",
+        "triggerText": "every word we speak,"
+      },
+      {
+        "image": "scene_254.png",
+        "triggerText": "every conversation we have,"
+      },
+      {
+        "image": "scene_255.png",
+        "triggerText": "is built on top of two million years of people who somehow managed to love,"
+      },
+      {
+        "image": "scene_256.png",
+        "triggerText": "hunt, and build a species without ever needing to explain themselves."
+      },
+      {
+        "image": "scene_257.png",
+        "triggerText": "They survived without talking."
+      },
+      {
+        "image": "scene_258.png",
+        "triggerText": "And the strange truth is,"
+      },
+      {
+        "image": "scene_259.png",
+        "triggerText": "they may have understood each other better than we do now."
+      }
+    ]
+  },
+  "video": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30
+  },
+  "encoder": {
+    "codec": "libx264",
+    "preset": "medium",
+    "crf": 20
+  }
+}

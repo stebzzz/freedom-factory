@@ -1,7 +1,13 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# ───────────────────────────────────────────────────────────────────────
+# Freedom Factory — .gitignore
+# Goal: keep source + project-data JSONs, exclude generated outputs,
+# user drafts, and oversized media. The VPS clones this repo and runs
+# `docker compose build`; anything not here ends up in the image.
+# ───────────────────────────────────────────────────────────────────────
 
-# dependencies
+# ── Deps & build artefacts ─────────────────────────────────────────────
 /node_modules
+/.venv
 /.pnp
 .pnp.*
 .yarn/*
@@ -9,33 +15,102 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
-
-# testing
 /coverage
-
-# next.js
 /.next/
 /out/
-
-# production
 /build
+*.tsbuildinfo
+next-env.d.ts
 
-# misc
-.DS_Store
+# ── Env & secrets ──────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+!deploy/env.production.example
 *.pem
 
-# debug
+# Runtime config that contains API keys (filled at runtime, never committed).
+# A sanitized template is tracked as config/settings.example.json instead.
+/config/settings.json
+/config/pipeline-queue.json
+/config/custom-presets.json
+
+# ── Editor / OS noise ──────────────────────────────────────────────────
+.DS_Store
+.vscode
+.idea
+*.swp
+*.swo
+
+# ── Logs ───────────────────────────────────────────────────────────────
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+*.log
 
-# env files (can opt-in for committing if needed)
-.env*
-
-# vercel
+# ── Vercel ─────────────────────────────────────────────────────────────
 .vercel
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# ── Pipeline outputs (regenerated at runtime, mounted as volumes) ──────
+/public/generated/
+/public/uploads/
+/public/sourcing/
+/public/old/
+/public/style-refs/
+/outputs/
+/audio/
+/mp3/
+/dentist/
+/old/
+/.concat-work/
+/ref-style/
+/scripts/old/
+
+# ── Heavy media at the repo root (user drafts, raw inputs) ─────────────
+# These should be uploaded to the VPS via rsync, not git.
+/*.mp3
+/*.mp4
+/*.wav
+/*.mov
+/*.m4a
+/*.aac
+/*.flac
+# Allow the small avatar
+!avatar.png
+
+# ── User text drafts at the repo root ──────────────────────────────────
+# Real source scripts live in lib/ — these are paste-buffer files.
+/concubine.txt
+/finance.txt
+/finance2.txt
+/mafia.txt
+/newscript.txt
+/script-fullia.txt
+/script-galveston-doc.txt
+/script-videofr.txt
+/script_for_voice.txt
+/sleepyscriptvideo.txt
+/stick-script.txt
+/sticktxt.txt
+/edit.txt
+/NoteGPT_TRANSCRIPT_POV You're Genghis Khan.txt
+/video-your trillionairefr.txt
+/retour.md
+/prompts-llm.pdf
+/s5.jpeg
+
+# ── Auto-generated JSON backups (timestamped) ──────────────────────────
+*.backup-*.json
+*.backup.json
+
+# ── Python venv leftovers ──────────────────────────────────────────────
+__pycache__/
+*.pyc
+
+# ── What we DO want to keep (kept for clarity — these aren't excluded) ─
+# - app/, lib/, components/, remotion/, scripts/*.mjs, config/, deploy/
+# - public/ (icons + 9665235-hd_1920_1080_25fps.mp4 background asset)
+# - package.json, tsconfig.json, Dockerfile, docker-compose.yml, DEPLOY.md
+# - galveston_1900_veo3_prompts.json, style-kit-*.json, concat-flow*.json,
+#   earth_evolution_prompts.json, promptimage.json (referenced by runner)

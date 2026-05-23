@@ -30,5 +30,16 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    "public/**",
+    "outputs/**",
+    ".concat-work/**",
+    "ref-style/**",
+    "old/**",
+    "scripts/old/**",
+    "audio/**",
+    "mp3/**",
+    "dentist/**"
+  ]
 }

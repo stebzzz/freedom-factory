@@ -1,0 +1,46 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: freedom-factory:latest
+    container_name: freedom-factory
+    restart: unless-stopped
+    env_file:
+      - .env.production
+    ports:
+      # Listen only on localhost — nginx reverse-proxies the public port.
+      - "127.0.0.1:3000:3000"
+    volumes:
+      # Persistent state — survive container rebuilds.
+      - generated:/app/public/generated
+      - uploads:/app/public/uploads
+      - style-refs:/app/public/style-refs
+      - sourcing:/app/public/sourcing
+      - outputs:/app/outputs
+      - audio:/app/audio
+      - mp3:/app/mp3
+      # JSON config (settings.json, custom-presets.json, pipeline-queue.json)
+      - ./config:/app/config
+      # Prompt JSONs at repo root (galveston_1900_veo3_prompts.json, etc.)
+      - ./prompts:/app/prompts:ro
+    # Give Remotion / ffmpeg breathing room. Adjust to fit your VPS.
+    deploy:
+      resources:
+        limits:
+          memory: 6G
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/api/videos > /dev/null || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  generated:
+  uploads:
+  style-refs:
+  sourcing:
+  outputs:
+  audio:
+  mp3:

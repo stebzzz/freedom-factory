@@ -1,0 +1,278 @@
+{
+  "project": "galveston_1900",
+  "format": "16:9",
+  "global_style": "documentary cinematic, photorealistic, desaturated muted palette, naturalistic lighting, no text on screen, no watermark, no logo, no captions, no subtitles, no music indication",
+  "negative_prompt_global": "text, captions, subtitles, watermark, logo, brand name, modern signage, anachronistic objects, cartoon, illustration, low quality, blurry, distorted faces, identifiable celebrity faces",
+  "scenes": [
+    {
+      "id": 1,
+      "section": "opening_today",
+      "image_prompt": "Wide cinematic shot of the Galveston seawall in present-day Texas, late afternoon golden hour light raking across weathered concrete, the Gulf of Mexico stretching to the horizon on the right, soft haze, empty foreground, photorealistic, shot on 50mm lens, shallow depth of field on the concrete texture, muted warm tones, documentary aesthetic, no text, no logo, no people in foreground",
+      "animation_prompt": "Slow static drone hover, almost imperceptible forward drift, gentle heat shimmer rising from the concrete, distant waves rolling slowly in the background, soft ambient atmosphere, no camera shake"
+    },
+    {
+      "id": 2,
+      "section": "opening_today",
+      "image_prompt": "Cyclists in casual modern clothing passing along the Galveston promenade, shot from behind at a low angle, late afternoon sun creating long shadows on the pavement, the seawall and Gulf visible to the side, photorealistic, shallow depth of field, cinematic 16:9, warm muted tones, no faces visible, no text, no logo",
+      "animation_prompt": "Slow tracking pan following the cyclists from behind, subtle handheld feel, soft motion of clothing in breeze, shadows lengthening slightly, peaceful mundane motion"
+    },
+    {
+      "id": 3,
+      "section": "opening_today",
+      "image_prompt": "A small bronze memorial plaque set flush into a concrete promenade, weathered patina, faint engraved text barely legible, fallen leaves and dust at the edges, late afternoon light from a low angle, shot from a high overhead angle looking straight down, photorealistic, hyper-detailed texture, somber atmosphere, no readable words, no logo",
+      "animation_prompt": "Extreme slow zoom in toward the plaque, almost imperceptible push, a single dry leaf drifts across the frame in slow motion, dust particles catching the light, no other movement"
+    },
+    {
+      "id": 4,
+      "section": "opening_today",
+      "image_prompt": "Wide ocean shot of the Gulf of Mexico from a low angle on the Galveston seawall, gray-green waters meeting a hazy horizon, overcast diffuse light, no boats, empty composition, photorealistic, cinematic widescreen, contemplative mood, muted desaturated palette",
+      "animation_prompt": "Static locked-off shot, slow rolling waves moving toward camera, gentle wind rippling the surface, no camera movement, durational stillness"
+    },
+    {
+      "id": 5,
+      "section": "title_motif",
+      "image_prompt": "Abstract atmospheric shot of dark storm clouds gathering over a flat coastal landscape at dusk, distant silhouette of a low city skyline barely visible, deep blue-gray palette, photorealistic, cinematic widescreen, ominous but restrained mood, no text, no logo",
+      "animation_prompt": "Time-lapse style cloud movement at moderate speed, subtle vertical drift, slowly darkening atmosphere, no camera movement"
+    },
+    {
+      "id": 6,
+      "section": "cyclone_formation",
+      "image_prompt": "Vintage-style nautical chart of the Caribbean and Gulf of Mexico, parchment texture, hand-drawn coastlines of Cuba, the Antilles and the Texas coast, soft warm sepia tones, top-down overhead view, photorealistic paper texture with creases and stains, cinematic close-up framing, no modern text, no logo",
+      "animation_prompt": "Slow push-in toward the central Gulf area, faint pencil-like trace beginning to draw a curved storm path eastward to westward across the Antilles toward Cuba, paper grain visible, subtle warm light shift"
+    },
+    {
+      "id": 7,
+      "section": "cyclone_formation",
+      "image_prompt": "Satellite-style view of a swirling tropical cyclone over the Caribbean Sea seen from high altitude, dense white spiral cloud structure with a visible eye, deep blue ocean below, photorealistic, cinematic, no on-screen graphics, no text, no logo",
+      "animation_prompt": "Slow rotation of the spiral cloud structure clockwise to counterclockwise, gentle drift westward across the frame, subtle orbital camera tilt, atmospheric"
+    },
+    {
+      "id": 8,
+      "section": "galveston_1900",
+      "image_prompt": "Period-accurate wide aerial shot of Galveston Island in 1900, a long narrow barrier island in the Gulf of Mexico, low-lying buildings packed near the shore, sailing ships and steamers in the harbor, soft turn-of-the-century atmosphere, photorealistic with archival photo quality, slightly faded sepia and desaturated tones, cinematic widescreen, no modern elements, no text, no logo",
+      "animation_prompt": "Slow drifting overhead pan from east to west across the island, gentle parallax over the rooftops, soft cloud shadows passing across the land, calm and observational"
+    },
+    {
+      "id": 9,
+      "section": "galveston_1900",
+      "image_prompt": "The Strand business district of Galveston in 1900, three-story Victorian commercial buildings with cast-iron facades lining a wide street, horse-drawn carts and an electric streetcar, men in suits and bowler hats, period-accurate signage with no readable text, soft overcast daylight, photorealistic with archival film grain, cinematic, muted warm tones, no modern elements, no logo",
+      "animation_prompt": "Static wide shot with subtle in-frame motion, the streetcar slowly moving along its tracks, pedestrians walking at varied paces, horses shifting weight, gentle period atmosphere"
+    },
+    {
+      "id": 10,
+      "section": "galveston_1900",
+      "image_prompt": "Massive cotton bales stacked along a turn-of-the-century port wharf in Galveston, dock workers in period clothing loading bales onto a steamship, ropes and pulleys, soft hazy daylight, photorealistic archival aesthetic, sepia-leaning palette, cinematic medium-wide shot, no text, no readable signage, no logo",
+      "animation_prompt": "Slow lateral tracking shot moving past the stacked bales, workers in motion lifting and rolling bales, steam rising softly from the ship's stack in the background, durational realism"
+    },
+    {
+      "id": 11,
+      "section": "isaac_cline",
+      "image_prompt": "Interior of a small federal weather bureau office in 1889, dark wood paneling, brass barometers and thermometers on the wall, weather charts pinned to a corkboard, an unoccupied desk with paperwork and an oil lamp, soft window light coming from the left, photorealistic, cinematic medium shot, warm muted tones, no readable text, no logo",
+      "animation_prompt": "Very slow push-in toward the desk, dust particles drifting in the light beam from the window, faint flicker of the oil lamp flame, no human figures visible, observational stillness"
+    },
+    {
+      "id": 12,
+      "section": "isaac_cline",
+      "image_prompt": "A man in a late nineteenth century suit shot from behind in silhouette, standing at a window of a wooden weather observation station, looking out at a calm sky, soft backlit light rendering him as a dark shape, photorealistic, cinematic, muted period palette, no facial features visible, no text, no logo",
+      "animation_prompt": "Static shot, the silhouette barely shifting his weight, soft curtain movement at the edge of the window, subtle dust motes in the air"
+    },
+    {
+      "id": 13,
+      "section": "isaac_cline",
+      "image_prompt": "Extreme close-up of a yellowed newspaper page from 1891, the Galveston Daily News, archival texture with foxing and crease lines, columns of vintage typeface visible but not legible at this magnification, warm tungsten lamp light raking across the paper from the side, photorealistic hyper-detail, shallow depth of field, no readable specific words, no logo",
+      "animation_prompt": "Very slow push-in across the page texture, paper grain shifting in the light, a faint shadow of a hand briefly passes over the edge, no other motion"
+    },
+    {
+      "id": 14,
+      "section": "forecasting_disagreement",
+      "image_prompt": "Exterior of the Belén Observatory in Havana, Cuba, late nineteenth century stone facade with arched windows and a small domed cupola, palm trees in the foreground, warm tropical evening light, photorealistic, cinematic wide shot, slightly desaturated period palette, no readable text, no logo",
+      "animation_prompt": "Static locked-off shot, palm fronds gently swaying in tropical breeze, soft drifting clouds behind the dome, peaceful but charged stillness"
+    },
+    {
+      "id": 15,
+      "section": "forecasting_disagreement",
+      "image_prompt": "Interior of the United States Weather Bureau in Washington in 1900, a long wood-paneled room with maps pinned to large boards, brass instruments on shelves, a telegraph receiver on a central desk, gas lamps providing soft warm light, photorealistic period detail, cinematic medium-wide shot, muted palette, no readable text on maps, no logo",
+      "animation_prompt": "Slow push-in toward the central telegraph desk, the receiver's tape slowly feeding out, faint flicker of gas lamps, no people visible"
+    },
+    {
+      "id": 16,
+      "section": "forecasting_disagreement",
+      "image_prompt": "Close-up of a brass telegraph key on a wooden desk surrounded by curling paper tape with dot-and-dash impressions, warm lamp light, photorealistic hyper-detail, shallow depth of field, archival cinematic mood, no readable text, no logo",
+      "animation_prompt": "Static macro shot, the telegraph key clicking with subtle vertical motion, paper tape slowly emerging from the slot beside it, light flickering faintly"
+    },
+    {
+      "id": 17,
+      "section": "september_7_warning",
+      "image_prompt": "Two storm warning flags raised on a tall wooden pole above a small weather station, red square flags with black centers against a darkening overcast sky, the Gulf horizon visible behind, photorealistic, cinematic medium shot from low angle, ominous muted palette, no logo, no text",
+      "animation_prompt": "Static low-angle shot, the flags whipping in increasingly strong wind, halyards clinking against the pole, clouds darkening slowly behind, building tension"
+    },
+    {
+      "id": 18,
+      "section": "myth_vs_reality",
+      "image_prompt": "Wide street shot in Galveston on the morning of September 8, 1900, water already covering the lower half of the street, wooden bridges in the distance partially submerged, gray rain-soaked sky, period-accurate buildings with shutters closed, photorealistic, cinematic widescreen, muted blue-gray palette, archival aesthetic, no text, no logo",
+      "animation_prompt": "Slow lateral tracking pan, water visibly rippling and rising slightly, rain falling in continuous diagonal lines, distant bridge timbers shifting against the current"
+    },
+    {
+      "id": 19,
+      "section": "myth_vs_reality",
+      "image_prompt": "Close overhead shot of a hand at a telegraph key in a dimly lit weather office, paper tape with morse impressions emerging, brass instruments and a wall clock reading roughly three-thirty visible at the edge of the frame, warm lamp light against deep blue afternoon storm light through the window, photorealistic, cinematic, no readable text, no logo",
+      "animation_prompt": "Static shot, the hand tapping the telegraph key with rhythmic motion, tape advancing in small jerks, lamp flame trembling, rain visible streaking the window behind"
+    },
+    {
+      "id": 20,
+      "section": "september_8_dawn",
+      "image_prompt": "Galveston beach at dawn on September 8, 1900, abnormally high tide reaching far up the sand toward the houses, gray-blue overcast sky with low fast-moving clouds, scattered debris already on the beach, photorealistic, cinematic wide shot, cold muted palette, no people visible, no text, no logo",
+      "animation_prompt": "Static wide shot, waves rolling further inland than expected, foam reaching toward the camera, low clouds racing overhead at unnatural speed, atmospheric tension building"
+    },
+    {
+      "id": 21,
+      "section": "september_8_morning",
+      "image_prompt": "View through a rain-streaked window of a Victorian house in Galveston, blurred wet street outside with wind-blown debris, palms bending dramatically, soft interior lamp light reflected in the glass, photorealistic, cinematic close-up, blue-gray exterior contrasting with warm interior glow, no readable text, no logo",
+      "animation_prompt": "Static shot, rain streaking down the glass in continuous rivulets, palms violently bending in the background, lamp reflection flickering, increasing wind sounds suggested only visually"
+    },
+    {
+      "id": 22,
+      "section": "september_8_afternoon",
+      "image_prompt": "Hyper-detailed close-up of a brass cup anemometer mounted on a wooden roof platform, instrument spinning at extreme speed, dark turbulent storm sky behind, salt spray on the brass, photorealistic, cinematic macro shot, dramatic stormy palette, no text, no logo",
+      "animation_prompt": "Static close-up, the cups of the anemometer spinning so fast they blur into a disk, the entire instrument vibrating, then in the final fraction the assembly is violently torn away leaving a broken stub"
+    },
+    {
+      "id": 23,
+      "section": "september_8_afternoon",
+      "image_prompt": "Wide shot of a Galveston residential street late afternoon September 8, 1900, water already mid-thigh deep across the entire street, Victorian houses with floodwater entering ground floors, debris floating, dark green-gray storm light, photorealistic, cinematic, muted desaturated palette, no people visible, no text, no logo",
+      "animation_prompt": "Slow tracking shot moving down the flooded street at low height just above the water, debris drifting past, water surface rippling and rising visibly, rain falling heavily"
+    },
+    {
+      "id": 24,
+      "section": "submersion_630pm",
+      "image_prompt": "Dramatic wide shot of a sudden surge of water rushing through a Galveston street, walls of foaming brown water several feet high pushing past Victorian houses, debris swept along the front of the wave, dark stormy sky above, photorealistic, cinematic widescreen, intense but not gratuitous, muted dark palette, no text, no logo",
+      "animation_prompt": "Static wide shot, the wall of water surging from left to right across the frame at high speed, debris tumbling, structures shaking as the water hits, raw kinetic energy"
+    },
+    {
+      "id": 25,
+      "section": "submersion_630pm",
+      "image_prompt": "A wooden Victorian house near the Galveston beach buckling and beginning to collapse under the force of incoming surge water and wind, splintering wood, shutters torn loose, dark storm sky and rain, photorealistic, cinematic medium-wide shot, muted dramatic palette, no people visible, no text, no logo",
+      "animation_prompt": "Static medium-wide shot, the structure visibly twisting and beginning to fall sideways into the floodwaters, shingles flying off, wood splintering, slow but inexorable collapse"
+    },
+    {
+      "id": 26,
+      "section": "battering_rams",
+      "image_prompt": "Wide stormy night shot of multiple wooden Victorian houses drifting and colliding in deep floodwater, used as battering rams against still-standing structures, splintered timbers, dark turbulent water, faint moonlight through storm clouds, photorealistic, cinematic, dark blue-gray palette, no people visible, no text, no logo",
+      "animation_prompt": "Slow tracking shot at water level, the floating houses crashing into one another with heavy impact, debris exploding outward, water churning, dramatic but durational"
+    },
+    {
+      "id": 27,
+      "section": "cline_house_collapse",
+      "image_prompt": "Exterior of Isaac Cline's wooden two-story Victorian house in Galveston during the storm, the entire structure leaning at an unnatural angle, water surging around its foundation, dark stormy night with rain, photorealistic, cinematic medium-wide shot, somber muted palette, no people visible, no text, no logo",
+      "animation_prompt": "Static medium-wide shot, the house slowly tilting further sideways, splintering at the joints, then collapsing into the water in slow real-time, debris field expanding outward"
+    },
+    {
+      "id": 28,
+      "section": "st_marys",
+      "image_prompt": "Exterior of St. Mary's Orphanage on Galveston beach in 1900, two long wooden dormitory buildings on slightly raised foundations near the dunes, gray overcast sky before the storm, photorealistic period detail, cinematic wide shot, muted somber palette, no people visible, no text, no logo",
+      "animation_prompt": "Static wide shot, sea grass swaying gently in rising wind, gulls scattering away, slowly darkening sky, atmospheric foreboding without dramatization"
+    },
+    {
+      "id": 29,
+      "section": "st_marys",
+      "image_prompt": "Wide silhouetted shot at twilight of figures in long habits standing in front of a darkened building near the shore, rendered as dark shapes against a stormy gray sky, no facial detail, photorealistic, cinematic, somber muted palette, dignified and respectful framing, no text, no logo",
+      "animation_prompt": "Static wide shot, the silhouettes barely moving, wind whipping their robes, sea visible roiling behind, observational stillness"
+    },
+    {
+      "id": 30,
+      "section": "lucas_terrace",
+      "image_prompt": "Exterior of Lucas Terrace, a large brick three-story apartment building in Galveston 1900, the structure partially destroyed with collapsed sections and exposed interior rooms after the storm, debris piled around its base, gray morning-after light, photorealistic, cinematic wide shot, muted somber palette, no people visible, no text, no logo",
+      "animation_prompt": "Slow lateral tracking shot moving past the ruined facade, dust still settling from collapsed sections, faint smoke or vapor rising, durational and respectful"
+    },
+    {
+      "id": 31,
+      "section": "midnight_subsides",
+      "image_prompt": "Wide shot of the Galveston coastline around midnight after the worst of the storm, broken horizon of partial silhouettes of damaged structures, water still high but no longer rising, dark blue-black sky with the moon faintly visible through breaking clouds, photorealistic, cinematic widescreen, somber palette, no text, no logo",
+      "animation_prompt": "Static wide shot, the wind visibly slackening, water surface calming gradually, clouds slowly parting to reveal more moonlight, atmosphere of exhaustion"
+    },
+    {
+      "id": 32,
+      "section": "september_9_morning",
+      "image_prompt": "Wide aerial-style shot of Galveston on the morning of September 9, 1900, vast field of splintered wooden debris where neighborhoods once stood, mounds of timber and household possessions, calm gray sky, faint smoke rising in places, photorealistic, cinematic widescreen, desaturated somber palette, no people visible at this distance, no text, no logo",
+      "animation_prompt": "Slow drifting overhead pan across the destruction, faint smoke threads rising and dispersing, gulls circling at altitude, durational and observational"
+    },
+    {
+      "id": 33,
+      "section": "september_9_morning",
+      "image_prompt": "Ground-level wide shot of a Galveston street the morning after the storm, completely flattened buildings on either side, debris piled three stories high in places, a single chimney still standing, soft hazy gray morning light, photorealistic period accuracy, cinematic, muted palette, no people visible, no text, no logo",
+      "animation_prompt": "Slow forward dolly down the destroyed street, faint dust rising from settling rubble, distant smoke columns, observational and respectful pace"
+    },
+    {
+      "id": 34,
+      "section": "erasure_spindletop",
+      "image_prompt": "The Spindletop oil gusher in Beaumont, Texas, 1901, a massive black plume of oil shooting high into the sky from a wooden derrick, period-accurate workers in silhouette in the foreground, flat coastal Texas landscape, hazy daylight, photorealistic archival aesthetic, cinematic wide shot, no text, no logo",
+      "animation_prompt": "Static wide shot, the oil plume erupting upward in continuous high-pressure motion, droplets raining back down, workers running, dramatic but not stylized"
+    },
+    {
+      "id": 35,
+      "section": "erasure_houston_channel",
+      "image_prompt": "Wide shot of the Houston Ship Channel in the early twentieth century, a dredged waterway lined with industrial wharves, large steamships moving along the channel, smoke from stacks, period-accurate cranes and warehouses, photorealistic, cinematic widescreen, muted industrial palette, no readable signage, no logo",
+      "animation_prompt": "Slow lateral tracking shot, a steamship moving along the channel, smoke trailing behind, cranes operating in the background, durational industrial activity"
+    },
+    {
+      "id": 36,
+      "section": "erasure_houston_growth",
+      "image_prompt": "Skyline of Houston in 1920, growing cluster of mid-rise commercial buildings and early skyscrapers under construction, scaffolding visible, smoky industrial atmosphere, photorealistic period accuracy, cinematic wide shot, muted sepia-leaning palette, no readable signs, no logo",
+      "animation_prompt": "Slow time-lapse style cloud movement above the skyline, faint smoke from chimneys drifting, cranes barely moving in distant construction, static camera"
+    },
+    {
+      "id": 37,
+      "section": "funeral_pyres",
+      "image_prompt": "Distant wide shot of multiple large pyres burning along a debris-covered Galveston coastline at dusk, dark plumes of smoke rising into a gray sky, no human bodies visible, only firelight and smoke columns, photorealistic, cinematic, somber muted palette, respectful framing, no text, no logo",
+      "animation_prompt": "Static wide shot, smoke columns rising slowly and dispersing, firelight flickering against the darkening sky, gulls in the distance, durational and grave"
+    },
+    {
+      "id": 38,
+      "section": "clara_barton",
+      "image_prompt": "Exterior of a turn-of-the-century relief tent encampment in Galveston, large white canvas tents with American Red Cross insignia areas (no readable text or logo) lined in rows, period-accurate volunteers in the distance, supply crates stacked, soft overcast daylight, photorealistic, cinematic wide shot, muted documentary palette, no readable text, no logo",
+      "animation_prompt": "Slow lateral tracking shot moving past the row of tents, canvas flapping gently in coastal breeze, distant figures moving between tents, soft observational pace"
+    },
+    {
+      "id": 39,
+      "section": "seawall_construction",
+      "image_prompt": "Construction of the original Galveston seawall around 1903, large blocks of concrete being poured into wooden formwork along the coast, period-accurate steam-powered cranes, workers in silhouette, the Gulf in the background, photorealistic period detail, cinematic wide shot, muted industrial palette, no text, no logo",
+      "animation_prompt": "Slow lateral tracking shot along the construction site, cranes operating with visible steam, workers moving with tools, water lapping against the unfinished base, durational industrial realism"
+    },
+    {
+      "id": 40,
+      "section": "grade_raising",
+      "image_prompt": "A large two-story Victorian wooden house jacked up several feet above its original ground level on heavy timber cribbing, with sand being pumped beneath it through a pipeline, period-accurate workers in the foreground, soft hazy daylight, photorealistic, cinematic medium-wide shot, sepia-leaning palette, no text, no logo",
+      "animation_prompt": "Static medium-wide shot, sand visibly flowing through the pipeline and accumulating beneath the raised house, workers shoveling and directing flow, slow continuous process"
+    },
+    {
+      "id": 41,
+      "section": "grade_raising",
+      "image_prompt": "St. Patrick's Church in Galveston, a large brick church being slowly raised on massive screw jacks during the grade raising operation, scaffolding around the foundation, period-accurate workers and engineers, soft daylight, photorealistic, cinematic wide shot, muted period palette, no readable text, no logo",
+      "animation_prompt": "Static wide shot, the church visibly rising by tiny increments, dozens of workers turning jack handles in synchronized motion, dust rising from the cribbing"
+    },
+    {
+      "id": 42,
+      "section": "modern_seawall_test",
+      "image_prompt": "Wide shot of the Galveston seawall during a hurricane, large gray-green waves crashing over the top of the concrete barrier, spray flying high into the sky, dark stormy daytime light, no people in frame, photorealistic, cinematic widescreen, dramatic muted palette, no text, no logo",
+      "animation_prompt": "Static wide shot, successive waves striking the wall and erupting into vertical sheets of spray, water cascading over and pouring down the city side, durational and powerful"
+    },
+    {
+      "id": 43,
+      "section": "today_cemetery",
+      "image_prompt": "Wide shot of the old Galveston cemetery today, weathered headstones and modest mass grave markers in rows, sparse grass and oak trees, late afternoon overcast light, photorealistic, cinematic, muted somber palette, no readable text on stones, no people visible, no logo",
+      "animation_prompt": "Slow forward tracking shot moving between the headstones, leaves drifting on the ground, soft wind through tree branches, durational and contemplative"
+    },
+    {
+      "id": 44,
+      "section": "today_plaque_close",
+      "image_prompt": "Extreme close-up of a weathered bronze plaque embedded in concrete on the Galveston seawall, surface texture detailed with patina and salt damage, soft overcast daylight raking across the metal, photorealistic, cinematic macro shot, no readable specific text, no logo",
+      "animation_prompt": "Very slow push-in toward the plaque surface, a single dry leaf drifts across, faint shadow of a passing bird, no other movement"
+    },
+    {
+      "id": 45,
+      "section": "closing_seawall_today",
+      "image_prompt": "Wide cinematic shot of the empty Galveston seawall at last light, the Gulf of Mexico extending to a faint horizon, deep blue and gray tones, a single distant silhouette of a person walking far down the promenade, photorealistic, cinematic widescreen, contemplative palette, no text, no logo",
+      "animation_prompt": "Static locked-off wide shot, slow gentle waves rolling in, the distant silhouette walking very slowly toward the horizon, light gradually fading, durational stillness, ending on near-darkness"
+    }
+  ]
+}

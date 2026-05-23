@@ -1,0 +1,1662 @@
+{
+    "project": {
+        "name": "renting-vs-index-funds",
+        "outputPath": "outputs/renting-vs-index-funds.mp4"
+    },
+    "images": {
+        "dir": "assets/images",
+        "pattern": "001-*.png",
+        "count": 268,
+        "order": "alphabetique",
+        "list": [
+            "001-001.png",
+            "001-002.png",
+            "001-003.png",
+            "001-004.png",
+            "001-005.png",
+            "001-006.png",
+            "001-007.png",
+            "001-008.png",
+            "001-009.png",
+            "001-010.png",
+            "001-011.png",
+            "001-012.png",
+            "001-013.png",
+            "001-014.png",
+            "001-015.png",
+            "001-016.png",
+            "001-017.png",
+            "001-018.png",
+            "001-019.png",
+            "001-020.png",
+            "001-021.png",
+            "001-022.png",
+            "001-023.png",
+            "001-024.png",
+            "001-025.png",
+            "001-026.png",
+            "001-027.png",
+            "001-028.png",
+            "001-029.png",
+            "001-030.png",
+            "001-031.png",
+            "001-032.png",
+            "001-033.png",
+            "001-034.png",
+            "001-035.png",
+            "001-036.png",
+            "001-037.png",
+            "001-038.png",
+            "001-039.png",
+            "001-040.png",
+            "001-041.png",
+            "001-042.png",
+            "001-043.png",
+            "001-044.png",
+            "001-045.png",
+            "001-046.png",
+            "001-047.png",
+            "001-048.png",
+            "001-049.png",
+            "001-050.png",
+            "001-051.png",
+            "001-052.png",
+            "001-053.png",
+            "001-054.png",
+            "001-055.png",
+            "001-056.png",
+            "001-057.png",
+            "001-058.png",
+            "001-059.png",
+            "001-060.png",
+            "001-061.png",
+            "001-062.png",
+            "001-063.png",
+            "001-064.png",
+            "001-065.png",
+            "001-066.png",
+            "001-067.png",
+            "001-068.png",
+            "001-069.png",
+            "001-070.png",
+            "001-071.png",
+            "001-072.png",
+            "001-073.png",
+            "001-074.png",
+            "001-075.png",
+            "001-076.png",
+            "001-077.png",
+            "001-078.png",
+            "001-079.png",
+            "001-080.png",
+            "001-081.png",
+            "001-082.png",
+            "001-083.png",
+            "001-084.png",
+            "001-085.png",
+            "001-086.png",
+            "001-087.png",
+            "001-088.png",
+            "001-089.png",
+            "001-090.png",
+            "001-091.png",
+            "001-092.png",
+            "001-093.png",
+            "001-094.png",
+            "001-095.png",
+            "001-096.png",
+            "001-097.png",
+            "001-098.png",
+            "001-099.png",
+            "001-100.png",
+            "001-101.png",
+            "001-102.png",
+            "001-103.png",
+            "001-104.png",
+            "001-105.png",
+            "001-106.png",
+            "001-107.png",
+            "001-108.png",
+            "001-109.png",
+            "001-110.png",
+            "001-111.png",
+            "001-112.png",
+            "001-113.png",
+            "001-114.png",
+            "001-115.png",
+            "001-116.png",
+            "001-117.png",
+            "001-118.png",
+            "001-119.png",
+            "001-120.png",
+            "001-121.png",
+            "001-122.png",
+            "001-123.png",
+            "001-124.png",
+            "001-125.png",
+            "001-126.png",
+            "001-127.png",
+            "001-128.png",
+            "001-129.png",
+            "001-130.png",
+            "001-131.png",
+            "001-132.png",
+            "001-133.png",
+            "001-134.png",
+            "001-135.png",
+            "001-136.png",
+            "001-137.png",
+            "001-138.png",
+            "001-139.png",
+            "001-140.png",
+            "001-141.png",
+            "001-142.png",
+            "001-143.png",
+            "001-144.png",
+            "001-145.png",
+            "001-146.png",
+            "001-147.png",
+            "001-148.png",
+            "001-149.png",
+            "001-150.png",
+            "001-151.png",
+            "001-152.png",
+            "001-153.png",
+            "001-154.png",
+            "001-155.png",
+            "001-156.png",
+            "001-157.png",
+            "001-158.png",
+            "001-159.png",
+            "001-160.png",
+            "001-161.png",
+            "001-162.png",
+            "001-163.png",
+            "001-164.png",
+            "001-165.png",
+            "001-166.png",
+            "001-167.png",
+            "001-168.png",
+            "001-169.png",
+            "001-170.png",
+            "001-171.png",
+            "001-172.png",
+            "001-173.png",
+            "001-174.png",
+            "001-175.png",
+            "001-176.png",
+            "001-177.png",
+            "001-178.png",
+            "001-179.png",
+            "001-180.png",
+            "001-181.png",
+            "001-182.png",
+            "001-183.png",
+            "001-184.png",
+            "001-185.png",
+            "001-186.png",
+            "001-187.png",
+            "001-188.png",
+            "001-189.png",
+            "001-190.png",
+            "001-191.png",
+            "001-192.png",
+            "001-193.png",
+            "001-194.png",
+            "001-195.png",
+            "001-196.png",
+            "001-197.png",
+            "001-198.png",
+            "001-199.png",
+            "001-200.png",
+            "001-201.png",
+            "001-202.png",
+            "001-203.png",
+            "001-204.png",
+            "001-205.png",
+            "001-206.png",
+            "001-207.png",
+            "001-208.png",
+            "001-209.png",
+            "001-210.png",
+            "001-211.png",
+            "001-212.png",
+            "001-213.png",
+            "001-214.png",
+            "001-215.png",
+            "001-216.png",
+            "001-217.png",
+            "001-218.png",
+            "001-219.png",
+            "001-220.png",
+            "001-221.png",
+            "001-222.png",
+            "001-223.png",
+            "001-224.png",
+            "001-225.png",
+            "001-226.png",
+            "001-227.png",
+            "001-228.png",
+            "001-229.png",
+            "001-230.png",
+            "001-231.png",
+            "001-232.png",
+            "001-233.png",
+            "001-234.png",
+            "001-235.png",
+            "001-236.png",
+            "001-237.png",
+            "001-238.png",
+            "001-239.png",
+            "001-240.png",
+            "001-241.png",
+            "001-242.png",
+            "001-243.png",
+            "001-244.png",
+            "001-245.png",
+            "001-246.png",
+            "001-247.png",
+            "001-248.png",
+            "001-249.png",
+            "001-250.png",
+            "001-251.png",
+            "001-252.png",
+            "001-253.png",
+            "001-254.png",
+            "001-255.png",
+            "001-256.png",
+            "001-257.png",
+            "001-258.png",
+            "001-259.png",
+            "001-260.png",
+            "001-261.png",
+            "001-262.png",
+            "001-263.png",
+            "001-264.png",
+            "001-265.png",
+            "001-266.png",
+            "001-267.png",
+            "001-268.png"
+        ]
+    },
+    "voiceover": {
+        "path": "assets/audio/voiceover.mp3",
+        "durationSec": 0,
+        "hasTimingFile": true,
+        "timingFilePath": "assets/transcripts/whisper.json"
+    },
+    "timing": {
+        "mode": "whisper_trigger_text",
+        "matchMode": "fuzzy_text",
+        "fallbackMode": "uniform",
+        "cutRule": "start_at_trigger_end_at_next_trigger",
+        "minImageDurationSec": 0.5,
+        "maxImageDurationSec": 4,
+        "uniformDurationSec": null,
+        "perImage": [
+            {
+                "image": "001-001.png",
+                "triggerText": "Jake buys a rental property",
+                "visualBeat": "Jake receives a small house labeled Rental Property"
+            },
+            {
+                "image": "001-002.png",
+                "triggerText": "Marcus puts the same money into index funds",
+                "visualBeat": "Marcus puts $50,000 into an Index Fund screen"
+            },
+            {
+                "image": "001-003.png",
+                "triggerText": "They both think they made the smarter choice",
+                "visualBeat": "Jake and Marcus both smile under a Smarter Choice sign"
+            },
+            {
+                "image": "001-004.png",
+                "triggerText": "one of them forgot to count the hours",
+                "visualBeat": "Jake ignores a clock labeled Hours"
+            },
+            {
+                "image": "001-005.png",
+                "triggerText": "the other forgot to count the zeros",
+                "visualBeat": "Marcus ignores a screen labeled More Zeros"
+            },
+            {
+                "image": "001-006.png",
+                "triggerText": "over 20 years, the gap will make your stomach drop",
+                "visualBeat": "A 20 Year timeline appears with a huge gap at the end"
+            },
+            {
+                "image": "001-007.png",
+                "triggerText": "Jake and Marcus both have $50,000 saved",
+                "visualBeat": "Jake holds a $50,000 sign"
+            },
+            {
+                "image": "001-008.png",
+                "triggerText": "Jake and Marcus both have $50,000 saved",
+                "visualBeat": "Marcus holds a matching $50,000 sign"
+            },
+            {
+                "image": "001-009.png",
+                "triggerText": "They both earn $55,000 a year",
+                "visualBeat": "Both stand beside $55,000 per year signs"
+            },
+            {
+                "image": "001-010.png",
+                "triggerText": "same age, same city, same financial starting point",
+                "visualBeat": "Both stand at the same starting line"
+            },
+            {
+                "image": "001-011.png",
+                "triggerText": "The only difference is what they do with that 50 grand",
+                "visualBeat": "A sign says Only Difference and points at the $50,000 choice"
+            },
+            {
+                "image": "001-012.png",
+                "triggerText": "Jake uses it as a 20% down payment",
+                "visualBeat": "Jake places $50,000 onto a 20% Down Payment board"
+            },
+            {
+                "image": "001-013.png",
+                "triggerText": "on a $250,000 rental property",
+                "visualBeat": "A simple house appears with a $250,000 label"
+            },
+            {
+                "image": "001-014.png",
+                "triggerText": "a 30-year mortgage at 7% interest",
+                "visualBeat": "Jake signs a mortgage paper labeled 30 Years and 7%"
+            },
+            {
+                "image": "001-015.png",
+                "triggerText": "His monthly mortgage payment is about $1,330",
+                "visualBeat": "A payment screen shows $1,330 per month"
+            },
+            {
+                "image": "001-016.png",
+                "triggerText": "a tenant willing to pay $1,800 a month in rent",
+                "visualBeat": "A tenant hands Jake a rent check labeled $1,800"
+            },
+            {
+                "image": "001-017.png",
+                "triggerText": "that's $470 a month in profit",
+                "visualBeat": "A math board shows $1,800 minus $1,330 equals $470"
+            },
+            {
+                "image": "001-018.png",
+                "triggerText": "Jake feels like a genius",
+                "visualBeat": "Jake grins beside a Genius sign"
+            },
+            {
+                "image": "001-019.png",
+                "triggerText": "Marcus takes the same $50,000 and drops it into a total stock market index fund",
+                "visualBeat": "Marcus drops the same $50,000 into a Total Stock Market Fund screen"
+            },
+            {
+                "image": "001-020.png",
+                "triggerText": "No leverage, no tenants, no keys to hand over",
+                "visualBeat": "Three simple icons appear with red X marks over Leverage Tenants and Keys"
+            },
+            {
+                "image": "001-021.png",
+                "triggerText": "automatic contribution of $300 a month",
+                "visualBeat": "Marcus turns on Auto Invest $300 per month"
+            },
+            {
+                "image": "001-022.png",
+                "triggerText": "doesn't think about it again",
+                "visualBeat": "Marcus walks away from the account and stops thinking about it"
+            },
+            {
+                "image": "001-023.png",
+                "triggerText": "His coworkers ask him what he's investing in",
+                "visualBeat": "Coworkers point at Marcus with a question mark"
+            },
+            {
+                "image": "001-024.png",
+                "triggerText": "He says, Index funds",
+                "visualBeat": "Marcus points to a small sign that says Index Funds"
+            },
+            {
+                "image": "001-025.png",
+                "triggerText": "They nod politely and change the subject",
+                "visualBeat": "The coworkers nod politely and turn away"
+            },
+            {
+                "image": "001-026.png",
+                "triggerText": "Jake has a house, a tenant, and a story to tell at dinner parties",
+                "visualBeat": "Jake stands with a house a tenant and a dinner story bubble"
+            },
+            {
+                "image": "001-027.png",
+                "triggerText": "Marcus has a brokerage account and a confirmation email",
+                "visualBeat": "Marcus stands with a brokerage account and a confirmation email"
+            },
+            {
+                "image": "001-028.png",
+                "triggerText": "It's not even close in terms of how it feels",
+                "visualBeat": "A split screen shows Jake feeling exciting and Marcus feeling boring"
+            },
+            {
+                "image": "001-029.png",
+                "triggerText": "feelings and math are two very different things",
+                "visualBeat": "A big sign says Feelings and Math Are Different"
+            },
+            {
+                "image": "001-030.png",
+                "triggerText": "Rent checks hit his account on the first of every month",
+                "visualBeat": "Jake receives another rent check on the first of the month"
+            },
+            {
+                "image": "001-031.png",
+                "triggerText": "He drives past his property on the way to work",
+                "visualBeat": "Jake drives past the rental house with a thought bubble labeled I Own That"
+            },
+            {
+                "image": "001-032.png",
+                "triggerText": "claiming mortgage interest",
+                "visualBeat": "Jake points at a tax paper labeled Mortgage Interest"
+            },
+            {
+                "image": "001-033.png",
+                "triggerText": "and depreciation on his taxes",
+                "visualBeat": "Jake points at another tax paper labeled Depreciation"
+            },
+            {
+                "image": "001-034.png",
+                "triggerText": "shaving a couple thousand off his tax bill each year",
+                "visualBeat": "A tax bill shrinks by a few thousand dollars"
+            },
+            {
+                "image": "001-035.png",
+                "triggerText": "He's building equity with every mortgage payment",
+                "visualBeat": "Jake places a small brick onto an Equity stack"
+            },
+            {
+                "image": "001-036.png",
+                "triggerText": "comparable homes in the neighborhood tick up in value",
+                "visualBeat": "A neighborhood house value chart ticks upward"
+            },
+            {
+                "image": "001-037.png",
+                "triggerText": "Everything about this investment feels real, tangible, and smart",
+                "visualBeat": "Jake touches the house with a Real Asset label"
+            },
+            {
+                "image": "001-038.png",
+                "triggerText": "logs into his brokerage account once a quarter",
+                "visualBeat": "Marcus opens a brokerage screen once per quarter"
+            },
+            {
+                "image": "001-039.png",
+                "triggerText": "sees the number go up a little",
+                "visualBeat": "The brokerage number moves slightly up"
+            },
+            {
+                "image": "001-040.png",
+                "triggerText": "then down a little",
+                "visualBeat": "The brokerage number moves slightly down"
+            },
+            {
+                "image": "001-041.png",
+                "triggerText": "then up a little more",
+                "visualBeat": "The brokerage number moves slightly up again"
+            },
+            {
+                "image": "001-042.png",
+                "triggerText": "Year one, his $50,000 grows to about $55,000",
+                "visualBeat": "Year One screen shows $50,000 becoming $55,000"
+            },
+            {
+                "image": "001-043.png",
+                "triggerText": "Year two, maybe $61,000",
+                "visualBeat": "Year Two screen shows $55,000 becoming $61,000"
+            },
+            {
+                "image": "001-044.png",
+                "triggerText": "It doesn't feel like anything is happening",
+                "visualBeat": "Marcus stares at the screen feeling nothing"
+            },
+            {
+                "image": "001-045.png",
+                "triggerText": "There's no key in his pocket",
+                "visualBeat": "A key icon appears with a red X"
+            },
+            {
+                "image": "001-046.png",
+                "triggerText": "no tenant texting him",
+                "visualBeat": "A tenant text icon appears with a red X"
+            },
+            {
+                "image": "001-047.png",
+                "triggerText": "no asset he can point to from his car window",
+                "visualBeat": "A car window points at nothing real to show"
+            },
+            {
+                "image": "001-048.png",
+                "triggerText": "Jake's friends ask him about the property",
+                "visualBeat": "Jake’s friends point excitedly at the rental house"
+            },
+            {
+                "image": "001-049.png",
+                "triggerText": "Marcus's friends don't ask him about anything",
+                "visualBeat": "Marcus’s friends stand silently with no questions"
+            },
+            {
+                "image": "001-050.png",
+                "triggerText": "The social proof alone makes Jake feel like he's winning by a mile",
+                "visualBeat": "Jake stands on a tall Social Proof podium"
+            },
+            {
+                "image": "001-051.png",
+                "triggerText": "Let's look at the numbers through year three",
+                "visualBeat": "A Year Three board appears"
+            },
+            {
+                "image": "001-052.png",
+                "triggerText": "Jake has collected roughly $64,800 in rent",
+                "visualBeat": "A rent total board shows $64,800 collected"
+            },
+            {
+                "image": "001-053.png",
+                "triggerText": "His mortgage payments total about $47,880",
+                "visualBeat": "A mortgage total board shows $47,880 paid"
+            },
+            {
+                "image": "001-054.png",
+                "triggerText": "That leaves $16,920 in gross cash flow",
+                "visualBeat": "A gross cash flow board shows $16,920"
+            },
+            {
+                "image": "001-055.png",
+                "triggerText": "Sounds great until you subtract everything else",
+                "visualBeat": "A warning sign says Subtract Everything Else"
+            },
+            {
+                "image": "001-056.png",
+                "triggerText": "Property taxes run about $3,000 a year",
+                "visualBeat": "A tax bill appears labeled $3,000 per year"
+            },
+            {
+                "image": "001-057.png",
+                "triggerText": "Insurance adds another $1,500",
+                "visualBeat": "An insurance bill appears labeled $1,500 per year"
+            },
+            {
+                "image": "001-058.png",
+                "triggerText": "replaced a water heater for $1,200",
+                "visualBeat": "A broken water heater bill appears labeled $1,200"
+            },
+            {
+                "image": "001-059.png",
+                "triggerText": "fixed a leaking roof for $2,800",
+                "visualBeat": "A leaking roof bill appears labeled $2,800"
+            },
+            {
+                "image": "001-060.png",
+                "triggerText": "1 month of vacancy between tenants that cost him $1,800 in lost rent",
+                "visualBeat": "A vacancy sign appears with Lost Rent $1,800"
+            },
+            {
+                "image": "001-061.png",
+                "triggerText": "plus $600 to clean and relist",
+                "visualBeat": "A cleaning bucket bill appears labeled $600 Clean + Relist"
+            },
+            {
+                "image": "001-062.png",
+                "triggerText": "Property management? Jake does it himself to save money",
+                "visualBeat": "Jake crosses out Property Manager to save money"
+            },
+            {
+                "image": "001-063.png",
+                "triggerText": "phone calls at 10:00 p.m.",
+                "visualBeat": "Jake answers a phone alert labeled 10:00 p.m."
+            },
+            {
+                "image": "001-064.png",
+                "triggerText": "weekend showings",
+                "visualBeat": "Jake gives a weekend showing beside a calendar"
+            },
+            {
+                "image": "001-065.png",
+                "triggerText": "coordinating repairs on his lunch break",
+                "visualBeat": "Jake coordinates a repair during lunch break"
+            },
+            {
+                "image": "001-066.png",
+                "triggerText": "actual net cash flow over 3 years is somewhere around $2,000 to $4,000",
+                "visualBeat": "A net cash flow board shrinks to $2,000 to $4,000"
+            },
+            {
+                "image": "001-067.png",
+                "triggerText": "Not the $16,920 that looked so good on a napkin",
+                "visualBeat": "A big $16,920 napkin number gets crossed out"
+            },
+            {
+                "image": "001-068.png",
+                "triggerText": "doesn't account for a single hour of his time",
+                "visualBeat": "A clock appears with Jake’s unpaid hours"
+            },
+            {
+                "image": "001-069.png",
+                "triggerText": "Marcus, meanwhile, has put in $50,000 plus $10,800",
+                "visualBeat": "Marcus adds $50,000 plus $10,800 contributions"
+            },
+            {
+                "image": "001-070.png",
+                "triggerText": "his portfolio is sitting at about $76,000",
+                "visualBeat": "Marcus’s portfolio screen shows About $76,000"
+            },
+            {
+                "image": "001-071.png",
+                "triggerText": "spent zero hours managing it",
+                "visualBeat": "Marcus relaxes beside icons labeled Zero Hours"
+            },
+            {
+                "image": "001-072.png",
+                "triggerText": "zero phone calls, zero emergencies",
+                "visualBeat": "A phone icon appears with a red X labeled Emergencies"
+            },
+            {
+                "image": "001-073.png",
+                "triggerText": "Jake still has leverage working for him",
+                "visualBeat": "Jake stands beside a sign labeled Leverage"
+            },
+            {
+                "image": "001-074.png",
+                "triggerText": "His $250,000 property has appreciated maybe 3 to 4% a year and is now worth around $270,000",
+                "visualBeat": "A house value board grows from $250,000 to $270,000"
+            },
+            {
+                "image": "001-075.png",
+                "triggerText": "to $280,000",
+                "visualBeat": "The house value board grows again to $280,000"
+            },
+            {
+                "image": "001-076.png",
+                "triggerText": "the difference between what the house is worth and what he owes",
+                "visualBeat": "A debt screen appears under the house labeled Mortgage Owed"
+            },
+            {
+                "image": "001-077.png",
+                "triggerText": "His equity has grown to roughly $55,000 to $65,000",
+                "visualBeat": "An equity board shows $55,000 to $65,000"
+            },
+            {
+                "image": "001-078.png",
+                "triggerText": "came partly from using the bank's money",
+                "visualBeat": "A bank money bag pushes up Jake’s equity stack"
+            },
+            {
+                "image": "001-079.png",
+                "triggerText": "That's the power of leverage",
+                "visualBeat": "A sign says Power of Leverage"
+            },
+            {
+                "image": "001-080.png",
+                "triggerText": "stock investors can't easily replicate",
+                "visualBeat": "A stock investor tries to copy leverage but cannot reach it"
+            },
+            {
+                "image": "001-081.png",
+                "triggerText": "The rent check is the number everyone talks about",
+                "visualBeat": "A large rent check appears labeled Everyone Talks About This"
+            },
+            {
+                "image": "001-082.png",
+                "triggerText": "the number on the YouTube thumbnail",
+                "visualBeat": "A YouTube thumbnail shows the rent check number"
+            },
+            {
+                "image": "001-083.png",
+                "triggerText": "the number at the real estate meetup",
+                "visualBeat": "A real estate meetup sign points at the rent check"
+            },
+            {
+                "image": "001-084.png",
+                "triggerText": "your landlord buddy brags about at the barbecue",
+                "visualBeat": "A barbecue brag bubble shows the rent check"
+            },
+            {
+                "image": "001-085.png",
+                "triggerText": "everything that comes out of that rent check",
+                "visualBeat": "A hidden drain opens under the rent check"
+            },
+            {
+                "image": "001-086.png",
+                "triggerText": "Vacancy",
+                "visualBeat": "Vacancy pulls money out of the rent check"
+            },
+            {
+                "image": "001-087.png",
+                "triggerText": "sits empty about 1 month per year",
+                "visualBeat": "A sign says 1 Month Empty"
+            },
+            {
+                "image": "001-088.png",
+                "triggerText": "a full mortgage payment with zero income to cover it",
+                "visualBeat": "A mortgage bill arrives with zero rent income"
+            },
+            {
+                "image": "001-089.png",
+                "triggerText": "when a tenant leaves, you're paying for cleaning",
+                "visualBeat": "A tenant leaves and cleaning costs appear"
+            },
+            {
+                "image": "001-090.png",
+                "triggerText": "your own time to screen",
+                "visualBeat": "Jake screens new tenants with a checklist"
+            },
+            {
+                "image": "001-091.png",
+                "triggerText": "and show",
+                "visualBeat": "Jake shows the empty property to a new tenant"
+            },
+            {
+                "image": "001-092.png",
+                "triggerText": "budget 1 to 2% of the property's value per year",
+                "visualBeat": "A maintenance board appears labeled 1% to 2% per year"
+            },
+            {
+                "image": "001-093.png",
+                "triggerText": "On a $250,000 house, that's $2,500 to $5,000 annually",
+                "visualBeat": "A $250,000 house creates a bill labeled $2,500 to $5,000 annually"
+            },
+            {
+                "image": "001-094.png",
+                "triggerText": "Some years it's a $200 faucet fix",
+                "visualBeat": "A tiny faucet bill appears labeled $200"
+            },
+            {
+                "image": "001-095.png",
+                "triggerText": "Other years it's a $7,000 HVAC replacement",
+                "visualBeat": "A huge HVAC bill drops down labeled $7,000"
+            },
+            {
+                "image": "001-096.png",
+                "triggerText": "you didn't see coming and can't postpone",
+                "visualBeat": "A warning sign says Cannot Postpone"
+            },
+            {
+                "image": "001-097.png",
+                "triggerText": "it's August and your tenant is threatening to leave",
+                "visualBeat": "A tenant threatens to leave under a hot August sun"
+            },
+            {
+                "image": "001-098.png",
+                "triggerText": "Capital expenditures",
+                "visualBeat": "A capital expenditures board appears"
+            },
+            {
+                "image": "001-099.png",
+                "triggerText": "Roofs last 20 to 25 years",
+                "visualBeat": "A roof lifespan card shows 20 to 25 years"
+            },
+            {
+                "image": "001-100.png",
+                "triggerText": "Furnaces last 15 to 20",
+                "visualBeat": "A furnace lifespan card shows 15 to 20 years"
+            },
+            {
+                "image": "001-101.png",
+                "triggerText": "Water heaters last 10 to 12",
+                "visualBeat": "A water heater lifespan card shows 10 to 12 years"
+            },
+            {
+                "image": "001-102.png",
+                "triggerText": "costs, and they come in chunks of $5,000 to $15,000",
+                "visualBeat": "A stack of future bills appears labeled $5,000 to $15,000"
+            },
+            {
+                "image": "001-103.png",
+                "triggerText": "setting aside money every month",
+                "visualBeat": "Jake puts monthly savings into a CapEx jar"
+            },
+            {
+                "image": "001-104.png",
+                "triggerText": "not running a business. You're running on luck",
+                "visualBeat": "A sign says Business Not Luck"
+            },
+            {
+                "image": "001-105.png",
+                "triggerText": "that's 8 to 10% of monthly rent gone immediately",
+                "visualBeat": "A property management bill appears labeled 8% to 10%"
+            },
+            {
+                "image": "001-106.png",
+                "triggerText": "Roughly $150 to $180 a month",
+                "visualBeat": "A rent check loses $150 to $180 per month"
+            },
+            {
+                "image": "001-107.png",
+                "triggerText": "If Jake hires a manager",
+                "visualBeat": "Jake holds a manager contract with money leaving"
+            },
+            {
+                "image": "001-108.png",
+                "triggerText": "If he manages it himself",
+                "visualBeat": "Jake manages the property himself with a tired face"
+            },
+            {
+                "image": "001-109.png",
+                "triggerText": "Either way, it costs something",
+                "visualBeat": "A sign says Either Way It Costs"
+            },
+            {
+                "image": "001-110.png",
+                "triggerText": "the one risk nobody likes to discuss, bad tenants",
+                "visualBeat": "A dark warning sign says Bad Tenants"
+            },
+            {
+                "image": "001-111.png",
+                "triggerText": "A tenant who stops paying",
+                "visualBeat": "A tenant stops paying rent"
+            },
+            {
+                "image": "001-112.png",
+                "triggerText": "knows the eviction process",
+                "visualBeat": "An eviction paper appears"
+            },
+            {
+                "image": "001-113.png",
+                "triggerText": "3 to 6 months of lost rent",
+                "visualBeat": "A calendar flips from 3 months to 6 months"
+            },
+            {
+                "image": "001-114.png",
+                "triggerText": "plus legal fees",
+                "visualBeat": "Lost rent and legal fees fall onto Jake"
+            },
+            {
+                "image": "001-115.png",
+                "triggerText": "erase an entire year's profit or more",
+                "visualBeat": "A profit board gets erased for the year"
+            },
+            {
+                "image": "001-116.png",
+                "triggerText": "None of this shows up in the $470 a month cash flow number",
+                "visualBeat": "A $470 cash flow board hides all the missing costs"
+            },
+            {
+                "image": "001-117.png",
+                "triggerText": "but it shows up eventually",
+                "visualBeat": "A sign says Eventually It Shows Up"
+            },
+            {
+                "image": "001-118.png",
+                "triggerText": "By year five",
+                "visualBeat": "A Year Five board appears"
+            },
+            {
+                "image": "001-119.png",
+                "triggerText": "He's on his third tenant",
+                "visualBeat": "Jake stands beside three tenant icons"
+            },
+            {
+                "image": "001-120.png",
+                "triggerText": "He's replaced the roof for $8,500",
+                "visualBeat": "A roof replacement bill appears labeled $8,500"
+            },
+            {
+                "image": "001-121.png",
+                "triggerText": "plumbing emergency that cost $1,400",
+                "visualBeat": "A plumbing emergency bill appears labeled $1,400"
+            },
+            {
+                "image": "001-122.png",
+                "triggerText": "spent 1 month with the property empty",
+                "visualBeat": "A vacancy sign appears again labeled 1 Month Empty"
+            },
+            {
+                "image": "001-123.png",
+                "triggerText": "He's raised rent to $1,950",
+                "visualBeat": "A rent board rises to $1,950"
+            },
+            {
+                "image": "001-124.png",
+                "triggerText": "property taxes have gone up",
+                "visualBeat": "A tax bill rises upward too"
+            },
+            {
+                "image": "001-125.png",
+                "triggerText": "insurance have gone up, too",
+                "visualBeat": "An insurance bill rises upward too"
+            },
+            {
+                "image": "001-126.png",
+                "triggerText": "cash on cash return is hovering around 3 to 5%",
+                "visualBeat": "A cash on cash return board shows 3% to 5%"
+            },
+            {
+                "image": "001-127.png",
+                "triggerText": "not the 15 to 20% return he told his friends about",
+                "visualBeat": "A barbecue speech bubble shows 15% to 20% crossed out"
+            },
+            {
+                "image": "001-128.png",
+                "triggerText": "Marcus is still doing absolutely nothing",
+                "visualBeat": "Marcus sleeps while his portfolio grows"
+            },
+            {
+                "image": "001-129.png",
+                "triggerText": "grown from $50,000 to roughly $135,000",
+                "visualBeat": "A portfolio chart grows from $50,000 to $135,000"
+            },
+            {
+                "image": "001-130.png",
+                "triggerText": "to $150,000 by year seven",
+                "visualBeat": "The portfolio chart grows again to $150,000"
+            },
+            {
+                "image": "001-131.png",
+                "triggerText": "including his $300 monthly contributions",
+                "visualBeat": "A $300 monthly contribution arrow feeds the portfolio"
+            },
+            {
+                "image": "001-132.png",
+                "triggerText": "He didn't pick stocks",
+                "visualBeat": "Marcus ignores a stock picking board"
+            },
+            {
+                "image": "001-133.png",
+                "triggerText": "He didn't time the market",
+                "visualBeat": "Marcus ignores a market timing clock"
+            },
+            {
+                "image": "001-134.png",
+                "triggerText": "He didn't do anything except not touch it",
+                "visualBeat": "A sign says Do Nothing"
+            },
+            {
+                "image": "001-135.png",
+                "triggerText": "The compound growth is starting to accelerate",
+                "visualBeat": "A compound growth curve starts bending upward"
+            },
+            {
+                "image": "001-136.png",
+                "triggerText": "The gains on his gains",
+                "visualBeat": "Gains create more gains on a small chart"
+            },
+            {
+                "image": "001-137.png",
+                "triggerText": "generating more new wealth each year than his original contributions",
+                "visualBeat": "A contribution bar becomes smaller than the growth bar"
+            },
+            {
+                "image": "001-138.png",
+                "triggerText": "what's happening underneath the surface",
+                "visualBeat": "A hidden surface board appears"
+            },
+            {
+                "image": "001-139.png",
+                "triggerText": "Jake's wealth is growing, but it's growing slowly after expenses",
+                "visualBeat": "Jake’s wealth line grows slowly after expenses"
+            },
+            {
+                "image": "001-140.png",
+                "triggerText": "requires constant attention",
+                "visualBeat": "A warning icon appears beside Constant Attention"
+            },
+            {
+                "image": "001-141.png",
+                "triggerText": "Marcus's wealth is growing in a curve",
+                "visualBeat": "Marcus’s wealth line starts slow then curves faster"
+            },
+            {
+                "image": "001-142.png",
+                "triggerText": "Compounding is boring for the first 5 years",
+                "visualBeat": "A sign says Boring First"
+            },
+            {
+                "image": "001-143.png",
+                "triggerText": "and astonishing for the next 15",
+                "visualBeat": "A sign says Astonishing Later"
+            },
+            {
+                "image": "001-144.png",
+                "triggerText": "By year 10",
+                "visualBeat": "A Year Ten board appears"
+            },
+            {
+                "image": "001-145.png",
+                "triggerText": "property is worth roughly $335,000 to $350,000",
+                "visualBeat": "A house value board shows $335,000 to $350,000"
+            },
+            {
+                "image": "001-146.png",
+                "triggerText": "remaining mortgage balance is about $166,000",
+                "visualBeat": "A mortgage balance board shows $166,000"
+            },
+            {
+                "image": "001-147.png",
+                "triggerText": "equity at approximately $170,000 to $184,000",
+                "visualBeat": "An equity board shows $170,000 to $184,000"
+            },
+            {
+                "image": "001-148.png",
+                "triggerText": "out of pocket beyond the original down payment is somewhere between $20,000 and $35,000",
+                "visualBeat": "A cost pile appears labeled $20,000 to $35,000"
+            },
+            {
+                "image": "001-149.png",
+                "triggerText": "Marcus's portfolio ... $165,000 to $180,000",
+                "visualBeat": "A Marcus portfolio board shows $165,000 to $180,000"
+            },
+            {
+                "image": "001-150.png",
+                "triggerText": "$86,000 total",
+                "visualBeat": "A contribution board shows $86,000 total"
+            },
+            {
+                "image": "001-151.png",
+                "triggerText": "The rest is pure compound growth",
+                "visualBeat": "A growth pile appears labeled Pure Compound Growth"
+            },
+            {
+                "image": "001-152.png",
+                "triggerText": "zero weekends fixing anything",
+                "visualBeat": "A weekend calendar shows zero repair tasks"
+            },
+            {
+                "image": "001-153.png",
+                "triggerText": "At year 10, they're surprisingly close in total wealth",
+                "visualBeat": "A Year Ten comparison board shows Jake and Marcus close"
+            },
+            {
+                "image": "001-154.png",
+                "triggerText": "Jake might be slightly ahead thanks to leverage",
+                "visualBeat": "Jake stands slightly ahead beside a leverage arrow"
+            },
+            {
+                "image": "001-155.png",
+                "triggerText": "But here's the thing",
+                "visualBeat": "A warning sign says But Here’s The Thing"
+            },
+            {
+                "image": "001-156.png",
+                "triggerText": "spent hundreds of hours managing his property",
+                "visualBeat": "A clock pile appears labeled Hundreds of Hours"
+            },
+            {
+                "image": "001-157.png",
+                "triggerText": "took on hundreds of thousands in debt",
+                "visualBeat": "A debt mountain appears labeled Hundreds of Thousands"
+            },
+            {
+                "image": "001-158.png",
+                "triggerText": "concentrated his entire investment in a single asset",
+                "visualBeat": "Jake’s money sits inside one house labeled One Asset"
+            },
+            {
+                "image": "001-159.png",
+                "triggerText": "in a single zip code",
+                "visualBeat": "A map pin appears labeled One Zip Code"
+            },
+            {
+                "image": "001-160.png",
+                "triggerText": "Marcus diversified across thousands of companies",
+                "visualBeat": "Marcus stands beside thousands of tiny company boxes"
+            },
+            {
+                "image": "001-161.png",
+                "triggerText": "never lost a night of sleep",
+                "visualBeat": "Marcus sleeps peacefully under a No Stress sign"
+            },
+            {
+                "image": "001-162.png",
+                "triggerText": "By year 20",
+                "visualBeat": "A Year Twenty board appears"
+            },
+            {
+                "image": "001-163.png",
+                "triggerText": "property is worth roughly $450,000 to $500,000",
+                "visualBeat": "A house value board shows $450,000 to $500,000"
+            },
+            {
+                "image": "001-164.png",
+                "triggerText": "His mortgage is either paid off or nearly there",
+                "visualBeat": "A mortgage board shows Paid Off or Nearly"
+            },
+            {
+                "image": "001-165.png",
+                "triggerText": "His equity is somewhere between $400,000 and $500,000",
+                "visualBeat": "An equity board shows $400,000 to $500,000"
+            },
+            {
+                "image": "001-166.png",
+                "triggerText": "He's been collecting rent the entire time",
+                "visualBeat": "Rent checks appear across a 20 year timeline"
+            },
+            {
+                "image": "001-167.png",
+                "triggerText": "after 20 years of maintenance, repairs, turnover, taxes, insurance",
+                "visualBeat": "A pile of expenses eats the rent checks"
+            },
+            {
+                "image": "001-168.png",
+                "triggerText": "at least one major renovation",
+                "visualBeat": "A renovation bill appears labeled Major Renovation"
+            },
+            {
+                "image": "001-169.png",
+                "triggerText": "net profit from cash flow might be $40,000 to $80,000",
+                "visualBeat": "A cash flow profit board shows $40,000 to $80,000"
+            },
+            {
+                "image": "001-170.png",
+                "triggerText": "Maybe more in a hot market",
+                "visualBeat": "A market sign shows Hot Market Maybe More"
+            },
+            {
+                "image": "001-171.png",
+                "triggerText": "maybe less in a flat one",
+                "visualBeat": "A flat market sign shows Maybe Less"
+            },
+            {
+                "image": "001-172.png",
+                "triggerText": "Marcus' portfolio ... $420,000 to $460,000",
+                "visualBeat": "Marcus portfolio board shows $420,000 to $460,000"
+            },
+            {
+                "image": "001-173.png",
+                "triggerText": "total contributions of $122,000 over 20 years",
+                "visualBeat": "A contribution board shows $122,000 total"
+            },
+            {
+                "image": "001-174.png",
+                "triggerText": "$300,000 plus is pure compounding",
+                "visualBeat": "A compound growth pile shows $300,000 plus"
+            },
+            {
+                "image": "001-175.png",
+                "triggerText": "No debt",
+                "visualBeat": "A debt icon appears with a red X"
+            },
+            {
+                "image": "001-176.png",
+                "triggerText": "no tenants",
+                "visualBeat": "A tenant icon appears with a red X"
+            },
+            {
+                "image": "001-177.png",
+                "triggerText": "no 2:00 a.m. phone calls about a broken pipe",
+                "visualBeat": "A broken pipe phone alert appears with a red X"
+            },
+            {
+                "image": "001-178.png",
+                "triggerText": "same ballpark, somewhere between $400,000 and $500,000 each",
+                "visualBeat": "A net worth board shows both near $400,000 to $500,000"
+            },
+            {
+                "image": "001-179.png",
+                "triggerText": "Jake worked for his",
+                "visualBeat": "Jake carries heavy work boxes toward wealth"
+            },
+            {
+                "image": "001-180.png",
+                "triggerText": "Marcus waited for his",
+                "visualBeat": "Marcus waits beside a growing portfolio tree"
+            },
+            {
+                "image": "001-181.png",
+                "triggerText": "Jake had stress, risk concentration, and illiquidity",
+                "visualBeat": "Jake stands under icons labeled Stress Risk Illiquidity"
+            },
+            {
+                "image": "001-182.png",
+                "triggerText": "Marcus had volatility, but liquidity and freedom",
+                "visualBeat": "Marcus stands under icons labeled Volatility Liquidity Freedom"
+            },
+            {
+                "image": "001-183.png",
+                "triggerText": "changes the math dramatically",
+                "visualBeat": "A sign says Math Changes Dramatically"
+            },
+            {
+                "image": "001-184.png",
+                "triggerText": "Marcus increased his monthly contribution by even $200",
+                "visualBeat": "Marcus adds an extra $200 to his monthly contribution"
+            },
+            {
+                "image": "001-185.png",
+                "triggerText": "bringing it to $500 a month",
+                "visualBeat": "A contribution board changes from $300 to $500 per month"
+            },
+            {
+                "image": "001-186.png",
+                "triggerText": "his 20-year portfolio jumps to roughly $550,000 to $600,000",
+                "visualBeat": "A 20 year portfolio board jumps to $550,000 to $600,000"
+            },
+            {
+                "image": "001-187.png",
+                "triggerText": "multiplied effect through compounding",
+                "visualBeat": "A compounding machine multiplies the extra contribution"
+            },
+            {
+                "image": "001-188.png",
+                "triggerText": "in real estate, increasing your investment usually means buying another property",
+                "visualBeat": "A real estate board shows Buy Another Property"
+            },
+            {
+                "image": "001-189.png",
+                "triggerText": "taking on another mortgage",
+                "visualBeat": "A second mortgage paper lands on Jake’s desk"
+            },
+            {
+                "image": "001-190.png",
+                "triggerText": "doubling your workload",
+                "visualBeat": "A workload bar doubles beside Jake"
+            },
+            {
+                "image": "001-191.png",
+                "triggerText": "If I only showed you the downsides of real estate",
+                "visualBeat": "A sign says Real Estate Has Downsides"
+            },
+            {
+                "image": "001-192.png",
+                "triggerText": "what every stock market influencer does",
+                "visualBeat": "A stock market influencer hides a real estate warning card"
+            },
+            {
+                "image": "001-193.png",
+                "triggerText": "Stocks have real risks too",
+                "visualBeat": "A sign says Stocks Have Risks Too"
+            },
+            {
+                "image": "001-194.png",
+                "triggerText": "In 2008, the market dropped roughly 37%",
+                "visualBeat": "A market crash chart drops sharply labeled 2008"
+            },
+            {
+                "image": "001-195.png",
+                "triggerText": "dropped roughly 37%",
+                "visualBeat": "A crash number shows Down 37%"
+            },
+            {
+                "image": "001-196.png",
+                "triggerText": "In March 2020, it dropped 34% in a single month",
+                "visualBeat": "A second crash chart drops sharply labeled March 2020"
+            },
+            {
+                "image": "001-197.png",
+                "triggerText": "dropped 34%",
+                "visualBeat": "A crash number shows Down 34%"
+            },
+            {
+                "image": "001-198.png",
+                "triggerText": "watched it fall to $95,000",
+                "visualBeat": "Marcus watches $150,000 fall to $95,000"
+            },
+            {
+                "image": "001-199.png",
+                "triggerText": "That's gut-wrenching",
+                "visualBeat": "Marcus holds his stomach beside a Gut Wrenching sign"
+            },
+            {
+                "image": "001-200.png",
+                "triggerText": "panic sell during crashes",
+                "visualBeat": "A panic sell button flashes red"
+            },
+            {
+                "image": "001-201.png",
+                "triggerText": "sell during crashes",
+                "visualBeat": "Retail investors sell at the bottom"
+            },
+            {
+                "image": "001-202.png",
+                "triggerText": "buy back in after the recovery",
+                "visualBeat": "Retail investors buy back after recovery"
+            },
+            {
+                "image": "001-203.png",
+                "triggerText": "locking in losses at the worst possible time",
+                "visualBeat": "A locked loss board appears"
+            },
+            {
+                "image": "001-204.png",
+                "triggerText": "There's no cash flow",
+                "visualBeat": "A sign says No Monthly Cash Flow"
+            },
+            {
+                "image": "001-205.png",
+                "triggerText": "Unlike a rental property",
+                "visualBeat": "A rental property sends Jake a monthly check"
+            },
+            {
+                "image": "001-206.png",
+                "triggerText": "Dividends exist",
+                "visualBeat": "An index fund sends a tiny dividend check"
+            },
+            {
+                "image": "001-207.png",
+                "triggerText": "maybe 1.5 to 2% yield",
+                "visualBeat": "A dividend yield board shows 1.5% to 2%"
+            },
+            {
+                "image": "001-208.png",
+                "triggerText": "On $150,000, that's about $200 a month",
+                "visualBeat": "A $150,000 portfolio produces about $200 per month"
+            },
+            {
+                "image": "001-209.png",
+                "triggerText": "That's not replacing anyone's income",
+                "visualBeat": "A sign says Not Income Replacement"
+            },
+            {
+                "image": "001-210.png",
+                "triggerText": "Marcus used $50,000 to control $50,000 in assets",
+                "visualBeat": "A leverage comparison board shows $50,000 controls $50,000"
+            },
+            {
+                "image": "001-211.png",
+                "triggerText": "Jake used $50,000 to control $250,000 in assets",
+                "visualBeat": "A leverage comparison board shows $50,000 controls $250,000"
+            },
+            {
+                "image": "001-212.png",
+                "triggerText": "That five to one leverage is powerful",
+                "visualBeat": "A five to one leverage sign appears"
+            },
+            {
+                "image": "001-213.png",
+                "triggerText": "when property values rise",
+                "visualBeat": "A house value chart rises beside a leverage arrow"
+            },
+            {
+                "image": "001-214.png",
+                "triggerText": "real estate creates more millionaires than the stock market",
+                "visualBeat": "A millionaire survey board points toward Real Estate"
+            },
+            {
+                "image": "001-215.png",
+                "triggerText": "no tax magic like depreciation",
+                "visualBeat": "A sign says Tax Magic"
+            },
+            {
+                "image": "001-216.png",
+                "triggerText": "Real estate investors can deduct",
+                "visualBeat": "Jake points at a depreciation tax paper"
+            },
+            {
+                "image": "001-217.png",
+                "triggerText": "theoretical decline in their building's value",
+                "visualBeat": "A building value arrow goes down on paper"
+            },
+            {
+                "image": "001-218.png",
+                "triggerText": "even if the property is actually appreciating",
+                "visualBeat": "The actual house value arrow goes up beside it"
+            },
+            {
+                "image": "001-219.png",
+                "triggerText": "legal tax shelter",
+                "visualBeat": "A tax shelter box appears labeled Legal"
+            },
+            {
+                "image": "001-220.png",
+                "triggerText": "stock investors simply don't have access to",
+                "visualBeat": "Marcus tries to grab the tax shelter but cannot"
+            },
+            {
+                "image": "001-221.png",
+                "triggerText": "Real estate wins in specific identifiable situations",
+                "visualBeat": "A sign says Real Estate Wins Sometimes"
+            },
+            {
+                "image": "001-222.png",
+                "triggerText": "rent-to-price ratio is strong",
+                "visualBeat": "A rent to price ratio board appears"
+            },
+            {
+                "image": "001-223.png",
+                "triggerText": "monthly rent is at least 0.8 to 1%",
+                "visualBeat": "A monthly rent card shows 0.8% to 1%"
+            },
+            {
+                "image": "001-224.png",
+                "triggerText": "purchase the cash flow math works in your favor",
+                "visualBeat": "A purchase price board unlocks cash flow"
+            },
+            {
+                "image": "001-225.png",
+                "triggerText": "from day one",
+                "visualBeat": "A sign says From Day One"
+            },
+            {
+                "image": "001-226.png",
+                "triggerText": "willing to treat it as a business",
+                "visualBeat": "Jake treats the property like a business"
+            },
+            {
+                "image": "001-227.png",
+                "triggerText": "screening tenants carefully",
+                "visualBeat": "A tenant screening checklist appears"
+            },
+            {
+                "image": "001-228.png",
+                "triggerText": "budgeting for capital expenditures",
+                "visualBeat": "A CapEx budget jar fills up"
+            },
+            {
+                "image": "001-229.png",
+                "triggerText": "building systems",
+                "visualBeat": "A systems board appears with simple gears"
+            },
+            {
+                "image": "001-230.png",
+                "triggerText": "returns can exceed stocks",
+                "visualBeat": "A returns board rises above Stocks"
+            },
+            {
+                "image": "001-231.png",
+                "triggerText": "especially with leverage",
+                "visualBeat": "A leverage arrow boosts the returns board"
+            },
+            {
+                "image": "001-232.png",
+                "triggerText": "strategies like house hacking",
+                "visualBeat": "A house hacking sign appears"
+            },
+            {
+                "image": "001-233.png",
+                "triggerText": "living in one unit",
+                "visualBeat": "Jake lives in one unit"
+            },
+            {
+                "image": "001-234.png",
+                "triggerText": "renting the others",
+                "visualBeat": "Other units send rent checks toward Jake"
+            },
+            {
+                "image": "001-235.png",
+                "triggerText": "reduce your own housing costs to near zero",
+                "visualBeat": "A housing cost bill shrinks toward zero"
+            },
+            {
+                "image": "001-236.png",
+                "triggerText": "stock market simply can't do",
+                "visualBeat": "A sign says Stocks Cannot Do This"
+            },
+            {
+                "image": "001-237.png",
+                "triggerText": "1031 exchanges",
+                "visualBeat": "A 1031 exchange paper appears"
+            },
+            {
+                "image": "001-238.png",
+                "triggerText": "defer capital gains taxes",
+                "visualBeat": "A capital gains tax bill gets delayed"
+            },
+            {
+                "image": "001-239.png",
+                "triggerText": "rolling profits into a new property",
+                "visualBeat": "Property profits roll into a new property"
+            },
+            {
+                "image": "001-240.png",
+                "triggerText": "grow your real estate portfolio tax-free",
+                "visualBeat": "A real estate portfolio grows tax deferred"
+            },
+            {
+                "image": "001-241.png",
+                "triggerText": "Real estate isn't a bad investment",
+                "visualBeat": "A sign says Real Estate Is Not Bad"
+            },
+            {
+                "image": "001-242.png",
+                "triggerText": "It's a misunderstood one",
+                "visualBeat": "A sign changes to Misunderstood"
+            },
+            {
+                "image": "001-243.png",
+                "triggerText": "Jake thought real estate was the proven path to wealth",
+                "visualBeat": "Jake stands beside a Proven Path To Wealth sign"
+            },
+            {
+                "image": "001-244.png",
+                "triggerText": "Marcus thought the stock market would do the work for him",
+                "visualBeat": "Marcus stands beside a Market Does The Work sign"
+            },
+            {
+                "image": "001-245.png",
+                "triggerText": "mapped out what this costs",
+                "visualBeat": "A table appears labeled Full Numbers"
+            },
+            {
+                "image": "001-246.png",
+                "triggerText": "in dollars, in time, in stress, and in risk",
+                "visualBeat": "Four icons appear labeled Dollars Time Stress Risk"
+            },
+            {
+                "image": "001-247.png",
+                "triggerText": "The real trap",
+                "visualBeat": "A sign says Real Trap"
+            },
+            {
+                "image": "001-248.png",
+                "triggerText": "isn't real estate",
+                "visualBeat": "A real estate icon appears with a red X"
+            },
+            {
+                "image": "001-249.png",
+                "triggerText": "and it isn't stocks",
+                "visualBeat": "A stock market icon appears with a red X"
+            },
+            {
+                "image": "001-250.png",
+                "triggerText": "based on a YouTube headline",
+                "visualBeat": "A YouTube headline pulls Jake and Marcus in"
+            },
+            {
+                "image": "001-251.png",
+                "triggerText": "a podcast clip",
+                "visualBeat": "A podcast clip pulls Jake and Marcus in"
+            },
+            {
+                "image": "001-252.png",
+                "triggerText": "something your uncle said at Thanksgiving",
+                "visualBeat": "An uncle at Thanksgiving points at a money idea"
+            },
+            {
+                "image": "001-253.png",
+                "triggerText": "running the full numbers for your own situation",
+                "visualBeat": "A calculator appears labeled Your Situation"
+            },
+            {
+                "image": "001-254.png",
+                "triggerText": "what happens when you do both",
+                "visualBeat": "A sign says What If You Do Both"
+            },
+            {
+                "image": "001-255.png",
+                "triggerText": "own property",
+                "visualBeat": "Jake holds a property icon"
+            },
+            {
+                "image": "001-256.png",
+                "triggerText": "invest in the market",
+                "visualBeat": "Marcus holds a market icon"
+            },
+            {
+                "image": "001-257.png",
+                "triggerText": "at the same time",
+                "visualBeat": "Both icons combine on one board"
+            },
+            {
+                "image": "001-258.png",
+                "triggerText": "the math might change everything",
+                "visualBeat": "A huge question mark appears labeled Math Changes"
+            },
+            {
+                "image": "001-259.png",
+                "triggerText": "the next time someone tells you",
+                "visualBeat": "A sign says Next Time Someone Says"
+            },
+            {
+                "image": "001-260.png",
+                "triggerText": "real estate always wins",
+                "visualBeat": "A speech bubble says Real Estate Always Wins"
+            },
+            {
+                "image": "001-261.png",
+                "triggerText": "the stock market always wins",
+                "visualBeat": "A speech bubble says Stock Market Always Wins"
+            },
+            {
+                "image": "001-262.png",
+                "triggerText": "ask them one question. Did you include everything",
+                "visualBeat": "A final question board appears labeled Did You Include Everything"
+            },
+            {
+                "image": "001-263.png",
+                "triggerText": "include everything",
+                "visualBeat": "A checklist appears with every hidden cost checked"
+            },
+            {
+                "image": "001-264.png",
+                "triggerText": "include everything",
+                "visualBeat": "A checklist appears with every hidden benefit checked"
+            },
+            {
+                "image": "001-265.png",
+                "triggerText": "The answer that includes everything",
+                "visualBeat": "A big answer board says Include Everything"
+            },
+            {
+                "image": "001-266.png",
+                "triggerText": "the only answer that matters",
+                "visualBeat": "Jake and Marcus look at the same full-number board"
+            },
+            {
+                "image": "001-267.png",
+                "triggerText": "real estate and stock market",
+                "visualBeat": "A balanced scale holds House and Index Fund"
+            },
+            {
+                "image": "001-268.png",
+                "triggerText": "only answer that matters",
+                "visualBeat": "A final warning sign says Only Full Math Matters"
+            }
+        ]
+    },
+    "video": {
+        "width": 1920,
+        "height": 1080,
+        "fps": 30,
+        "kenBurns": false,
+        "transition": "fade",
+        "transitionDurationSec": 0.5
+    },
+    "audio": {
+        "voiceoverVolume": 1,
+        "backgroundMusic": null,
+        "backgroundMusicVolume": 0.1
+    },
+    "subtitles": {
+        "enabled": false,
+        "srtPath": null,
+        "burnIn": false
+    },
+    "encoder": {
+        "codec": "libx264",
+        "crf": 20,
+        "preset": "medium"
+    }
+}
