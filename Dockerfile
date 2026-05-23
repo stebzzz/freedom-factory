@@ -15,12 +15,14 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends \
       python3 make g++ ca-certificates \
     && rm -rf /var/lib/apt/lists/*
-# Match npm version used to generate package-lock.json on dev machine.
-# (node:20 ships npm 10.8.2 which rejects lockfileVersion-3 metadata
-# written by npm 11; locally the lock was generated with npm 11.)
 RUN npm install -g npm@11
 COPY package.json package-lock.json ./
-RUN npm ci --no-audit --no-fund
+# `npm install` (lenient) instead of `npm ci` (strict). `npm ci` rejects
+# the lock with "Invalid: lock file's ajv@6.14.0 does not satisfy
+# ajv@8.20.0" on linux/x64 even though the lock validates on darwin/arm64
+# where it was generated — looks like a platform-specific optional-deps
+# tree mismatch. `npm install` resolves nested versions on the fly.
+RUN npm install --no-audit --no-fund
 
 # ─── Stage 2: builder ───────────────────────────────────────────────────
 FROM node:20-bookworm-slim AS builder
