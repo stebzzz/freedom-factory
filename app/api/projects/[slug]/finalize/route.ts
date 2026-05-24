@@ -2,11 +2,12 @@
 // Used by the "Finaliser" button on pipeline-job pages where the original pipeline run
 // failed mid-flow (e.g. voiceover step crashed) and the user provided a manual VO.
 import { NextResponse } from "next/server";
-import { readFile, readdir } from "node:fs/promises";
+import { readFile, readdir, writeFile } from "node:fs/promises";
 import { existsSync, statSync } from "node:fs";
 import path from "node:path";
 import { getProject } from "@/lib/projects/registry";
 import { assembleMontage } from "@/lib/api/ffmpeg";
+import { alignScenesWithWhisper } from "@/lib/api/whisper";
 import { getPresetOrDefault } from "@/lib/presets/channel-presets";
 import type { ScriptScene, AnimationResult } from "@/lib/pipeline/types";
 
@@ -44,7 +45,11 @@ export async function POST(req: Request, { params }: { params: Promise<{ slug: s
   }
 
   const body = await req.json().catch(() => ({}));
-  const { presetId, subtitles } = body as { presetId?: string; subtitles?: boolean };
+  const { presetId, subtitles, alignWithWhisper } = body as {
+    presetId?: string;
+    subtitles?: boolean;
+    alignWithWhisper?: boolean;
+  };
 
   const jobDir = project.outDir;
   const scriptJsonPath = path.join(jobDir, "script.json");
@@ -114,6 +119,29 @@ export async function POST(req: Request, { params }: { params: Promise<{ slug: s
 
   inFlight.set(slug, { startedAt: Date.now() });
   try {
+    // CRITICAL: a manually-uploaded voiceover doesn't follow the scene durations
+    // baked into script.json (those were Claude's theoretical 1.5s/scene splits).
+    // Run whisper to transcribe the real audio and snap each scene's
+    // durationSeconds to its actual word window — otherwise the montage drifts
+    // out of sync with the voice (which is exactly what the user reported).
+    if (alignWithWhisper !== false) {
+      try {
+        console.log(`[Finalize ${slug}] aligning ${scenes.length} scenes via Whisper...`);
+        const aligned = await alignScenesWithWhisper(scenes, voiceoverPath, {
+          language: preset.language,
+        });
+        // Persist the new durations back into script.json so downstream consumers
+        // (and future finalizes) see the aligned timeline.
+        const meta = JSON.parse(await readFile(scriptJsonPath, "utf-8"));
+        meta.scenes = scenes;
+        await writeFile(scriptJsonPath, JSON.stringify(meta, null, 2));
+        const matchPct = Math.round(aligned.matchedWordRatio * 100);
+        console.log(`[Finalize ${slug}] Whisper aligned: ${aligned.totalAudioSec.toFixed(1)}s audio, ${matchPct}% word match`);
+      } catch (err) {
+        console.warn(`[Finalize ${slug}] Whisper alignment failed (${(err as Error).message}) — using script.json durations`);
+      }
+    }
+
     const result = await assembleMontage(
       {
         audioPath: voiceoverPath,
