@@ -283,7 +283,41 @@ export interface PromptPatch {
 
 export function patchScenePrompt(slug: string, id: number, patch: PromptPatch): { ok: boolean; error?: string } {
   const project = getProject(slug);
-  if (!project || !project.promptsFile) return { ok: false, error: "promptsFile manquant" };
+  if (!project) return { ok: false, error: "projet introuvable" };
+
+  // Pipeline jobs (from /pipeline): scenes live in public/generated/<slug>/script.json
+  // with camelCase keys (imagePrompt, motionPrompt, narration, durationSeconds) and
+  // a numeric `index` instead of `id`.
+  const scriptJsonPath = path.join(project.outDir, "script.json");
+  if (existsSync(scriptJsonPath)) {
+    let data: { title?: string; scenes?: Array<Record<string, unknown>> };
+    try {
+      data = JSON.parse(readFileSync(scriptJsonPath, "utf-8"));
+    } catch (e) {
+      return { ok: false, error: `parse error script.json: ${(e as Error).message}` };
+    }
+    if (!Array.isArray(data.scenes)) return { ok: false, error: "structure script.json inattendue" };
+
+    const idx = data.scenes.findIndex((s) => (s.index as number) === id);
+    if (idx < 0) return { ok: false, error: `scène #${id} introuvable dans script.json` };
+
+    if (patch.imagePrompt !== undefined) data.scenes[idx].imagePrompt = patch.imagePrompt;
+    if (patch.videoPrompt !== undefined) data.scenes[idx].motionPrompt = patch.videoPrompt;
+    if (patch.vo !== undefined) data.scenes[idx].narration = patch.vo;
+    if (patch.title !== undefined) data.scenes[idx].title = patch.title;
+
+    const backup = scriptJsonPath.replace(/\.json$/, `.backup-${Date.now()}.json`);
+    try {
+      copyFileSync(scriptJsonPath, backup);
+      writeFileSync(scriptJsonPath, JSON.stringify(data, null, 2));
+      return { ok: true };
+    } catch (e) {
+      return { ok: false, error: `write error script.json: ${(e as Error).message}` };
+    }
+  }
+
+  // Legacy CLI projects: top-level <slug>_prompts.json
+  if (!project.promptsFile) return { ok: false, error: "promptsFile manquant" };
   const promptsPath = path.join(ROOT, project.promptsFile);
   if (!existsSync(promptsPath)) return { ok: false, error: "prompts file introuvable" };
 
