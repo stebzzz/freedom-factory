@@ -1,9 +1,30 @@
 import { spawn } from "child_process";
+import { existsSync } from "fs";
 import { mkdir, readdir, readFile, rm, writeFile } from "fs/promises";
 import os from "os";
 import path from "path";
 
 const YT_DLP_BIN = process.env.YT_DLP_PATH || "yt-dlp";
+
+// YouTube's anti-bot heuristics on datacenter IPs (Hostinger VPS) reject every
+// public extractor unless we present BOTH a Proof-of-Token (PoT) and a valid
+// session cookie. We expose two helpers below that auto-discover the local
+// bgutil-pot service and a cookies.txt sitting in the config volume.
+//
+// Optional env vars (Dokploy → Environment):
+//   YT_DLP_BGUTIL_BASEURL    — default http://172.17.0.1:4416 (Docker gateway)
+//   YT_DLP_COOKIES_PATH      — default <cwd>/config/youtube-cookies.txt
+//   YT_DLP_EXTRA_EXTRACTOR_ARGS — appended verbatim (advanced)
+function autoDiscoverCookies(explicit?: string): string | undefined {
+  if (explicit && existsSync(explicit)) return explicit;
+  const env = process.env.YOUTUBE_COOKIES || process.env.YT_DLP_COOKIES_PATH;
+  if (env && existsSync(env)) return env;
+  const local = path.join(process.cwd(), "config", "youtube-cookies.txt");
+  if (existsSync(local)) return local;
+  return undefined;
+}
+const BGUTIL_BASEURL = process.env.YT_DLP_BGUTIL_BASEURL || "http://172.17.0.1:4416";
+const BGUTIL_EXTRACTOR_ARG = `youtubepot-bgutilhttp:base_url=${BGUTIL_BASEURL}`;
 
 /**
  * Extract the 11-char YouTube video ID from any of the usual URL shapes:
@@ -90,7 +111,7 @@ export async function fetchTranscript(url: string, opts: FetchOpts = {}): Promis
   if (!id) throw new Error(`URL YouTube non reconnue: ${url.slice(0, 80)}`);
 
   const lang = opts.language || process.env.YOUTUBE_TRANSCRIPT_LANG || "en";
-  const cookiesFile = opts.cookiesFile || process.env.YOUTUBE_COOKIES;
+  const cookiesFile = autoDiscoverCookies(opts.cookiesFile);
   const cookiesFromBrowser = opts.cookiesFromBrowser || process.env.YT_DLP_COOKIES_FROM_BROWSER;
 
   const workDir = path.join(os.tmpdir(), `yt-${id}-${Date.now()}`);
@@ -105,6 +126,7 @@ export async function fetchTranscript(url: string, opts: FetchOpts = {}): Promis
     "json3/vtt/best",
     "--skip-download",
     "--no-warnings",
+    "--extractor-args", BGUTIL_EXTRACTOR_ARG,
     "-o",
     path.join(workDir, "%(id)s.%(ext)s"),
   ];
@@ -217,7 +239,7 @@ export async function fetchVideoKeyframes(
     throw new Error(`fetchVideoKeyframes: cadenceSeconds out of range (${cadenceSeconds}, expected 0.5..60)`);
   }
 
-  const cookiesFile = opts.cookiesFile || process.env.YOUTUBE_COOKIES;
+  const cookiesFile = autoDiscoverCookies(opts.cookiesFile);
   const cookiesFromBrowser = opts.cookiesFromBrowser || process.env.YT_DLP_COOKIES_FROM_BROWSER;
 
   const workDir = path.join(os.tmpdir(), `yt-frames-${id}-${Date.now()}`);
@@ -230,6 +252,7 @@ export async function fetchVideoKeyframes(
     "bestvideo[height<=360][ext=mp4]/bestvideo[height<=360]/best[height<=360]",
     "--no-playlist",
     "--no-warnings",
+    "--extractor-args", BGUTIL_EXTRACTOR_ARG,
     "-o",
     videoTemplate,
   ];

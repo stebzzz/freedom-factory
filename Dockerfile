@@ -54,15 +54,22 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       fonts-noto-cjk \
       libvips \
       python3 python3-venv python3-pip \
+      unzip \
       ca-certificates curl tini \
     && rm -rf /var/lib/apt/lists/* \
-    # yt-dlp single-file binary — used by the style-kit YouTube import flow
-    # (lib/api/youtube.ts). Pinning to "latest" so we get fresh extractors on
-    # every image rebuild; YouTube changes are constant.
-    && curl -fsSL https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp \
-         -o /usr/local/bin/yt-dlp \
-    && chmod +x /usr/local/bin/yt-dlp \
-    && /usr/local/bin/yt-dlp --version
+    # yt-dlp + bgutil PoToken plugin via pip (the single-file binary doesn't
+    # load Python plugins). lib/api/youtube.ts auto-injects the bgutil
+    # extractor arg pointing at the local bgutil-pot service.
+    && pip3 install --break-system-packages --no-cache-dir --upgrade \
+         yt-dlp \
+         bgutil-ytdlp-pot-provider \
+    && /usr/local/bin/yt-dlp --version \
+    # Deno JS runtime — required by yt-dlp 2026+ for YouTube's player decipher
+    # challenge. Without it, every download silently degrades and then fails
+    # with "Sign in to confirm you're not a bot" on datacenter IPs.
+    && curl -fsSL https://deno.land/install.sh | sh -s -- -y \
+    && ln -s /root/.deno/bin/deno /usr/local/bin/deno \
+    && deno --version
 
 # Whisper transcription is handled by the OpenAI API (lib/api/whisper.ts:
 # transcribeWithOpenAI). We don't build whisper.cpp locally anymore — it cost
