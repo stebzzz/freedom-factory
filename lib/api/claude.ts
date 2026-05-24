@@ -1236,7 +1236,12 @@ export async function splitScriptInto2sScenes(
   // and the tail of the script comes back as fallback. We slice the segments into batches and
   // merge the results. A small overlap window helps narrative continuity.
   const useRemixMode = kitImagePrompts.length > 0;
-  const CHUNK_SIZE = 50;
+  // Claude Code CLI (via the VPS wrapper) caps its output below the Anthropic API limit.
+  // 20 prompts × ~200 tokens ≈ 4k tokens response — fits the CLI's default ceiling with margin.
+  const CHUNK_SIZE = 20;
+  // Retry passes get smaller chunks: a chunk that failed once was likely too big or
+  // tripped a transient cap, so we re-ask in halves.
+  const RETRY_CHUNK_SIZE = 10;
   const promptsByIdx = new Map<number, string>();
   const categoriesByIdx = new Map<number, SceneCategory>();
 
@@ -1246,9 +1251,11 @@ export async function splitScriptInto2sScenes(
   console.log(`[Claude 2s Prompts] catégories allouées — STICK: ${allocated.filter(c=>c==="STICK").length}, SETTING: ${allocated.filter(c=>c==="SETTING").length}, OBJECT: ${allocated.filter(c=>c==="OBJECT").length}`);
 
   // Parse Claude output: strict JSON first, regex fallback if the JSON is truncated/malformed.
-  // Truncation is rare with CHUNK_SIZE=50 but happens — the regex still recovers most entries.
-  const ingestResponse = (raw: string): number => {
+  // Returns count of prompts ingested + the raw length (so callers can log truncation).
+  const ingestResponse = (raw: string): { got: number; rawLen: number; head: string; tail: string } => {
     const stripped = raw.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/, "").trim();
+    const head = stripped.slice(0, 120).replace(/\s+/g, " ");
+    const tail = stripped.slice(-120).replace(/\s+/g, " ");
     let got = 0;
     try {
       const parsed = JSON.parse(stripped) as { prompts?: Array<{ index?: number; imagePrompt?: string }> };
@@ -1258,7 +1265,7 @@ export async function splitScriptInto2sScenes(
           got++;
         }
       }
-      return got;
+      return { got, rawLen: stripped.length, head, tail };
     } catch {
       const re = /\{\s*"index"\s*:\s*(\d+)[\s\S]*?"imagePrompt"\s*:\s*"((?:[^"\\]|\\.)*)"/g;
       let m: RegExpExecArray | null;
@@ -1267,7 +1274,7 @@ export async function splitScriptInto2sScenes(
         const text = m[2].replace(/\\"/g, '"').replace(/\\n/g, " ").trim();
         if (text) { promptsByIdx.set(idx, text); got++; }
       }
-      return got;
+      return { got, rawLen: stripped.length, head, tail };
     }
   };
 
@@ -1282,8 +1289,12 @@ export async function splitScriptInto2sScenes(
         `Claude 2s Prompts [${startIdx}-${endIdx - 1}]`,
       );
       const raw = (response.content[0]?.text || "").trim();
-      const got = ingestResponse(raw);
-      console.log(`[Claude 2s Prompts] chunk [${startIdx}-${endIdx - 1}]: ${got}/${chunk.length} prompts`);
+      const r = ingestResponse(raw);
+      if (r.got < chunk.length) {
+        console.warn(`[Claude 2s Prompts] chunk [${startIdx}-${endIdx - 1}]: ${r.got}/${chunk.length} prompts — rawLen=${r.rawLen}, head="${r.head}", tail="${r.tail}"`);
+      } else {
+        console.log(`[Claude 2s Prompts] chunk [${startIdx}-${endIdx - 1}]: ${r.got}/${chunk.length} prompts`);
+      }
     } catch (err) {
       console.warn(`[Claude 2s Prompts] chunk [${startIdx}-${endIdx - 1}] failed: ${(err as Error).message}`);
     }
@@ -1304,10 +1315,10 @@ export async function splitScriptInto2sScenes(
     for (let i = 0; i < segments.length; i++) if (!promptsByIdx.has(i)) missing.push(i);
     if (missing.length === 0) break;
     console.warn(`[Claude 2s Prompts] retry ${retry}/2 sur ${missing.length} index manquants: ${missing.slice(0, 10).join(",")}${missing.length > 10 ? "…" : ""}`);
-    // Re-chunk the missing list and call in parallel. Pass the ORIGINAL absolute indices via
-    // the categoriesByIdx + indexOffset machinery so Claude returns the correct script indices.
+    // Re-chunk the missing list using a SMALLER chunk size — the original failure was likely
+    // an output cap, so we halve the request to give Claude more breathing room.
     const missingChunks: number[][] = [];
-    for (let i = 0; i < missing.length; i += CHUNK_SIZE) missingChunks.push(missing.slice(i, i + CHUNK_SIZE));
+    for (let i = 0; i < missing.length; i += RETRY_CHUNK_SIZE) missingChunks.push(missing.slice(i, i + RETRY_CHUNK_SIZE));
     await Promise.all(missingChunks.map(async (origIdxs) => {
       // Re-use callChunk semantics by building a synthetic segment slice that preserves indices.
       // We pass the actual absolute index range to buildPrompt via a small inline wrapper that
