@@ -258,7 +258,10 @@ export async function alignScenesWithWhisper(
   audioPath: string,
   options: { language?: string; minSceneDuration?: number; maxSceneDuration?: number } = {},
 ): Promise<AlignmentResult> {
-  const minDur = options.minSceneDuration ?? 1.5;
+  // Default 0.3s. The previous 1.5s default clamped short scenes ("kick off your
+  // shoes,") to 1.5s when whisper said they were 1.1s, accumulating ~0.4s drift
+  // per short scene → after ~20 short scenes the video was ~10s ahead of the audio.
+  const minDur = options.minSceneDuration ?? 0.3;
   const maxDur = options.maxSceneDuration ?? 60;
 
   const transcript = await transcribeWithWhisper(audioPath, { language: options.language });
