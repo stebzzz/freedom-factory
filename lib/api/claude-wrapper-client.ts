@@ -29,9 +29,16 @@ export interface CallClaudeOptions {
 }
 
 // ===================================================================
-// Concurrency semaphore — cap to 3 in-flight calls
+// Concurrency semaphore — STRICT serial queue (MAX_CONCURRENT = 1).
+// The VPS Claude Code wrapper has a stdin race condition: when a second
+// big-prompt POST arrives while the first is still writing stdin into the
+// `claude` CLI, the CLI gives up after 3s ("no stdin data received in 3s")
+// and returns HTTP 500. The fix that actually works is serialising calls
+// on our side so the wrapper never sees more than one in-flight prompt.
+// Wan / image gen are NOT affected and keep their own per-provider
+// concurrency (lib/api/wan.ts, concurrency=3 by default).
 // ===================================================================
-const MAX_CONCURRENT = 3;
+const MAX_CONCURRENT = 1;
 let inflight = 0;
 const waitQueue: Array<() => void> = [];
 
