@@ -55,7 +55,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       libvips \
       python3 python3-venv python3-pip \
       ca-certificates curl tini \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    # yt-dlp single-file binary — used by the style-kit YouTube import flow
+    # (lib/api/youtube.ts). Pinning to "latest" so we get fresh extractors on
+    # every image rebuild; YouTube changes are constant.
+    && curl -fsSL https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp \
+         -o /usr/local/bin/yt-dlp \
+    && chmod +x /usr/local/bin/yt-dlp \
+    && /usr/local/bin/yt-dlp --version
 
 # Whisper transcription is handled by the OpenAI API (lib/api/whisper.ts:
 # transcribeWithOpenAI). We don't build whisper.cpp locally anymore — it cost
