@@ -12,8 +12,9 @@ const ROOT = "/Users/stephanezayat/Documents/youtube-freedom-factory";
 const WHISPER_BIN = "whisper-cli";
 const WHISPER_MODEL = `${os.homedir()}/.cache/whisper-cpp-models/ggml-large-v3-turbo-q5_0.bin`;
 // MIN_SLICE: minimum duration an image stays on screen. Lower = better sync (no drift) but
-// short flashes possible. 0.4s is a good compromise — under this only ~1% of scenes are affected.
-const MIN_SLICE = 0.4;
+// short flashes possible. CLI override: --min=0.3
+const minArg = process.argv.find(a => a.startsWith("--min="));
+const MIN_SLICE = minArg ? parseFloat(minArg.replace("--min=", "")) : 0.4;
 
 const jobName = process.argv[2];
 if (!jobName) { console.error("usage: <jobName>"); process.exit(1); }

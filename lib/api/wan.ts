@@ -80,6 +80,19 @@ async function downloadToFile(url: string, outputPath: string): Promise<number> 
   return buf.length;
 }
 
+// When ≥2 refs are sent, the first ref is the canonical style anchor (e.g. frame-005, a pure
+// stickman with no scenery) and the second+ are scene-context references. The model needs to
+// know that IMAGE 1 is a STYLE template (line work, proportions) — not something to copy
+// pose-for-pose — otherwise every stickman ends up frozen in the same stance.
+function wrapPromptWithRefHierarchy(prompt: string, refCount: number): string {
+  if (refCount < 2) return prompt;
+  return `STYLE REFERENCE (IMAGE 1): a generic stickman in this exact style — same line weight, head shape, proportions, simple eye dots, flat ink-line aesthetic. Use ONLY as STYLE TEMPLATE: replicate line quality and proportions, but the POSE, EXPRESSION, ACTION must be NEW matching the scene description. Do NOT copy IMAGE 1's stance.
+
+SCENE REFERENCE (IMAGE 2): composition/object/environment inspiration. Layout hint only — do NOT copy its character style.
+
+Scene to draw (NEW pose & action, IMAGE 1 line style only): ${prompt}`;
+}
+
 async function generateOne(
   key: string,
   model: WanModel,
@@ -87,7 +100,8 @@ async function generateOne(
   refPaths: string[],
 ): Promise<string> {
   // Build the multimodal content array: text + up to 9 ref images as data URIs.
-  const content: Array<{ text?: string; image?: string }> = [{ text: prompt }];
+  const wrappedPrompt = wrapPromptWithRefHierarchy(prompt, refPaths.length);
+  const content: Array<{ text?: string; image?: string }> = [{ text: wrappedPrompt }];
   for (const p of refPaths.slice(0, 9)) {
     content.push({ image: await refToDataUri(p) });
   }
