@@ -374,9 +374,14 @@ async function runPipeline(jobId: string, jobDir: string) {
     // Anything else would silently regenerate the script (the very thing the user complained about).
     const wantCustom = hasCustomScript;
     if (wantCustom && hasCustomScript) {
+      // Pilot mode: pass the sample size so Claude only generates imagePrompts for the pilot
+      // subset (5 by default) instead of all ~275 scenes. Cuts script gen from ~14 chunks to 1.
+      const pilotForSplit = params.pilotMode ? (params.pilotSampleSize ?? 5) : undefined;
       emit(jobId, { step: "script", status: "running", progress: 10,
-        message: `Mode describe-kit (${language}) — Claude découpe ton script en scènes ~1.5s...` });
-      script = await splitScriptInto2sScenes(params.customScript!, params.duration, kitVocab);
+        message: params.pilotMode
+          ? `Mode pilot (${language}) — Claude génère uniquement ${pilotForSplit} imagePrompts...`
+          : `Mode describe-kit (${language}) — Claude découpe ton script en scènes ~1.5s...` });
+      script = await splitScriptInto2sScenes(params.customScript!, params.duration, kitVocab, pilotForSplit);
     } else {
       emit(jobId, { step: "script", status: "running", progress: 10,
         message: `Mode describe-kit (${language}) — Claude génère script + scènes ~1.5s...` });

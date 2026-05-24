@@ -1216,6 +1216,7 @@ export async function splitScriptInto2sScenes(
   customScript: string,
   durationMinutes: number,
   kitImagePrompts: string[] = [],
+  pilotSampleSize?: number,
 ): Promise<ScriptResult> {
   const config = await getConfig();
   const modelId = getModelId(config);
@@ -1225,6 +1226,25 @@ export async function splitScriptInto2sScenes(
   // Step 1: deterministic JS segmentation — narration is VERBATIM, Claude cannot touch it.
   const segments = segmentScriptVerbatim(customScript);
   if (segments.length === 0) throw new Error("splitScriptInto2sScenes: aucun segment trouvé après découpage JS");
+
+  // PILOT MODE: only generate imagePrompts for a spread-out subset of indices.
+  // Non-pilot scenes get an empty imagePrompt — the pipeline's pilot filter drops them
+  // before image gen. This keeps Claude work O(pilot_size) instead of O(segments.length),
+  // which is both faster AND avoids the wrapper-VPS instability seen on long runs.
+  // MUST match samplePilotIndices() in lib/pipeline/runner.ts — both functions need to
+  // pick the same indices so the runner's pilotSet downstream matches the prompts we generated.
+  const pilotIndices: number[] | null = (() => {
+    if (!pilotSampleSize || pilotSampleSize <= 0) return null;
+    const total = segments.length;
+    const n = Math.max(1, Math.min(pilotSampleSize, total));
+    if (n >= total) return null; // pilot >= script: nothing to skip, fall back to full processing
+    const out = new Set<number>();
+    for (let i = 0; i < n; i++) {
+      out.add(n === 1 ? 0 : Math.round((i / (n - 1)) * (total - 1)));
+    }
+    for (let i = 0; out.size < n && i < total; i++) out.add(i);
+    return [...out].sort((a, b) => a - b);
+  })();
 
   // Step 2: Claude generates ONLY the imagePrompts for each (verbatim) narration, in order.
   // REMIX MODE: when a kit vocabulary is provided, Claude must PICK the most relevant kit prompt
@@ -1249,6 +1269,65 @@ export async function splitScriptInto2sScenes(
   const allocated = allocateCategories(segments.length);
   allocated.forEach((cat, i) => categoriesByIdx.set(i, cat));
   console.log(`[Claude 2s Prompts] catégories allouées — STICK: ${allocated.filter(c=>c==="STICK").length}, SETTING: ${allocated.filter(c=>c==="SETTING").length}, OBJECT: ${allocated.filter(c=>c==="OBJECT").length}`);
+
+  // PILOT SHORTCUT: only generate imagePrompts for the pilot subset, single Claude call.
+  // Avoids the cost AND avoids the wrapper-VPS instability seen on long chunked runs.
+  if (pilotIndices) {
+    console.log(`[Claude 2s Prompts] PILOT — ${pilotIndices.length} scènes sur ${segments.length} (indices ${pilotIndices.join(", ")})`);
+    const slice = pilotIndices.map((idx) => segments[idx]);
+    const localCats = new Map<number, SceneCategory>();
+    pilotIndices.forEach((origIdx, localIdx) => localCats.set(localIdx, categoriesByIdx.get(origIdx) ?? "OBJECT"));
+    const pilotPrompt = buildPrompt(useRemixMode, slice, 0, slice.length, kitImagePrompts, customScript, localCats);
+
+    let pilotErr: Error | null = null;
+    try {
+      const response = await callClaudeRetry(
+        modelId,
+        Math.min(8000, 200 + slice.length * 400),
+        [{ role: "user", content: pilotPrompt }],
+        "Claude 2s Pilot",
+      );
+      const raw = (response.content[0]?.text || "").trim();
+      const stripped = raw.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/, "").trim();
+      const tryParse = (): Array<{ index?: number; imagePrompt?: string }> => {
+        try {
+          const parsed = JSON.parse(stripped) as { prompts?: Array<{ index?: number; imagePrompt?: string }> };
+          return parsed.prompts ?? [];
+        } catch {
+          const re = /\{\s*"index"\s*:\s*(\d+)[\s\S]*?"imagePrompt"\s*:\s*"((?:[^"\\]|\\.)*)"/g;
+          const out: Array<{ index: number; imagePrompt: string }> = [];
+          let m: RegExpExecArray | null;
+          while ((m = re.exec(stripped)) !== null) {
+            out.push({ index: parseInt(m[1], 10), imagePrompt: m[2].replace(/\\"/g, '"').replace(/\\n/g, " ").trim() });
+          }
+          return out;
+        }
+      };
+      for (const p of tryParse()) {
+        if (typeof p.index === "number" && typeof p.imagePrompt === "string" && p.imagePrompt.trim()) {
+          const origIdx = pilotIndices[p.index];
+          if (origIdx !== undefined) promptsByIdx.set(origIdx, p.imagePrompt.trim());
+        }
+      }
+    } catch (err) {
+      pilotErr = err as Error;
+    }
+
+    const missingPilot = pilotIndices.filter((i) => !promptsByIdx.has(i));
+    if (missingPilot.length > 0) {
+      throw new Error(`splitScriptInto2sScenes PILOT: ${missingPilot.length}/${pilotIndices.length} pilot prompts manquants (indices ${missingPilot.join(",")})${pilotErr ? ` — last error: ${pilotErr.message}` : ""}`);
+    }
+
+    const scenes: ScriptScene[] = segments.map((seg, i) => ({
+      index: i,
+      narration: seg.narration,
+      imagePrompt: promptsByIdx.get(i) ?? "",
+      durationSeconds: seg.durationSeconds,
+    }));
+    const fullScript = scenes.map((s) => s.narration).join(" ");
+    console.log(`[Claude 2s Prompts] PILOT done — ${pilotIndices.length} prompts générés, ${segments.length - pilotIndices.length} scènes hors-pilot avec imagePrompt vide`);
+    return { fullScript, scenes, wordCount: fullScript.split(/\s+/).filter(Boolean).length };
+  }
 
   // Parse Claude output: strict JSON first, regex fallback if the JSON is truncated/malformed.
   // Returns count of prompts ingested + the raw length (so callers can log truncation).
