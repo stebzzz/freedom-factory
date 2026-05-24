@@ -54,16 +54,34 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ sl
     }
     try {
       const imagesDir = path.join(project!.outDir, "images");
-      await generateImages(
+      // generateImages doesn't throw on per-scene failures — it calls onImageFailed
+      // and returns whatever scenes succeeded. Capture the failure reason so the
+      // route can return a real error instead of pretending the regen worked.
+      let failureReason: string | null = null;
+      const results = await generateImages(
         [{ index: sceneId, imagePrompt: prompt }],
         imagesDir,
         () => {},
-        { concurrency: 1 },
+        {
+          concurrency: 1,
+          onImageFailed: (_idx, reason) => {
+            failureReason = reason;
+          },
+        },
       );
+      const got = results.find((r) => r.sceneIndex === sceneId);
+      if (!got) {
+        const msg = failureReason ?? "image regen: generateImages n'a rien retourné";
+        // 401 from Veo3 means the GenAIPro JWT Clerk token has expired.
+        const hint = /401|invalid_token|jwt/i.test(msg)
+          ? " — la clé GenAIPro est probablement un JWT Clerk expiré, mets-la à jour dans /settings"
+          : "";
+        return NextResponse.json({ ok: false, error: msg + hint }, { status: 502 });
+      }
       const url = `/generated/${slug}/images/scene_${String(sceneId).padStart(3, "0")}.png`;
       return NextResponse.json({ ok: true, imageUrl: url });
     } catch (err) {
-      return NextResponse.json({ ok: true, regenError: `image regen: ${(err as Error).message}` }, { status: 200 });
+      return NextResponse.json({ ok: false, error: `image regen: ${(err as Error).message}` }, { status: 500 });
     }
   }
 
