@@ -246,9 +246,24 @@ export async function alignScenesWithWhisper(
 
   const transcript = await transcribeWithWhisper(audioPath, { language: options.language });
   // Prefer real per-word timestamps (OpenAI verbose_json) over interpolating from segments.
-  const timed = transcript.words && transcript.words.length > 0
-    ? transcript.words.map((w) => ({ word: normalize(w.word).trim(), start: w.start, end: w.end })).filter((w) => w.word)
-    : expandToWords(transcript.segments);
+  // OpenAI returns words like " C'est" or "c'est" which after normalize() become "c est" —
+  // a multi-token string that never matches the script's split tokens. Expand each whisper
+  // word into its sub-tokens, sharing the [start..end] window proportionally.
+  let timed: TimedWord[];
+  if (transcript.words && transcript.words.length > 0) {
+    timed = [];
+    for (const w of transcript.words) {
+      const subs = tokens(w.word);
+      if (subs.length === 0) continue;
+      const span = Math.max(0.001, w.end - w.start);
+      const per = span / subs.length;
+      for (let k = 0; k < subs.length; k++) {
+        timed.push({ word: subs[k], start: w.start + k * per, end: w.start + (k + 1) * per });
+      }
+    }
+  } else {
+    timed = expandToWords(transcript.segments);
+  }
   if (timed.length === 0) throw new Error("Whisper aligner: transcript vide");
 
   const totalAudioSec = transcript.words && transcript.words.length > 0
@@ -291,10 +306,26 @@ export async function alignScenesWithWhisper(
     scenes[i].durationSeconds = Number(aligned.toFixed(2));
   }
 
-  // Sanity: total should be close to audio length. If wildly off, the alignment was bad.
-  const totalScenes = scenes.reduce((s, sc) => s + sc.durationSeconds, 0);
-  if (totalAudioSec > 0 && Math.abs(totalScenes - totalAudioSec) / totalAudioSec > 0.4) {
-    console.warn(`[Whisper] alignement suspect: ${totalScenes.toFixed(1)}s scenes vs ${totalAudioSec.toFixed(1)}s audio`);
+  // If matching tanked (transcription drift, different language, paraphrased VO),
+  // the per-scene alignment is useless. Fall back to proportional distribution:
+  // each scene gets a share of totalAudioSec proportional to its narration length.
+  // Visually less precise than true word alignment, but the cumulative drift is
+  // bounded — and the master ends exactly when the audio ends.
+  const ratio = scriptTotal > 0 ? matchedTotal / scriptTotal : 0;
+  if (ratio < 0.3 && totalAudioSec > 0) {
+    console.warn(`[Whisper] match ratio ${(ratio * 100).toFixed(0)}% — falling back to proportional distribution over ${totalAudioSec.toFixed(1)}s audio`);
+    const weights = scenes.map((s) => Math.max(1, tokens(s.narration).length));
+    const totalWeight = weights.reduce((a, b) => a + b, 0);
+    for (let i = 0; i < scenes.length; i++) {
+      const share = (weights[i] / totalWeight) * totalAudioSec;
+      scenes[i].durationSeconds = Number(Math.max(minDur, Math.min(maxDur, share)).toFixed(2));
+    }
+  } else {
+    // Sanity: total should be close to audio length. If wildly off, the alignment was bad.
+    const totalScenes = scenes.reduce((s, sc) => s + sc.durationSeconds, 0);
+    if (totalAudioSec > 0 && Math.abs(totalScenes - totalAudioSec) / totalAudioSec > 0.4) {
+      console.warn(`[Whisper] alignement suspect: ${totalScenes.toFixed(1)}s scenes vs ${totalAudioSec.toFixed(1)}s audio`);
+    }
   }
 
   return {
