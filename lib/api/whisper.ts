@@ -319,19 +319,32 @@ export async function alignScenesWithWhisper(
     scenes[i].durationSeconds = Number(aligned.toFixed(2));
   }
 
-  // If matching tanked (transcription drift, different language, paraphrased VO),
-  // the per-scene alignment is useless. Fall back to proportional distribution:
-  // each scene gets a share of totalAudioSec proportional to its narration length.
-  // Visually less precise than true word alignment, but the cumulative drift is
-  // bounded — and the master ends exactly when the audio ends.
+  // If matching tanked (transcription drift, paraphrased VO, abbreviations like "I'm"
+  // vs "I am"), the per-scene word matcher is useless. Better fallback: use the whisper
+  // word TIMESTAMPS as a temporal grid and walk it in parallel with the script word
+  // count. Each scene consumes N script-words ≈ scaled whisper-words and inherits the
+  // [start..end] window of that slice. This respects the actual cadence of the voice
+  // (pauses on commas, faster on dense sections), unlike pure uniform distribution.
   const ratio = scriptTotal > 0 ? matchedTotal / scriptTotal : 0;
-  if (ratio < 0.3 && totalAudioSec > 0) {
-    console.warn(`[Whisper] match ratio ${(ratio * 100).toFixed(0)}% — falling back to proportional distribution over ${totalAudioSec.toFixed(1)}s audio`);
-    const weights = scenes.map((s) => Math.max(1, tokens(s.narration).length));
-    const totalWeight = weights.reduce((a, b) => a + b, 0);
+  if (ratio < 0.3 && timed.length > 0 && scriptTotal > 0) {
+    console.warn(`[Whisper] match ratio ${(ratio * 100).toFixed(0)}% — falling back to whisper-timestamp grid (${timed.length} words, ${totalAudioSec.toFixed(1)}s)`);
+    // Scale factor: if script has more words than transcript (or vice versa),
+    // each script-word consumes fewer/more whisper-words on the timeline.
+    const scale = timed.length / scriptTotal;
+    let wCursor = 0; // floating index into timed[]
     for (let i = 0; i < scenes.length; i++) {
-      const share = (weights[i] / totalWeight) * totalAudioSec;
-      scenes[i].durationSeconds = Number(Math.max(minDur, Math.min(maxDur, share)).toFixed(2));
+      const n = tokens(scenes[i].narration).length;
+      if (n === 0) {
+        scenes[i].durationSeconds = minDur;
+        continue;
+      }
+      const startIdx = Math.min(Math.floor(wCursor), timed.length - 1);
+      const startTime = timed[startIdx].start;
+      wCursor += n * scale;
+      const endIdx = Math.min(Math.floor(wCursor), timed.length - 1);
+      const endTime = wCursor >= timed.length ? totalAudioSec : timed[endIdx].start;
+      const aligned = Math.max(minDur, Math.min(maxDur, endTime - startTime));
+      scenes[i].durationSeconds = Number(aligned.toFixed(2));
     }
   } else {
     // Sanity: total should be close to audio length. If wildly off, the alignment was bad.
