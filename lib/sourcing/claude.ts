@@ -1,37 +1,15 @@
-import { getConfig } from "@/lib/config";
+import { callClaudeRetry } from "@/lib/api/claude-wrapper-client";
 import { jsonrepair } from "jsonrepair";
 import type { SourcingAsset } from "./types";
 
-const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
-const MODEL = process.env.SOURCING_CLAUDE_MODEL || "claude-haiku-4-5-20251001";
-
-interface ClaudeMessage {
-  content: Array<{ type: "text"; text: string }>;
-}
-
 async function callAnthropic(prompt: string, maxTokens = 1024): Promise<string> {
-  const config = await getConfig();
-  if (!config.anthropicKey) throw new Error("ANTHROPIC_API_KEY manquante");
-
-  const res = await fetch(ANTHROPIC_URL, {
-    method: "POST",
-    headers: {
-      "x-api-key": config.anthropicKey,
-      "anthropic-version": "2023-06-01",
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      model: MODEL,
-      max_tokens: maxTokens,
-      messages: [{ role: "user", content: prompt }],
-    }),
-  });
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`anthropic ${res.status}: ${text.slice(0, 300)}`);
-  }
-  const data = (await res.json()) as ClaudeMessage;
-  return data.content?.[0]?.text ?? "";
+  const response = await callClaudeRetry(
+    "claude-haiku-4-5-20251001",
+    maxTokens,
+    [{ role: "user", content: prompt }],
+    "Claude Sourcing",
+  );
+  return response.content[0]?.text ?? "";
 }
 
 function parseJsonLoose<T>(raw: string, fallback: T): T {

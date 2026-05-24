@@ -4,6 +4,8 @@ import path from "path";
 export interface AppSettings {
   // API Keys
   anthropicKey: string;
+  claudeWrapperToken: string;
+  claudeWrapperUrl: string;
   siliconflowKey: string;
   genaiproKey: string;
   geminigenKey: string;
@@ -26,6 +28,8 @@ const SETTINGS_PATH = path.join(process.cwd(), "config", "settings.json");
 
 const DEFAULTS: AppSettings = {
   anthropicKey: "",
+  claudeWrapperToken: "",
+  claudeWrapperUrl: "http://168.231.81.106:3000/api/claude",
   siliconflowKey: "",
   genaiproKey: "",
   geminigenKey: "",
@@ -55,6 +59,8 @@ export async function getConfig(): Promise<AppSettings> {
   // .env.local always wins over settings.json (hot-reload friendly)
   const env = process.env;
   loaded.anthropicKey   = env.ANTHROPIC_API_KEY   || loaded.anthropicKey   || "";
+  loaded.claudeWrapperToken = env.CLAUDE_WRAPPER_TOKEN || loaded.claudeWrapperToken || "";
+  loaded.claudeWrapperUrl = env.CLAUDE_WRAPPER_URL || loaded.claudeWrapperUrl || DEFAULTS.claudeWrapperUrl;
   loaded.siliconflowKey = env.SILICONFLOW_API_KEY || loaded.siliconflowKey || "";
   loaded.genaiproKey    = env.GENAIPRO_API_KEY    || loaded.genaiproKey    || "";
   loaded.geminigenKey   = env.GEMINIGEN_API_KEY   || loaded.geminigenKey   || "";

@@ -1,20 +1,8 @@
-import { readFile } from "fs/promises";
-import path from "path";
-import { getConfig } from "@/lib/config";
-
-const HAIKU_MODEL = "claude-haiku-4-5-20251001";
+import { callClaudeWithImage } from "./claude-wrapper-client";
 
 interface ClassifyResult {
   hasCharacter: boolean;
   label: string;
-}
-
-function mimeFromPath(p: string): string {
-  const ext = path.extname(p).toLowerCase().replace(".", "");
-  if (ext === "jpg" || ext === "jpeg") return "image/jpeg";
-  if (ext === "webp") return "image/webp";
-  if (ext === "gif") return "image/gif";
-  return "image/png";
 }
 
 const SYSTEM_PROMPT = `You classify reference images for an illustration style kit.
@@ -30,48 +18,14 @@ Rules:
 - label is a short tag like "stickman beside fire", "campfire glow", "city skyline", "color palette pastels".`;
 
 export async function classifyImage(imagePath: string): Promise<ClassifyResult> {
-  const config = await getConfig();
-  const apiKey = config.anthropicKey;
-  if (!apiKey) throw new Error("classifyImage: ANTHROPIC_API_KEY missing");
+  const raw = await callClaudeWithImage(
+    "Classify this image.",
+    imagePath,
+    SYSTEM_PROMPT,
+    "Claude Vision Classify",
+  );
 
-  const buffer = await readFile(imagePath);
-  const base64 = buffer.toString("base64");
-  const mediaType = mimeFromPath(imagePath);
-
-  const body = {
-    model: HAIKU_MODEL,
-    max_tokens: 120,
-    system: SYSTEM_PROMPT,
-    messages: [
-      {
-        role: "user",
-        content: [
-          { type: "image", source: { type: "base64", media_type: mediaType, data: base64 } },
-          { type: "text", text: "Classify this image." },
-        ],
-      },
-    ],
-  };
-
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      "x-api-key": apiKey,
-      "anthropic-version": "2023-06-01",
-    },
-    body: JSON.stringify(body),
-  });
-
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`classifyImage ${res.status}: ${text.slice(0, 300)}`);
-  }
-
-  const data = (await res.json()) as { content?: Array<{ type: string; text?: string }> };
-  const raw = data.content?.find((c) => c.type === "text")?.text?.trim() ?? "";
-
-  // Tolerate ```json fences if Haiku decides to wrap.
+  // Tolerate ```json fences if the model decides to wrap.
   const stripped = raw.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/, "").trim();
   try {
     const parsed = JSON.parse(stripped) as { has_character?: boolean; label?: string };
@@ -102,50 +56,16 @@ Cover, in this order, in ONE paragraph (40-80 words, no bullets):
 Reply with the paragraph only — no preamble, no JSON, no labels.`;
 
 /**
- * Send one frame to Haiku Vision and ask for a ~60-word style description.
+ * Send one frame to Claude vision and ask for a ~60-word style description.
  * Used by the style-kit YouTube import to build a consolidated brief.
  */
 export async function describeStyle(imagePath: string): Promise<string> {
-  const config = await getConfig();
-  const apiKey = config.anthropicKey;
-  if (!apiKey) throw new Error("describeStyle: ANTHROPIC_API_KEY missing");
-
-  const buffer = await readFile(imagePath);
-  const base64 = buffer.toString("base64");
-  const mediaType = mimeFromPath(imagePath);
-
-  const body = {
-    model: HAIKU_MODEL,
-    max_tokens: 220,
-    system: STYLE_SYSTEM,
-    messages: [
-      {
-        role: "user",
-        content: [
-          { type: "image", source: { type: "base64", media_type: mediaType, data: base64 } },
-          { type: "text", text: "Describe the style." },
-        ],
-      },
-    ],
-  };
-
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      "x-api-key": apiKey,
-      "anthropic-version": "2023-06-01",
-    },
-    body: JSON.stringify(body),
-  });
-
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`describeStyle ${res.status}: ${text.slice(0, 300)}`);
-  }
-
-  const data = (await res.json()) as { content?: Array<{ type: string; text?: string }> };
-  return data.content?.find((c) => c.type === "text")?.text?.trim() ?? "";
+  return (await callClaudeWithImage(
+    "Describe the style.",
+    imagePath,
+    STYLE_SYSTEM,
+    "Claude Vision Style",
+  )).trim();
 }
 
 const DESCRIBE_IMAGE_SYSTEM = `You write detailed image-generation prompts. Look at this image and produce ONE paragraph (90-140 words) that another text-to-image model could use to recreate it as faithfully as possible.
@@ -167,44 +87,10 @@ Reply with the paragraph only — no preamble, no labels, no JSON, no bullets, n
  * Different from describeStyle: this targets re-creating THIS exact image, not the overall style.
  */
 export async function describeImage(imagePath: string): Promise<string> {
-  const config = await getConfig();
-  const apiKey = config.anthropicKey;
-  if (!apiKey) throw new Error("describeImage: ANTHROPIC_API_KEY missing");
-
-  const buffer = await readFile(imagePath);
-  const base64 = buffer.toString("base64");
-  const mediaType = mimeFromPath(imagePath);
-
-  const body = {
-    model: HAIKU_MODEL,
-    max_tokens: 400,
-    system: DESCRIBE_IMAGE_SYSTEM,
-    messages: [
-      {
-        role: "user",
-        content: [
-          { type: "image", source: { type: "base64", media_type: mediaType, data: base64 } },
-          { type: "text", text: "Write the prompt." },
-        ],
-      },
-    ],
-  };
-
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      "x-api-key": apiKey,
-      "anthropic-version": "2023-06-01",
-    },
-    body: JSON.stringify(body),
-  });
-
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`describeImage ${res.status}: ${text.slice(0, 300)}`);
-  }
-
-  const data = (await res.json()) as { content?: Array<{ type: string; text?: string }> };
-  return data.content?.find((c) => c.type === "text")?.text?.trim() ?? "";
+  return (await callClaudeWithImage(
+    "Write the prompt.",
+    imagePath,
+    DESCRIBE_IMAGE_SYSTEM,
+    "Claude Vision Describe",
+  )).trim();
 }

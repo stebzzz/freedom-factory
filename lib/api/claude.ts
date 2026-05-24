@@ -1,301 +1,13 @@
 import { ScriptResult, ScriptScene } from "@/lib/pipeline/types";
 import { getConfig } from "@/lib/config";
 import { ChannelPreset, getPresetOrDefault } from "@/lib/presets/channel-presets";
+import { callClaudeRetry, type ClaudeMessage } from "./claude-wrapper-client";
 
 // ===================================================================
-// Claude API — child process with EMBEDDED worker code
-// Avoids: Turbopack fetch patching, Turbopack path resolution
+// All Claude calls route through the VPS wrapper (lib/api/claude-wrapper-client).
+// The `model` and `maxTokens` arguments are kept for signature compatibility
+// across the call-sites in this file but the wrapper ignores them.
 // ===================================================================
-
-interface ClaudeMessage {
-  content: Array<{ type: string; text: string }>;
-}
-
-// Worker code embedded as string — written to temp file at runtime
-// so Turbopack cannot statically analyze or resolve it
-const WORKER_CODE = `
-const https = require("node:https");
-const fs = require("node:fs");
-
-const inputFile = process.argv[2];
-const outputFile = process.argv[3];
-if (!inputFile || !outputFile) process.exit(1);
-
-const logFile = outputFile.replace("-out-", "-log-");
-function log(msg) { try { fs.appendFileSync(logFile, new Date().toISOString() + " " + msg + "\\n"); } catch {} }
-
-log("START pid=" + process.pid);
-
-let parsed;
-try {
-  parsed = JSON.parse(fs.readFileSync(inputFile, "utf-8"));
-} catch (e) {
-  log("INPUT ERROR: " + e.message);
-  fs.writeFileSync(outputFile, JSON.stringify({ success: false, error: "Cannot read input: " + e.message }));
-  process.exit(0);
-}
-
-const { model, maxTokens, messages, apiKey } = parsed;
-const body = JSON.stringify({ model, max_tokens: maxTokens, messages, stream: true });
-
-log("BODY " + body.length + " bytes (stream)");
-
-const agent = new https.Agent({ keepAlive: true, timeout: 600000 });
-
-const req = https.request({
-  hostname: "api.anthropic.com",
-  path: "/v1/messages",
-  method: "POST",
-  agent: agent,
-  headers: {
-    "content-type": "application/json",
-    "accept": "text/event-stream",
-    "x-api-key": apiKey,
-    "anthropic-version": "2023-06-01",
-    "content-length": Buffer.byteLength(body).toString(),
-    "connection": "keep-alive",
-  },
-}, (res) => {
-  log("STATUS " + res.statusCode);
-
-  if (res.statusCode >= 400) {
-    const errChunks = [];
-    res.on("data", (c) => errChunks.push(c));
-    res.on("end", () => {
-      const errBody = Buffer.concat(errChunks).toString("utf-8");
-      log("HTTP ERROR " + errBody.length + " bytes");
-      fs.writeFileSync(outputFile, JSON.stringify({ success: false, status: res.statusCode, error: errBody.slice(0, 500) }));
-    });
-    return;
-  }
-
-  // SSE parser — accumulate text_delta into content blocks
-  const contentBlocks = [];
-  let buffer = "";
-  let streamError = null;
-  let stopReason = null;
-  let usage = null;
-  let messageId = null;
-  let messageModel = null;
-
-  res.setEncoding("utf-8");
-  res.on("data", (chunk) => {
-    buffer += chunk;
-    let nl;
-    while ((nl = buffer.indexOf("\\n")) !== -1) {
-      const line = buffer.slice(0, nl);
-      buffer = buffer.slice(nl + 1);
-      if (!line.startsWith("data:")) continue;
-      const payload = line.slice(5).trim();
-      if (!payload) continue;
-      let evt;
-      try { evt = JSON.parse(payload); } catch { continue; }
-      const t = evt.type;
-      if (t === "message_start") {
-        messageId = evt.message && evt.message.id;
-        messageModel = evt.message && evt.message.model;
-        if (evt.message && evt.message.usage) usage = evt.message.usage;
-      } else if (t === "content_block_start") {
-        contentBlocks[evt.index] = { type: evt.content_block.type, text: evt.content_block.text || "" };
-      } else if (t === "content_block_delta") {
-        if (!contentBlocks[evt.index]) contentBlocks[evt.index] = { type: "text", text: "" };
-        if (evt.delta && evt.delta.type === "text_delta") {
-          contentBlocks[evt.index].text += evt.delta.text || "";
-        }
-      } else if (t === "message_delta") {
-        if (evt.delta && evt.delta.stop_reason) stopReason = evt.delta.stop_reason;
-        if (evt.usage) usage = Object.assign(usage || {}, evt.usage);
-      } else if (t === "error") {
-        streamError = (evt.error && (evt.error.message || JSON.stringify(evt.error))) || "stream error";
-        log("STREAM ERROR: " + streamError);
-      }
-    }
-  });
-
-  res.on("end", () => {
-    if (streamError) {
-      fs.writeFileSync(outputFile, JSON.stringify({ success: false, error: streamError }));
-      return;
-    }
-    const totalText = contentBlocks.filter(Boolean).map((b) => b.text || "").join("");
-    log("DONE stream, " + totalText.length + " chars across " + contentBlocks.filter(Boolean).length + " block(s)");
-    const data = {
-      id: messageId,
-      type: "message",
-      role: "assistant",
-      model: messageModel || model,
-      content: contentBlocks.filter(Boolean),
-      stop_reason: stopReason,
-      usage: usage,
-    };
-    fs.writeFileSync(outputFile, JSON.stringify({ success: true, data }));
-    log("OUTPUT WRITTEN OK");
-  });
-
-  res.on("error", (err) => {
-    log("RES ERROR: " + err.message);
-    if (!fs.existsSync(outputFile)) {
-      fs.writeFileSync(outputFile, JSON.stringify({ success: false, error: err.message }));
-    }
-  });
-});
-
-req.on("error", (err) => {
-  log("ERROR: " + err.message);
-  if (!fs.existsSync(outputFile)) {
-    fs.writeFileSync(outputFile, JSON.stringify({ success: false, error: err.message }));
-  }
-});
-
-req.on("socket", (socket) => {
-  socket.setKeepAlive(true, 30000);
-  socket.setTimeout(180000);
-  socket.on("timeout", () => {
-    log("SOCKET TIMEOUT");
-    req.destroy();
-  });
-});
-
-req.setTimeout(180000, () => {
-  log("TIMEOUT");
-  req.destroy();
-  if (!fs.existsSync(outputFile)) {
-    fs.writeFileSync(outputFile, JSON.stringify({ success: false, error: "Timeout 180s" }));
-  }
-});
-
-req.write(body);
-req.end();
-log("REQUEST SENT");
-
-process.on("uncaughtException", (e) => { log("UNCAUGHT: " + e.message); });
-process.on("unhandledRejection", (e) => { log("UNHANDLED: " + e); });
-`;
-
-async function callClaude(
-  model: string,
-  maxTokens: number,
-  messages: Array<{ role: string; content: string }>,
-): Promise<ClaudeMessage> {
-  const config = await getConfig();
-  const apiKey = config.anthropicKey;
-  if (!apiKey) throw new Error("Pas de cle API Anthropic — verifiez config/settings.json");
-
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const cp = require("child_process") as typeof import("node:child_process");
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const fs = require("fs") as typeof import("node:fs");
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const os = require("os") as typeof import("node:os");
-
-  const ts = Date.now() + "_" + Math.random().toString(36).slice(2, 6);
-  const tmpDir = os.tmpdir();
-  const tmpWorker = tmpDir + "/claude-w-" + ts + ".cjs";
-  const tmpIn = tmpDir + "/claude-in-" + ts + ".json";
-  const tmpOut = tmpDir + "/claude-out-" + ts + ".json";
-
-  // Write embedded worker to temp file — Turbopack can't resolve temp paths
-  fs.writeFileSync(tmpWorker, WORKER_CODE);
-  fs.writeFileSync(tmpIn, JSON.stringify({ model, maxTokens, messages, apiKey }));
-
-  console.log(`[Claude] Worker lance (model=${model})...`);
-
-  // Spawn fully detached child process — all stdio ignored
-  // so Turbopack can't interfere via pipe management
-  const child = cp.spawn(process.execPath, [tmpWorker, tmpIn, tmpOut], {
-    detached: true,
-    stdio: "ignore",
-  });
-  child.unref();
-
-  // Poll for output file (worker writes it when done)
-  // 600s = aligned with the internal https.Agent timeout above; sticky-mode
-  // sticky scripts can output 100+ image prompts (~20k tokens) which streams
-  // close to or past 4 min on Sonnet.
-  const maxWait = 600_000;
-  const pollInterval = 500;
-  const start = Date.now();
-
-  await new Promise<void>((resolve, reject) => {
-    const timer = setInterval(() => {
-      if (fs.existsSync(tmpOut)) {
-        clearInterval(timer);
-        resolve();
-        return;
-      }
-      if (Date.now() - start > maxWait) {
-        clearInterval(timer);
-        // Kill worker if still alive
-        try { process.kill(child.pid!, "SIGTERM"); } catch { /* ok */ }
-        try { fs.unlinkSync(tmpWorker); } catch { /* ok */ }
-        try { fs.unlinkSync(tmpIn); } catch { /* ok */ }
-        reject(new Error("Claude worker timeout (600s) — pas de reponse"));
-        return;
-      }
-    }, pollInterval);
-  });
-
-  // Clean temp worker + input
-  try { fs.unlinkSync(tmpWorker); } catch { /* ok */ }
-  try { fs.unlinkSync(tmpIn); } catch { /* ok */ }
-
-  // Read output
-  if (!fs.existsSync(tmpOut)) {
-    throw new Error("Claude worker: pas de fichier output genere");
-  }
-
-  const raw = fs.readFileSync(tmpOut, "utf-8");
-  try { fs.unlinkSync(tmpOut); } catch { /* ok */ }
-
-  let result: { success: boolean; data?: unknown; error?: string; status?: number };
-  try {
-    result = JSON.parse(raw);
-  } catch {
-    throw new Error("Claude worker: output JSON invalide: " + raw.slice(0, 200));
-  }
-
-  if (result.success) {
-    console.log("[Claude] Reponse OK");
-    return result.data as ClaudeMessage;
-  }
-
-  const apiErr: Error & { status?: number } = new Error("Claude API: " + String(result.error));
-  if (result.status) apiErr.status = result.status;
-  throw apiErr;
-}
-
-/** Call Claude with automatic retry on network errors — THROWS on failure, no mock */
-async function callClaudeRetry(
-  model: string,
-  maxTokens: number,
-  messages: Array<{ role: string; content: string }>,
-  label = "Claude",
-): Promise<ClaudeMessage> {
-  let lastErr: Error | null = null;
-
-  for (let attempt = 1; attempt <= 3; attempt++) {
-    try {
-      return await callClaude(model, maxTokens, messages);
-    } catch (err: unknown) {
-      lastErr = err as Error;
-      const status = (err as { status?: number }).status;
-
-      // 4xx client errors — no point retrying
-      if (status && status >= 400 && status < 500) {
-        throw new Error(`[${label}] Erreur API ${status}: ${(err as Error).message}`);
-      }
-
-      if (attempt < 3) {
-        console.warn(`[${label}] Erreur (tentative ${attempt}/3): ${(err as Error).message}`);
-        console.warn(`[${label}] Retry dans ${attempt * 3}s...`);
-        await new Promise((r) => setTimeout(r, attempt * 3000));
-        continue;
-      }
-    }
-  }
-
-  throw new Error(`[${label}] ECHEC apres 3 tentatives: ${lastErr?.message}`);
-}
 
 function getModelId(config: { scriptModel: string }): string {
   return config.scriptModel === "claude-opus-4-6" ? "claude-opus-4-6" : "claude-sonnet-4-6";
@@ -314,10 +26,6 @@ export async function generateScript(
 ): Promise<ScriptResult> {
   const config = await getConfig();
   const preset = getPresetOrDefault(presetId);
-
-  if (!config.anthropicKey) {
-    throw new Error("Cle API Anthropic manquante dans config/settings.json");
-  }
 
   console.log("[Claude] Generation script reelle — PAS de mock");
 
@@ -561,10 +269,6 @@ export async function parseCustomScript(
   const config = await getConfig();
   const preset = getPresetOrDefault(presetId);
 
-  if (!config.anthropicKey) {
-    throw new Error("Cle API Anthropic manquante dans config/settings.json");
-  }
-
   const modelId = getModelId(config);
   const [minDur, maxDur] = preset.script.sceneDurationRange;
   const totalDuration = durationMinutes * 60;
@@ -636,10 +340,6 @@ export async function extractCustomScriptWithPrompts(
 ): Promise<ScriptResult> {
   const config = await getConfig();
   const preset = getPresetOrDefault(presetId);
-
-  if (!config.anthropicKey) {
-    throw new Error("Cle API Anthropic manquante dans config/settings.json");
-  }
 
   const modelId = getModelId(config);
   const [minDur, maxDur] = preset.script.sceneDurationRange;
@@ -818,9 +518,6 @@ export async function generateStickyPrompts(
   durationMinutes: number,
 ): Promise<ScriptResult> {
   const config = await getConfig();
-  if (!config.anthropicKey) {
-    throw new Error("Cle API Anthropic manquante dans config/settings.json");
-  }
   const modelId = getModelId(config);
 
   const userContent = `${stylePrompt}
@@ -876,9 +573,6 @@ export async function rewriteCompetitorScript(
   targetDurationMinutes: number,
 ): Promise<string> {
   const config = await getConfig();
-  if (!config.anthropicKey) {
-    throw new Error("Cle API Anthropic manquante dans config/settings.json");
-  }
   const modelId = getModelId(config);
 
   // ElevenLabs reads ~150 wpm; pad target by 10% so the writer has elbow room.
@@ -929,7 +623,6 @@ Maintenant écris ma version réécrite (juste le texte narratif, rien d'autre) 
 // ===================================================================
 export async function consolidateStyleBrief(perFrameBriefs: string[]): Promise<string> {
   const config = await getConfig();
-  if (!config.anthropicKey) throw new Error("Cle API Anthropic manquante dans config/settings.json");
   const modelId = getModelId(config);
 
   const clean = perFrameBriefs.map((b) => b.trim()).filter((b) => b.length > 20);
@@ -990,7 +683,6 @@ export async function rankRefsForScenes(
   if (scenes.length === 0 || kitImages.length === 0) return [];
 
   const config = await getConfig();
-  if (!config.anthropicKey) throw new Error("Cle API Anthropic manquante dans config/settings.json");
   const modelId = getModelId(config);
 
   const validKit = kitImages.filter((k) => (k.imagePrompt ?? "").trim().length > 20);
@@ -1353,40 +1045,46 @@ function segmentScriptVerbatim(text: string): Array<{ narration: string; duratio
 // Classify a kit prompt into one of three visual categories used for forced distribution.
 //   STICK  = stickman(s) only, minimal background, no major object — pure character focus
 //   OBJECT = no stickman at all, pure object/symbol composition
-//   MIX    = stickman + object/label/scenery — anything that combines a character with elements
-export type SceneCategory = "STICK" | "OBJECT" | "MIX";
-const OBJECT_TOKENS = /\b(label(ed)?|sign|panel|screen|clock|chart|graph|timeline|calendar|bone|drill|syringe|tooth|teeth|candle|gear|target|magnifying|scale|paper|book|briefcase|map|pin|arrow|silhouettes?|icon|symbol|rectangle|circle|square|warning|trophy|gem|cake|crown|sword|cup|gift|key|coin|brush|tool|hammer|nail|building|tower|monument|stone|tablet|jar|bottle|pill|seed|nut|fruit|bread|food|drink|water|fire|flame|sun|moon|star|cloud|tree|plant|leaf|flower|insect|bird|fish|microscope|telescope|equipment|device|phone|laptop|computer|tv|television|camera|gold|silver|metal|wood|glass|machine|engine|train|car|wheel|boat|bow|spear|chair|table|bed|window|door|gate)\b/i;
-const SETTING_TOKENS = /\b(cave|campfire|hill|mountain|forest|river|beach|stone circle|tent|landscape|outdoor|ground|earth|grass|sand|night sky|stars in|sea|shore|trail|cliff|rock|desert|jungle|snow|horizon)\b/i;
+//   SETTING = stickman placed in a landscape/environment (cave, forest, street, village, market…)
+export type SceneCategory = "STICK" | "SETTING" | "OBJECT";
+const SETTING_TOKENS = /\b(cave|campfire|hill|mountain|forest|river|beach|stone circle|tent|landscape|outdoor|ground|earth|grass|sand|night sky|stars in|sea|shore|trail|cliff|rock|desert|jungle|snow|horizon|street|alley|village|market|fountain|temple|church|castle|courtyard|garden|farm|barn|workshop|factory|tower|bridge|harbor|valley|meadow|prairie|tundra|swamp|cathedral|monastery|library|stage|amphitheater|colosseum|piazza|boulevard|square|hut|cabin|tent|stadium|arena)\b/i;
 export function classifyKitPrompt(p: string): SceneCategory {
   const low = p.toLowerCase();
   const sticks = (low.match(/stickman|stick figure/g) ?? []).length;
   if (sticks === 0) return "OBJECT";
-  if (OBJECT_TOKENS.test(low) || SETTING_TOKENS.test(low)) return "MIX";
+  if (SETTING_TOKENS.test(low)) return "SETTING";
   return "STICK";
 }
 
-// Pre-allocate categories for N scenes with target 30% STICK, 30% OBJECT, 40% MIX,
-// alternating so we never get two of the same category in a row.
+// Pre-allocate categories for N scenes with target 10% STICK, 60% SETTING, 30% OBJECT.
+// Uses a seeded shuffle (deterministic for same n) + a pass that breaks 2-in-a-row runs
+// by swapping with a nearby different category.
 export function allocateCategories(n: number): SceneCategory[] {
-  const targets = { STICK: Math.round(n * 0.3), OBJECT: Math.round(n * 0.3), MIX: 0 };
-  targets.MIX = n - targets.STICK - targets.OBJECT;
-  const remaining: Record<SceneCategory, number> = { ...targets };
-  const out: SceneCategory[] = [];
-  let prev: SceneCategory | null = null;
-  for (let i = 0; i < n; i++) {
-    const candidates = (Object.keys(remaining) as SceneCategory[])
-      .filter((c) => remaining[c] > 0 && c !== prev);
-    // If nothing else available (e.g. very small N), allow repeating.
-    const pool = candidates.length > 0 ? candidates : (Object.keys(remaining) as SceneCategory[]).filter((c) => remaining[c] > 0);
-    if (pool.length === 0) break;
-    // Pick the category with the highest remaining count (proportional balance).
-    pool.sort((a, b) => remaining[b] - remaining[a]);
-    const pick = pool[0];
-    out.push(pick);
-    remaining[pick]--;
-    prev = pick;
+  const targets = { STICK: Math.round(n * 0.10), SETTING: Math.round(n * 0.60), OBJECT: 0 };
+  targets.OBJECT = n - targets.STICK - targets.SETTING;
+  const arr: SceneCategory[] = [];
+  for (let i = 0; i < targets.STICK; i++) arr.push("STICK");
+  for (let i = 0; i < targets.SETTING; i++) arr.push("SETTING");
+  for (let i = 0; i < targets.OBJECT; i++) arr.push("OBJECT");
+  // Seeded shuffle so the distribution is reproducible for the same scene count.
+  let seed = 0x12345 ^ n;
+  const rand = () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
   }
-  return out;
+  // Break 2-in-a-row runs by swapping with the next different-category slot.
+  for (let i = 1; i < arr.length; i++) {
+    if (arr[i] === arr[i - 1]) {
+      for (let j = i + 1; j < arr.length; j++) {
+        if (arr[j] !== arr[i - 1] && (j + 1 >= arr.length || arr[j + 1] !== arr[i])) {
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+          break;
+        }
+      }
+    }
+  }
+  return arr;
 }
 
 // Build the Claude user prompt for one chunk of segments.
@@ -1416,7 +1114,7 @@ function buildPrompt(
   if (useRemixMode) {
     // Bucket kit prompts by category so Claude only sees relevant candidates per scene.
     const buckets: Record<SceneCategory, Array<{ idx: number; text: string }>> = {
-      STICK: [], OBJECT: [], MIX: [],
+      STICK: [], SETTING: [], OBJECT: [],
     };
     kitImagePrompts.forEach((p, i) => buckets[classifyKitPrompt(p)].push({ idx: i, text: p }));
 
@@ -1425,14 +1123,14 @@ function buildPrompt(
         ? "(empty — compose from scratch following the category's visual definition; no kit base needed, use kitBaseIndex: null)"
         : buckets[cat].map((b) => `[K${b.idx}] ${b.text}`).join("\n");
 
-    return `You are a prompt remixer. Each pre-segmented narration beat has a FORCED visual category (STICK / OBJECT / MIX). You MUST respect the category for every scene.
+    return `You are a prompt remixer for stickman-style explainer-video frames. Each pre-segmented narration beat has a FORCED visual category (STICK / SETTING / OBJECT). You MUST respect the category for every scene.
 
 ═══════════════════════════
 CATEGORY DEFINITIONS (hard rules)
 ═══════════════════════════
-STICK  = ONE stickman only, performing an action. Plain white background. NO additional objects, NO labels, NO scenery, NO second character. Just the stickman doing something (standing, sitting, walking, gesturing, thinking). Minimal pose, simple expression.
-OBJECT = NO stickman at all. Pure object/symbol composition: candle, timeline, calendar, bone with notches, gear, melting clock, scale, map, chart, magnifying glass, sundial, hourglass, stone tablet, label-only card, etc.
-MIX    = ONE stickman PLUS an object/label/diagram. The stickman holds, points at, uses, or stands next to a specific object or labeled element. White or minimal background. NO landscapes — focus on the stickman-object interaction.
+STICK   = ONE stickman alone, distinct action, plain white background. NO scenery, NO labels, NO second character.
+SETTING = ONE stickman in a LANDSCAPE/ENVIRONMENT (cave, beach, hill, forest, street, village, market, campfire, mountain). Environment clearly visible.
+OBJECT  = NO stickman at all. Pure object/symbol composition (candle, timeline, gear, calendar, chart, map, hourglass, stone tablet…).
 
 ═══════════════════════════
 KIT PROMPTS — grouped by category (pick base from THE CORRECT BUCKET)
@@ -1440,23 +1138,23 @@ KIT PROMPTS — grouped by category (pick base from THE CORRECT BUCKET)
 --- STICK bucket (${buckets.STICK.length} refs) ---
 ${bucketList("STICK")}
 
+--- SETTING bucket (${buckets.SETTING.length} refs) ---
+${bucketList("SETTING")}
+
 --- OBJECT bucket (${buckets.OBJECT.length} refs) ---
 ${bucketList("OBJECT")}
-
---- MIX bucket (${buckets.MIX.length} refs) ---
-${bucketList("MIX")}
 
 ═══════════════════════════
 REMIX RULES
 ═══════════════════════════
 1. For each narration, read its FORCED category tag, then pick a kit prompt FROM THAT CATEGORY's bucket whose visual structure best matches the narration.
-2. STICK bucket may be EMPTY — in that case, compose from scratch following the STICK definition (one stickman, action, plain white background, nothing else). Set kitBaseIndex: null.
-3. Vary your picks — avoid reusing the same K-index within 5 consecutive scenes. Spread usage across many K-indices.
-4. Edit the picked base minimally: swap labels, replace 1-2 objects, change a number, adjust the action. Light surgery, not rewrite.
-5. RESPECT the category strictly: STICK must NOT have an object; MIX must have one specific object/label; OBJECT must NOT have any stickman.
-6. Stay 18-35 words. One English sentence per prompt.
-7. NEVER output a kit prompt verbatim — always remix at least one element.
-8. NEVER illustrate transitional/abstract sentences literally — show the visual mechanism behind the idea.
+2. SETTING: VARY the landscape across consecutive scenes (cave then hill then market) — avoid two identical settings back-to-back.
+3. STICK: ALWAYS NEW pose/action. Never two identical poses consecutively.
+4. Vary kit picks — avoid the same K-index within 5 consecutive scenes; spread usage broadly.
+5. Edit the picked base minimally: swap labels, replace 1-2 objects, change a number, adjust the action. Light surgery, not rewrite.
+6. RESPECT the category strictly: STICK = no scenery; SETTING = environment clearly visible; OBJECT = no stickman.
+7. 18-35 words. One English sentence per prompt.
+8. NEVER output a kit prompt verbatim; NEVER illustrate transitional/abstract sentences literally.
 
 ═══════════════════════════
 EXAMPLES (by category)
@@ -1464,11 +1162,11 @@ EXAMPLES (by category)
 STICK — Narration: "You're sitting in the dentist's chair."
 Remix: "A single stickman sits upright with mouth wide open, eyes slightly squinted, arms resting at sides, against a plain white background."
 
+SETTING — Narration: "They gathered around the fire that night."
+Remix: "A stickman crouches beside a small campfire on a rocky hilltop, flames licking upward under a starry night sky, simple ink-line illustration."
+
 OBJECT — Narration: "Every 29.5 days."
 Remix: "A horizontal timeline shows 29 small crescent moon icons spaced evenly, with a bold '29.5' label centered above and arrow markers at both ends, on white."
-
-MIX — Narration: "You glance at your phone."
-Remix: "The stickman holds a glowing rectangle labeled 9:47 AM close to their face, eyes wide, on a plain white background."
 
 ═══════════════════════════
 SCOPE
@@ -1479,7 +1177,7 @@ This is chunk covering indices ${indexOffset} to ${indexOffset + chunk.length - 
 OUTPUT FORMAT (strict JSON only, no markdown, no preamble, no trailing text)
 ═══════════════════════════
 {"prompts":[
-  {"index": ${indexOffset}, "category": "STICK|OBJECT|MIX", "kitBaseIndex": <K-index or null>, "imagePrompt": "<remixed sentence>"},
+  {"index": ${indexOffset}, "category": "STICK|SETTING|OBJECT", "kitBaseIndex": <K-index or null>, "imagePrompt": "<remixed sentence>"},
   ...
 ]}
 
@@ -1520,7 +1218,6 @@ export async function splitScriptInto2sScenes(
   kitImagePrompts: string[] = [],
 ): Promise<ScriptResult> {
   const config = await getConfig();
-  if (!config.anthropicKey) throw new Error("Cle API Anthropic manquante dans config/settings.json");
   const modelId = getModelId(config);
 
   const totalDurS = Math.max(60, Math.round(durationMinutes * 60));
@@ -1543,33 +1240,52 @@ export async function splitScriptInto2sScenes(
   const promptsByIdx = new Map<number, string>();
   const categoriesByIdx = new Map<number, SceneCategory>();
 
-  // Forced category allocation: 30% STICK, 30% OBJECT, 40% MIX with no two-in-a-row.
+  // Forced category allocation: 10% STICK, 60% SETTING, 30% OBJECT with no two-in-a-row.
   const allocated = allocateCategories(segments.length);
   allocated.forEach((cat, i) => categoriesByIdx.set(i, cat));
-  console.log(`[Claude 2s Prompts] catégories allouées — STICK: ${allocated.filter(c=>c==="STICK").length}, OBJECT: ${allocated.filter(c=>c==="OBJECT").length}, MIX: ${allocated.filter(c=>c==="MIX").length}`);
+  console.log(`[Claude 2s Prompts] catégories allouées — STICK: ${allocated.filter(c=>c==="STICK").length}, SETTING: ${allocated.filter(c=>c==="SETTING").length}, OBJECT: ${allocated.filter(c=>c==="OBJECT").length}`);
+
+  // Parse Claude output: strict JSON first, regex fallback if the JSON is truncated/malformed.
+  // Truncation is rare with CHUNK_SIZE=50 but happens — the regex still recovers most entries.
+  const ingestResponse = (raw: string): number => {
+    const stripped = raw.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/, "").trim();
+    let got = 0;
+    try {
+      const parsed = JSON.parse(stripped) as { prompts?: Array<{ index?: number; imagePrompt?: string }> };
+      for (const p of parsed.prompts ?? []) {
+        if (typeof p.index === "number" && typeof p.imagePrompt === "string" && p.imagePrompt.trim()) {
+          promptsByIdx.set(p.index, p.imagePrompt.trim());
+          got++;
+        }
+      }
+      return got;
+    } catch {
+      const re = /\{\s*"index"\s*:\s*(\d+)[\s\S]*?"imagePrompt"\s*:\s*"((?:[^"\\]|\\.)*)"/g;
+      let m: RegExpExecArray | null;
+      while ((m = re.exec(stripped)) !== null) {
+        const idx = parseInt(m[1], 10);
+        const text = m[2].replace(/\\"/g, '"').replace(/\\n/g, " ").trim();
+        if (text) { promptsByIdx.set(idx, text); got++; }
+      }
+      return got;
+    }
+  };
 
   const callChunk = async (startIdx: number, endIdx: number): Promise<void> => {
     const chunk = segments.slice(startIdx, endIdx);
     const chunkPrompt = buildPrompt(useRemixMode, chunk, startIdx, segments.length, kitImagePrompts, customScript, categoriesByIdx);
-    const response = await callClaudeRetry(
-      modelId,
-      Math.min(32000, 200 + chunk.length * 200), // generous: ~200 tokens per prompt
-      [{ role: "user", content: chunkPrompt }],
-      `Claude 2s Prompts [${startIdx}-${endIdx - 1}]`,
-    );
-    const raw = (response.content[0]?.text || "").trim();
-    const stripped = raw.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/, "").trim();
-    let parsed: { prompts?: Array<{ index?: number; imagePrompt?: string }> };
     try {
-      parsed = JSON.parse(stripped);
+      const response = await callClaudeRetry(
+        modelId,
+        Math.min(32000, 200 + chunk.length * 200), // generous: ~200 tokens per prompt
+        [{ role: "user", content: chunkPrompt }],
+        `Claude 2s Prompts [${startIdx}-${endIdx - 1}]`,
+      );
+      const raw = (response.content[0]?.text || "").trim();
+      const got = ingestResponse(raw);
+      console.log(`[Claude 2s Prompts] chunk [${startIdx}-${endIdx - 1}]: ${got}/${chunk.length} prompts`);
     } catch (err) {
-      console.warn(`[Claude chunk ${startIdx}-${endIdx - 1}] JSON parse failed: ${(err as Error).message}. Premiers chars: ${stripped.slice(0, 200)}`);
-      return;
-    }
-    for (const p of parsed.prompts ?? []) {
-      if (typeof p.index === "number" && typeof p.imagePrompt === "string" && p.imagePrompt.trim()) {
-        promptsByIdx.set(p.index, p.imagePrompt.trim());
-      }
+      console.warn(`[Claude 2s Prompts] chunk [${startIdx}-${endIdx - 1}] failed: ${(err as Error).message}`);
     }
   };
 
@@ -1581,44 +1297,71 @@ export async function splitScriptInto2sScenes(
   console.log(`[Claude 2s Prompts] ${segments.length} scènes → ${chunks.length} chunk(s) de max ${CHUNK_SIZE} (mode=${useRemixMode ? "remix" : "from-scratch"})`);
   await Promise.all(chunks.map(([s, e]) => callChunk(s, e)));
 
-  // Retry pass for any missing indices (single batch with just the missing ones).
-  const missingAfterFirst: number[] = [];
-  for (let i = 0; i < segments.length; i++) if (!promptsByIdx.has(i)) missingAfterFirst.push(i);
-  if (missingAfterFirst.length > 0) {
-    console.warn(`[Claude 2s Prompts] retry sur ${missingAfterFirst.length} index manquants: ${missingAfterFirst.slice(0, 10).join(",")}...`);
-    const retrySegments = missingAfterFirst.map((idx) => segments[idx]);
-    // Build a retry categoriesMap mapping local idx → original category
-    const retryCategoriesByIdx = new Map<number, SceneCategory>();
-    missingAfterFirst.forEach((origIdx, localIdx) => {
-      retryCategoriesByIdx.set(localIdx, categoriesByIdx.get(origIdx) ?? "OBJECT");
-    });
-    const retryPrompt = buildPrompt(useRemixMode, retrySegments, 0, retrySegments.length, kitImagePrompts, customScript, retryCategoriesByIdx);
-    try {
-      const response = await callClaudeRetry(
-        modelId,
-        Math.min(32000, 200 + retrySegments.length * 200),
-        [{ role: "user", content: retryPrompt }],
-        "Claude 2s Prompts retry",
-      );
-      const raw = (response.content[0]?.text || "").trim();
-      const stripped = raw.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/, "").trim();
-      const parsed = JSON.parse(stripped) as { prompts?: Array<{ index?: number; imagePrompt?: string }> };
-      for (const p of parsed.prompts ?? []) {
-        if (typeof p.index === "number" && typeof p.imagePrompt === "string" && p.imagePrompt.trim()) {
-          // The retry numbered 0..N-1, remap back to the original missing index.
-          const originalIdx = missingAfterFirst[p.index];
-          if (originalIdx !== undefined) promptsByIdx.set(originalIdx, p.imagePrompt.trim());
+  // Up to 2 retry passes targeting only the still-missing indices. After that → ABORT (no
+  // fallback prompts allowed; a generic placeholder would silently degrade the video).
+  for (let retry = 1; retry <= 2; retry++) {
+    const missing: number[] = [];
+    for (let i = 0; i < segments.length; i++) if (!promptsByIdx.has(i)) missing.push(i);
+    if (missing.length === 0) break;
+    console.warn(`[Claude 2s Prompts] retry ${retry}/2 sur ${missing.length} index manquants: ${missing.slice(0, 10).join(",")}${missing.length > 10 ? "…" : ""}`);
+    // Re-chunk the missing list and call in parallel. Pass the ORIGINAL absolute indices via
+    // the categoriesByIdx + indexOffset machinery so Claude returns the correct script indices.
+    const missingChunks: number[][] = [];
+    for (let i = 0; i < missing.length; i += CHUNK_SIZE) missingChunks.push(missing.slice(i, i + CHUNK_SIZE));
+    await Promise.all(missingChunks.map(async (origIdxs) => {
+      // Re-use callChunk semantics by building a synthetic segment slice that preserves indices.
+      // We pass the actual absolute index range to buildPrompt via a small inline wrapper that
+      // injects only the missing scenes into a per-index map override.
+      const slice = origIdxs.map((idx) => segments[idx]);
+      const localCats = new Map<number, SceneCategory>();
+      origIdxs.forEach((origIdx, localIdx) => localCats.set(localIdx, categoriesByIdx.get(origIdx) ?? "OBJECT"));
+      const retryPrompt = buildPrompt(useRemixMode, slice, 0, slice.length, kitImagePrompts, customScript, localCats);
+      try {
+        const response = await callClaudeRetry(
+          modelId,
+          Math.min(32000, 200 + slice.length * 200),
+          [{ role: "user", content: retryPrompt }],
+          `Claude 2s Prompts retry${retry}`,
+        );
+        const raw = (response.content[0]?.text || "").trim();
+        const stripped = raw.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/, "").trim();
+        // Custom ingestor: indices in the response are 0..N-1, remap to origIdxs[]
+        const tryParse = () => {
+          try {
+            const parsed = JSON.parse(stripped) as { prompts?: Array<{ index?: number; imagePrompt?: string }> };
+            return parsed.prompts ?? [];
+          } catch {
+            const re = /\{\s*"index"\s*:\s*(\d+)[\s\S]*?"imagePrompt"\s*:\s*"((?:[^"\\]|\\.)*)"/g;
+            const out: Array<{ index: number; imagePrompt: string }> = [];
+            let m: RegExpExecArray | null;
+            while ((m = re.exec(stripped)) !== null) {
+              out.push({ index: parseInt(m[1], 10), imagePrompt: m[2].replace(/\\"/g, '"').replace(/\\n/g, " ").trim() });
+            }
+            return out;
+          }
+        };
+        for (const p of tryParse()) {
+          if (typeof p.index === "number" && typeof p.imagePrompt === "string" && p.imagePrompt.trim()) {
+            const origIdx = origIdxs[p.index];
+            if (origIdx !== undefined) promptsByIdx.set(origIdx, p.imagePrompt.trim());
+          }
         }
+      } catch (err) {
+        console.warn(`[Claude 2s Prompts] retry${retry} batch failed: ${(err as Error).message}`);
       }
-    } catch (err) {
-      console.warn(`[Claude 2s Prompts] retry échoué: ${(err as Error).message}`);
-    }
+    }));
+  }
+
+  const stillMissing: number[] = [];
+  for (let i = 0; i < segments.length; i++) if (!promptsByIdx.has(i)) stillMissing.push(i);
+  if (stillMissing.length > 0) {
+    throw new Error(`splitScriptInto2sScenes: ${stillMissing.length} scène(s) sans imagePrompt après retries (indices: ${stillMissing.slice(0, 20).join(",")}${stillMissing.length > 20 ? "…" : ""}). ABORT (pas de fallback générique autorisé).`);
   }
 
   const scenes: ScriptScene[] = segments.map((seg, i) => ({
     index: i,
     narration: seg.narration,
-    imagePrompt: promptsByIdx.get(i) ?? `Cinematic stickman illustration, scene ${i}, 8K, 16:9`,
+    imagePrompt: promptsByIdx.get(i)!,
     durationSeconds: seg.durationSeconds,
   }));
 
@@ -1634,8 +1377,7 @@ export async function splitScriptInto2sScenes(
   const fullScript = scenes.map((s) => s.narration).join(" ");
   const totalOut = scenes.reduce((acc, s) => acc + s.durationSeconds, 0);
   const avg = totalOut / Math.max(1, scenes.length);
-  const missingPrompts = scenes.filter((_, i) => !promptsByIdx.has(i)).length;
-  console.log(`[Claude 2s Prompts] ${scenes.length} scènes verbatim (total ${totalOut.toFixed(1)}s / cible ${totalDurS}s, avg ${avg.toFixed(2)}s/scène)${missingPrompts > 0 ? `, ${missingPrompts} prompt(s) fallback` : ""}`);
+  console.log(`[Claude 2s Prompts] ${scenes.length} scènes verbatim (total ${totalOut.toFixed(1)}s / cible ${totalDurS}s, avg ${avg.toFixed(2)}s/scène) NO FALLBACK`);
   return { fullScript, scenes, wordCount: fullScript.split(/\s+/).filter(Boolean).length };
 }
 
@@ -1649,7 +1391,6 @@ export async function generateScript2sScenes(
   kitImagePrompts: string[] = [],
 ): Promise<ScriptResult> {
   const config = await getConfig();
-  if (!config.anthropicKey) throw new Error("Cle API Anthropic manquante dans config/settings.json");
   const modelId = getModelId(config);
 
   const totalDurS = Math.max(60, Math.round(durationMinutes * 60));
