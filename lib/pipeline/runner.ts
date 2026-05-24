@@ -438,7 +438,17 @@ async function runPipeline(jobId: string, jobDir: string) {
   );
   await writeFile(
     path.join(jobDir, "script.json"),
-    JSON.stringify({ title: params.title, niche: params.niche, wordCount: script.wordCount, scenes: script.scenes }, null, 2),
+    JSON.stringify({
+      title: params.title,
+      niche: params.niche,
+      wordCount: script.wordCount,
+      scenes: script.scenes,
+      // Persist the model choices so /api/projects/.../scenes/[id] knows which
+      // provider to call when the user clicks "Regen image" later.
+      imageProvider: params.imageProvider ?? "genaipro",
+      wanModel: params.wanModel,
+      geminigenModel: params.geminigenModel,
+    }, null, 2),
   );
   console.log(`[Pipeline] Script exporte: ${jobDir}/script.txt + script.json`);
 

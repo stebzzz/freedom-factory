@@ -1,11 +1,36 @@
 import { NextRequest, NextResponse } from "next/server";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { getScene, patchScenePrompt } from "@/lib/projects/state";
 import { getProject } from "@/lib/projects/registry";
 import { multiRunner } from "@/lib/projects/runner";
-import { generateImages } from "@/lib/api/genaipro";
+import { generateImages as generateImagesGenAIPro } from "@/lib/api/genaipro";
+import { generateImages as generateImagesGeminigen } from "@/lib/api/geminigen";
+import { generateImages as generateImagesWan } from "@/lib/api/wan";
+import type { ImageResult } from "@/lib/pipeline/types";
 import type { RunMode } from "@/lib/projects/types";
+
+type ImageProvider = "genaipro" | "geminigen" | "wan";
+type ImagesFn = (
+  scenes: { index: number; imagePrompt: string }[],
+  outDir: string,
+  onProgress: (done: number, total: number) => void,
+  opts?: Record<string, unknown>,
+) => Promise<ImageResult[]>;
+
+function readScriptMeta(outDir: string): {
+  imageProvider?: ImageProvider;
+  wanModel?: string;
+  geminigenModel?: string;
+} {
+  const p = path.join(outDir, "script.json");
+  if (!existsSync(p)) return {};
+  try {
+    return JSON.parse(readFileSync(p, "utf-8")) as ReturnType<typeof readScriptMeta>;
+  } catch {
+    return {};
+  }
+}
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -54,6 +79,20 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ sl
     }
     try {
       const imagesDir = path.join(project!.outDir, "images");
+      // Pick the provider that generated the original image — stored in script.json
+      // at job creation. Fallback to "wan" for legacy jobs that predate persistence
+      // (covers the current user's flow; genaipro is opt-in and its JWT expires).
+      const meta = readScriptMeta(project!.outDir);
+      const provider: ImageProvider = meta.imageProvider ?? "wan";
+      const generateImages: ImagesFn =
+        (provider === "geminigen" ? generateImagesGeminigen
+          : provider === "wan" ? generateImagesWan
+            : generateImagesGenAIPro) as unknown as ImagesFn;
+      const modelOpt =
+        provider === "geminigen" ? { model: meta.geminigenModel ?? "nano-banana-2" }
+          : provider === "wan" ? { model: meta.wanModel ?? "wan2.7-image" }
+            : {};
+
       // generateImages doesn't throw on per-scene failures — it calls onImageFailed
       // and returns whatever scenes succeeded. Capture the failure reason so the
       // route can return a real error instead of pretending the regen worked.
@@ -64,22 +103,22 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ sl
         () => {},
         {
           concurrency: 1,
-          onImageFailed: (_idx, reason) => {
+          ...modelOpt,
+          onImageFailed: (_idx: number, reason: string) => {
             failureReason = reason;
           },
         },
       );
       const got = results.find((r) => r.sceneIndex === sceneId);
       if (!got) {
-        const msg = failureReason ?? "image regen: generateImages n'a rien retourné";
-        // 401 from Veo3 means the GenAIPro JWT Clerk token has expired.
+        const msg = failureReason ?? `image regen via ${provider}: aucun résultat`;
         const hint = /401|invalid_token|jwt/i.test(msg)
-          ? " — la clé GenAIPro est probablement un JWT Clerk expiré, mets-la à jour dans /settings"
+          ? ` — la clé ${provider} est probablement expirée (JWT Clerk pour GenAIPro), mets-la à jour dans /settings`
           : "";
-        return NextResponse.json({ ok: false, error: msg + hint }, { status: 502 });
+        return NextResponse.json({ ok: false, error: `[${provider}] ${msg}${hint}` }, { status: 502 });
       }
       const url = `/generated/${slug}/images/scene_${String(sceneId).padStart(3, "0")}.png`;
-      return NextResponse.json({ ok: true, imageUrl: url });
+      return NextResponse.json({ ok: true, imageUrl: url, provider });
     } catch (err) {
       return NextResponse.json({ ok: false, error: `image regen: ${(err as Error).message}` }, { status: 500 });
     }
