@@ -225,6 +225,19 @@ function expandToWords(segments: WhisperSegment[]): TimedWord[] {
   return out;
 }
 
+/**
+ * Detect a script's language from a few narrations using stop-word counts.
+ * Used to pick the right Whisper transcription language when the preset is unreliable
+ * (e.g. documentary-fr applied to an English script — OpenAI would force-transcribe
+ * the audio as French nonsense, killing word match).
+ */
+export function detectScriptLanguage(narrations: string[]): "en" | "fr" {
+  const sample = narrations.slice(0, 50).join(" ").toLowerCase();
+  const fr = (sample.match(/\b(le|la|les|un|une|des|et|est|dans|pour|avec|qui|que|sur|pas|son|sa|ses|au|aux|du|ce|cette|ces|nous|vous|ils|elles)\b/g) ?? []).length;
+  const en = (sample.match(/\b(the|a|an|is|are|was|were|of|in|on|at|to|for|with|and|or|but|you|your|he|she|they|we|it|this|that|these|those)\b/g) ?? []).length;
+  return en >= fr ? "en" : "fr";
+}
+
 export interface AlignmentResult {
   scenes: ScriptScene[];
   totalAudioSec: number;

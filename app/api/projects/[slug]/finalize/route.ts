@@ -7,7 +7,7 @@ import { existsSync, statSync } from "node:fs";
 import path from "node:path";
 import { getProject } from "@/lib/projects/registry";
 import { assembleMontage } from "@/lib/api/ffmpeg";
-import { alignScenesWithWhisper } from "@/lib/api/whisper";
+import { alignScenesWithWhisper, detectScriptLanguage } from "@/lib/api/whisper";
 import { getPresetOrDefault } from "@/lib/presets/channel-presets";
 import type { ScriptScene, AnimationResult } from "@/lib/pipeline/types";
 
@@ -126,9 +126,14 @@ export async function POST(req: Request, { params }: { params: Promise<{ slug: s
     // out of sync with the voice (which is exactly what the user reported).
     if (alignWithWhisper !== false) {
       try {
-        console.log(`[Finalize ${slug}] aligning ${scenes.length} scenes via Whisper...`);
+        // Don't trust preset.language — a user can pick a French preset for an English
+        // script. Detect from the narrations themselves so OpenAI Whisper transcribes
+        // the audio in the right language (otherwise it force-translates and the
+        // word match crashes to 0%).
+        const detectedLang = detectScriptLanguage(scenes.map((s) => s.narration ?? ""));
+        console.log(`[Finalize ${slug}] aligning ${scenes.length} scenes via Whisper (lang=${detectedLang}, preset=${preset.language})...`);
         const aligned = await alignScenesWithWhisper(scenes, voiceoverPath, {
-          language: preset.language,
+          language: detectedLang,
         });
         // Persist the new durations back into script.json so downstream consumers
         // (and future finalizes) see the aligned timeline.
