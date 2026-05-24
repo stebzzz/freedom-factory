@@ -2,6 +2,7 @@
   "anthropicKey": "",
   "claudeWrapperToken": "",
   "claudeWrapperUrl": "http://168.231.81.106:3000/api/claude",
+  "openaiKey": "",
   "siliconflowKey": "",
   "falKey": "",
   "elevenlabsKey": "",
