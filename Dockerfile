@@ -57,28 +57,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       ca-certificates curl tini \
     && rm -rf /var/lib/apt/lists/*
 
-# whisper.cpp build (whisper-cli + ggml-large-v3-turbo-q5_0 model)
-# IMPORTANT: BUILD_SHARED_LIBS=OFF — otherwise whisper-cli ends up dynamically
-# linked against libwhisper.so/libggml.so under /tmp/whisper.cpp/build/src,
-# which we delete right after, leaving the binary unable to start
-# ("libwhisper.so.1: cannot open shared object file"). Statically linking
-# bakes those into whisper-cli itself and survives the cleanup.
-RUN apt-get update && apt-get install -y --no-install-recommends \
-      git build-essential cmake \
-    && git clone --depth 1 https://github.com/ggml-org/whisper.cpp.git /tmp/whisper.cpp \
-    && cmake -S /tmp/whisper.cpp -B /tmp/whisper.cpp/build \
-         -DGGML_NATIVE=ON \
-         -DBUILD_SHARED_LIBS=OFF \
-         -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
-    && cmake --build /tmp/whisper.cpp/build --config Release -j --target whisper-cli \
-    && install -m 0755 /tmp/whisper.cpp/build/bin/whisper-cli /usr/local/bin/whisper-cli \
-    && mkdir -p /root/.cache/whisper-cpp-models \
-    && curl -fL -o /root/.cache/whisper-cpp-models/ggml-large-v3-turbo-q5_0.bin \
-         https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo-q5_0.bin \
-    && apt-get purge -y --auto-remove git build-essential cmake \
-    && rm -rf /tmp/whisper.cpp /var/lib/apt/lists/* \
-    && /usr/local/bin/whisper-cli --help > /dev/null \
-    && echo "whisper-cli loads cleanly"
+# Whisper transcription is handled by the OpenAI API (lib/api/whisper.ts:
+# transcribeWithOpenAI). We don't build whisper.cpp locally anymore — it cost
+# ~10 min per deploy (git clone + cmake build + model download, all on a VPS
+# that crawls at ~15 KiB/s) for a feature that's now a cold fallback at best.
+# If we ever need offline transcription again, restore the previous block from
+# git history (commit 7c4eeb8).
 
 # Hostinger's ImageMagick on Debian disables PDF/SVG/MVG by default — we
 # allow them, since style-kit import reads PDFs and overlay uses MVG.

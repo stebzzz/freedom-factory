@@ -165,9 +165,11 @@ async function transcribeWithCli(
 }
 
 /**
- * Transcribe audio with timestamps. Prefers OpenAI API (faster + word-level
- * timestamps for accurate alignment), falls back to local whisper-cli if no
- * OPENAI_API_KEY is set or the API call fails.
+ * Transcribe audio with timestamps. Uses the OpenAI API (verbose_json,
+ * word-level timestamps). Falls back to a local whisper-cli only if it's
+ * actually installed — current production images skip the whisper.cpp build
+ * since OpenAI is the primary path and the local build was costing ~10 min
+ * per deploy on the VPS.
  */
 export async function transcribeWithWhisper(
   audioPath: string,
@@ -178,8 +180,10 @@ export async function transcribeWithWhisper(
     try {
       return await transcribeWithOpenAI(audioPath, config.openaiKey, { language: options.language });
     } catch (err) {
-      console.warn(`[Whisper] OpenAI API failed (${(err as Error).message.slice(0, 160)}) — falling back to local whisper-cli`);
+      console.warn(`[Whisper] OpenAI API failed (${(err as Error).message.slice(0, 160)}) — trying local whisper-cli if available`);
     }
+  } else {
+    console.warn(`[Whisper] OPENAI_API_KEY not set — trying local whisper-cli (likely absent in current images)`);
   }
   return transcribeWithCli(audioPath, options);
 }
