@@ -7,6 +7,7 @@ import { useProjectState } from "@/components/projects/useProjectState";
 import { RunControls } from "@/components/projects/RunControls";
 import { ScenesGrid } from "@/components/projects/ScenesGrid";
 import { ScenePromptDrawer } from "@/components/projects/ScenePromptDrawer";
+import { PipelineFinalizePanel } from "@/components/projects/PipelineFinalizePanel";
 import { RunLogPanel } from "@/components/projects/RunLogPanel";
 import { usePreviewAudio } from "@/components/projects/usePreviewAudio";
 import type { Scene } from "@/lib/projects/types";
@@ -111,6 +112,10 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
             Télécharger
           </a>
         </div>
+      )}
+
+      {!project.script && (
+        <PipelineFinalizePanel slug={slug} onAction={refetch} />
       )}
 
       <ScenesGrid scenes={scenes} onSceneClick={(s) => setOpenScene(s)} />
