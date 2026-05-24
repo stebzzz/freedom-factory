@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Upload, Film, Trash2, CheckCircle2 } from "lucide-react";
+import { Upload, Film, Trash2, CheckCircle2, Scissors } from "lucide-react";
 
 interface Props {
   slug: string;
@@ -10,7 +10,7 @@ interface Props {
 
 export function PipelineFinalizePanel({ slug, onAction }: Props) {
   const [voPresent, setVoPresent] = useState<boolean | null>(null);
-  const [busy, setBusy] = useState<null | "upload" | "delete" | "finalize">(null);
+  const [busy, setBusy] = useState<null | "upload" | "delete" | "finalize" | "clean">(null);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [elapsedSec, setElapsedSec] = useState<number>(0);
@@ -98,6 +98,29 @@ export function PipelineFinalizePanel({ slug, onAction }: Props) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
       setVoPresent(false);
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const cleanSilences = async () => {
+    setBusy("clean");
+    setError(null);
+    setInfo("Nettoyage des silences en cours…");
+    try {
+      const res = await fetch(`/api/projects/${slug}/voiceover/clean-silences`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ threshold: "-35dB", min: 0.4, pad: 0.08, fade: 0.02 }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+      const removed = (data.removedSec ?? 0).toFixed(1);
+      const before = (data.before?.durationSec ?? 0).toFixed(1);
+      const after = (data.after?.durationSec ?? 0).toFixed(1);
+      setInfo(`Silences retirés : ${before}s → ${after}s (-${removed}s). Original sauvegardé dans voiceover.original.wav.`);
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -193,6 +216,19 @@ export function PipelineFinalizePanel({ slug, onAction }: Props) {
           >
             <Trash2 size={14} />
             {busy === "delete" ? "…" : "Supprimer"}
+          </button>
+        )}
+
+        {voPresent && (
+          <button
+            onClick={cleanSilences}
+            disabled={busy !== null}
+            className="btn-glass"
+            style={{ opacity: busy !== null ? 0.5 : 1 }}
+            title="Détecte et raccourcit les silences > 0.4s (2-pass, micro-fade pour éviter les clicks). Original sauvegardé."
+          >
+            <Scissors size={14} />
+            {busy === "clean" ? "Nettoyage…" : "Nettoyer silences"}
           </button>
         )}
 
