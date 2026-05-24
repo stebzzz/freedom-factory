@@ -41,10 +41,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ sl
   if (!body.regen) return NextResponse.json({ ok: true });
 
   // Pipeline jobs (script.json present) have no associated CLI script, so multiRunner
-  // bails out. For image regen, call generateImages inline using the freshly-patched prompt.
+  // bails out. The drawer's main "Regen" button defaults to mode "regen-ids", so we
+  // treat regen-ids / ids-only / scene-regen-image all as image regen for pipeline jobs.
+  // (scene-regen-video has its own dedicated /regenerate-clip route.)
   const project = getProject(slug);
   const isPipelineJob = project && existsSync(path.join(project.outDir, "script.json"));
-  if (isPipelineJob && body.mode === "scene-regen-image") {
+  const imageRegenModes = new Set<string>(["scene-regen-image", "regen-ids", "ids-only"]);
+  if (isPipelineJob && (!body.mode || imageRegenModes.has(body.mode))) {
     const prompt = (body.imagePrompt ?? "").trim();
     if (!prompt) {
       return NextResponse.json({ ok: true, regenError: "imagePrompt vide — édite le prompt avant regen" }, { status: 200 });
