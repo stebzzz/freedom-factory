@@ -139,14 +139,16 @@ async function generateOne(
   return url;
 }
 
-// Rewrite a prompt to bypass content moderation (DataInspectionFailed).
+// Rewrite a prompt to bypass content moderation (DataInspectionFailed, IPInfringementSuspect, …).
 // We delegate to the same Claude rewriter the rest of the pipeline uses for moderation-safe rewrites.
-async function rewriteSafePromptForWan(originalPrompt: string, sceneIndex: number): Promise<string> {
+async function rewriteSafePromptForWan(originalPrompt: string, sceneIndex: number, reason: "content" | "ip"): Promise<string> {
   try {
     const { rewritePrompt } = await import("./prompt-rewrite");
-    const instruction = "This prompt was flagged for inappropriate content by an image-gen safety filter. Rewrite it to be ultra-safe: remove anything that could read as violence, weapons, blood, body parts, suggestive content, or proper names of living people. Keep the same visual idea, simple stickman / object style. Output only the rewritten English prompt.";
+    const instruction = reason === "ip"
+      ? "This prompt was flagged by DashScope as 'IP infringement suspect'. Rewrite it to remove ANY trademarks, brand names, real product names, copyrighted characters, named people (living or historical), recognisable logos, IP-protected designs, or distinctive copyrighted visual styles (e.g. specific film/anime/game looks). Use generic descriptions only: 'a phone', 'a soda can', 'a stickman', 'a generic explorer character'. Keep the same visual idea, same simple stickman / flat illustration style. Output only the rewritten English prompt, no preamble."
+      : "This prompt was flagged for inappropriate content by an image-gen safety filter. Rewrite it to be ultra-safe: remove anything that could read as violence, weapons, blood, body parts, suggestive content, or proper names of living people. Keep the same visual idea, simple stickman / object style. Output only the rewritten English prompt.";
     const safe = await rewritePrompt(originalPrompt, instruction);
-    console.log(`[WAN] scene ${sceneIndex} rewrote prompt for safety: "${safe.slice(0, 120)}..."`);
+    console.log(`[WAN] scene ${sceneIndex} rewrote prompt (${reason}): "${safe.slice(0, 120)}..."`);
     return safe;
   } catch (err) {
     console.warn(`[WAN] scene ${sceneIndex} safe-rewrite failed (${(err as Error).message}), keeping original`);
@@ -170,14 +172,17 @@ async function generateOneRetry(
     } catch (err) {
       lastErr = err as Error;
       const msg = lastErr.message;
-      const isModeration = /DataInspectionFailed|inappropriate content|content filter|safety/i.test(msg);
+      const isContentMod = /DataInspectionFailed|inappropriate content|content filter|safety/i.test(msg);
+      const isIPMod = /IPInfringement|infringement|copyright|trademark/i.test(msg);
+      const isModeration = isContentMod || isIPMod;
       const transient =
         /Throttling|RateLimit|TooManyRequests|429|5\d\d|fetch failed|ECONN|ETIMEDOUT/i.test(msg);
 
-      // Moderation fail: try once with a safe-rewritten prompt (Claude paraphrases it).
+      // Moderation fail: try once with a safe-rewritten prompt (Claude paraphrases it,
+      // targeting IP vs content-policy depending on which filter tripped).
       if (isModeration && !alreadyRewrote) {
-        console.warn(`[WAN] scene ${sceneIndex} flagged by moderation, attempting safe rewrite...`);
-        currentPrompt = await rewriteSafePromptForWan(prompt, sceneIndex);
+        console.warn(`[WAN] scene ${sceneIndex} flagged by ${isIPMod ? "IP" : "content"} moderation, attempting safe rewrite...`);
+        currentPrompt = await rewriteSafePromptForWan(prompt, sceneIndex, isIPMod ? "ip" : "content");
         alreadyRewrote = true;
         continue; // immediate retry with the rewritten prompt
       }

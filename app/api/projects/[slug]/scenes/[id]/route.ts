@@ -109,12 +109,19 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ sl
           },
         },
       );
+      // wan.generateImages pushes a placeholder ImageResult even on failure, so we
+      // can't trust the array — verify the actual PNG landed on disk before claiming success.
+      const finalPath = path.join(imagesDir, `scene_${String(sceneId).padStart(3, "0")}.png`);
       const got = results.find((r) => r.sceneIndex === sceneId);
-      if (!got) {
-        const msg = failureReason ?? `image regen via ${provider}: aucun résultat`;
+      if (!got || !existsSync(finalPath) || failureReason) {
+        const msg = failureReason ?? `image regen via ${provider}: pas de fichier généré`;
         const hint = /401|invalid_token|jwt/i.test(msg)
           ? ` — la clé ${provider} est probablement expirée (JWT Clerk pour GenAIPro), mets-la à jour dans /settings`
-          : "";
+          : /IPInfringement|infringement|copyright|trademark/i.test(msg)
+            ? " — DashScope a détecté du contenu protégé (IP/marque/personnage connu). Essaie 'Rewrite from VO' pour produire un prompt générique."
+            : /DataInspectionFailed|inappropriate|safety/i.test(msg)
+              ? " — DashScope a bloqué pour cause de modération. Essaie 'Rewrite from VO'."
+              : "";
         return NextResponse.json({ ok: false, error: `[${provider}] ${msg}${hint}` }, { status: 502 });
       }
       const url = `/generated/${slug}/images/scene_${String(sceneId).padStart(3, "0")}.png`;
