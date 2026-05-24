@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import type { Scene } from "@/lib/projects/types";
 import { SceneCard } from "./SceneCard";
 
-type Filter = "all" | "done" | "pending" | "failed" | "stuck" | "not-started";
+type Filter = "all" | "done" | "image-only" | "pending" | "failed" | "stuck" | "not-started";
 
 interface Props {
   scenes: Scene[];
@@ -14,6 +14,7 @@ interface Props {
 const FILTERS: { value: Filter; label: string }[] = [
   { value: "all", label: "Toutes" },
   { value: "done", label: "OK" },
+  { value: "image-only", label: "Image OK" },
   { value: "pending", label: "En cours" },
   { value: "failed", label: "Échec" },
   { value: "stuck", label: "Stuck" },
@@ -25,9 +26,10 @@ export function ScenesGrid({ scenes, onSceneClick }: Props) {
   const [search, setSearch] = useState("");
 
   const counts = useMemo(() => {
-    const c: Record<Filter, number> = { all: scenes.length, done: 0, pending: 0, failed: 0, stuck: 0, "not-started": 0 };
+    const c: Record<Filter, number> = { all: scenes.length, done: 0, "image-only": 0, pending: 0, failed: 0, stuck: 0, "not-started": 0 };
     for (const s of scenes) {
       if (s.status === "done") c.done++;
+      else if (s.status === "image-only") c["image-only"]++;
       else if (s.status === "video-pending" || s.status === "image-pending") c.pending++;
       else if (s.status === "video-failed" || s.status === "image-failed") c.failed++;
       else if (s.status === "video-stuck" || s.status === "image-stuck") c.stuck++;
@@ -41,6 +43,7 @@ export function ScenesGrid({ scenes, onSceneClick }: Props) {
     if (filter !== "all") {
       arr = arr.filter((s) => {
         if (filter === "done") return s.status === "done";
+        if (filter === "image-only") return s.status === "image-only";
         if (filter === "pending") return s.status === "video-pending" || s.status === "image-pending";
         if (filter === "failed") return s.status === "video-failed" || s.status === "image-failed";
         if (filter === "stuck") return s.status === "video-stuck" || s.status === "image-stuck";

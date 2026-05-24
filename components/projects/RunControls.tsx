@@ -60,6 +60,10 @@ export function RunControls({ state, activeConcat, onAction }: Props) {
   const isRunning = !!state.activeRun;
   const concatRunning = activeConcat?.status === "running";
   const canConcat = state.counts.done > 0 && !concatRunning;
+  // Pipeline jobs (slug `job_*`) have no associated CLI script — multiRunner would throw
+  // "Aucun script associé". Hide the modes that depend on a CLI script; the per-scene
+  // image regen (handled in the modal) is the only flow that still works for them.
+  const isPipelineJob = !state.project.script;
 
   const fire = async (key: string, fn: () => Promise<unknown>) => {
     setBusy(key);
@@ -79,6 +83,7 @@ export function RunControls({ state, activeConcat, onAction }: Props) {
       <div className="flex flex-wrap gap-2 items-center">
         {ACTIONS.map((a) => {
           if (a.hideIfZero && state.counts[a.hideIfZero] === 0) return null;
+          if (isPipelineJob) return null;
           const disabled = isRunning || busy !== null;
           const cls = a.variant === "primary" ? "btn-primary" : "btn-glass";
           return (
@@ -97,19 +102,25 @@ export function RunControls({ state, activeConcat, onAction }: Props) {
           );
         })}
 
-        <div className="w-px h-6" style={{ background: "var(--border-glass)" }} />
+        {!isPipelineJob && <div className="w-px h-6" style={{ background: "var(--border-glass)" }} />}
 
         <button
           disabled={!canConcat || busy !== null}
           onClick={() => fire("concat", () => postConcat(slug))}
           className="btn-glass"
-          title={canConcat ? `Concat des ${state.counts.done} clips → master.mp4` : "Concat indisponible"}
+          title={canConcat ? `Concat des ${state.counts.done} clips → master.mp4` : "Concat indisponible (aucun clip prêt)"}
           style={{ opacity: !canConcat || busy !== null ? 0.5 : 1 }}
         >
           <Film size={14} />
           {concatRunning ? "Concat…" : "Concat master"}
           {busy === "concat" && <span className="ml-1 opacity-70">…</span>}
         </button>
+
+        {isPipelineJob && (
+          <span className="mono-sm ml-2" style={{ opacity: 0.6 }}>
+            Pipeline job — edit/regen via la modal scène
+          </span>
+        )}
 
         {isRunning && (
           <button
