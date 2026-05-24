@@ -250,15 +250,46 @@ export async function assembleMontage(
   const keepClipAudio = input.keepClipAudio === true;
 
   return new Promise<MontageResult>((resolve, reject) => {
-    try {
-      buildDynamicMontage(timeline, audioPath, musicPath, outputPath, totalDuration, onProgress, resolve, reject, transitionType, transitionDuration, kenBurnsSpeed, musicVolume, hasParticles ? particlePath : undefined, subtitlesEnabled ? assPath : undefined, keepClipAudio);
-    } catch (err) {
-      console.error(`[FFmpeg] Montage erreur:`, err);
-      // Fallback simple ne supporte pas audioPath optionnel — exige au moins une source audio.
+    // Above ~120 stills the dynamic montage tries to load every PNG at once
+    // (-loop 1 -i ... × N) and the kernel OOM-kills ffmpeg with SIGKILL. Skip
+    // straight to the streaming concat-demuxer fallback for big slideshows.
+    // The image-only path doesn't get Ken Burns/transitions, but it actually
+    // completes — and a finished file beats an OOM crash.
+    const tooManyStills = timeline.length > 120 && timeline.every((s) => s.type === "image");
+    const tryDynamic = !tooManyStills;
+
+    const runFallback = (reason: string) => {
+      console.warn(`[FFmpeg] Fallback simple slideshow — ${reason}`);
       if (!audioPath) {
-        return reject(new Error("Fallback montage requires audioPath. Provide voiceover or disable keepClipAudio fallback."));
+        return reject(new Error("Fallback montage requires audioPath. Provide voiceover."));
       }
       buildMontageSimple(sortedImages, audioPath, scenes, outputPath, totalDuration, onProgress, resolve, reject, concatDir);
+    };
+
+    if (!tryDynamic) {
+      return runFallback(`${timeline.length} images > 120, dynamic path would OOM`);
+    }
+
+    try {
+      buildDynamicMontage(
+        timeline, audioPath, musicPath, outputPath, totalDuration, onProgress,
+        resolve,
+        (err) => {
+          // Async ffmpeg error path — retry with simple slideshow on OOM / SIGKILL.
+          const msg = err.message;
+          if (/SIGKILL|ENOMEM|Cannot allocate memory|killed/i.test(msg)) {
+            return runFallback(`dynamic montage killed (${msg.slice(0, 80)})`);
+          }
+          reject(err);
+        },
+        transitionType, transitionDuration, kenBurnsSpeed, musicVolume,
+        hasParticles ? particlePath : undefined,
+        subtitlesEnabled ? assPath : undefined,
+        keepClipAudio,
+      );
+    } catch (err) {
+      console.error(`[FFmpeg] Montage erreur:`, err);
+      runFallback(`sync throw: ${(err as Error).message}`);
     }
   });
 }

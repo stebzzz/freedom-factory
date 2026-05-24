@@ -14,10 +14,34 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 export const maxDuration = 600;
 
+// In-flight finalize per slug. The browser fetch may give up at ~60s (Traefik
+// default proxy timeout) and the user re-clicks, but ffmpeg keeps running
+// server-side. Reject concurrent calls so we don't spawn duplicate ffmpeg
+// processes that compete for memory and trigger OOM kills.
+declare global {
+  // eslint-disable-next-line no-var
+  var __finalizeInFlight: Map<string, { startedAt: number }> | undefined;
+}
+const inFlight: Map<string, { startedAt: number }> =
+  globalThis.__finalizeInFlight ?? (globalThis.__finalizeInFlight = new Map());
+
+export async function GET(_req: Request, { params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const slot = inFlight.get(slug);
+  return NextResponse.json({ running: !!slot, startedAt: slot?.startedAt });
+}
+
 export async function POST(req: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const project = getProject(slug);
   if (!project) return NextResponse.json({ error: "projet inconnu" }, { status: 404 });
+
+  if (inFlight.has(slug)) {
+    return NextResponse.json({
+      error: "Un montage est déjà en cours sur ce projet — patiente la fin avant de relancer",
+      running: true,
+    }, { status: 409 });
+  }
 
   const body = await req.json().catch(() => ({}));
   const { presetId, subtitles } = body as { presetId?: string; subtitles?: boolean };
@@ -88,6 +112,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ slug: s
 
   console.log(`[Finalize ${slug}] ${clips.length} clips + ${images.length} images, music=${hasMusic}, preset=${preset.id}`);
 
+  inFlight.set(slug, { startedAt: Date.now() });
   try {
     const result = await assembleMontage(
       {
@@ -117,5 +142,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ slug: s
   } catch (err) {
     console.error(`[Finalize ${slug}]`, err);
     return NextResponse.json({ error: (err as Error).message }, { status: 500 });
+  } finally {
+    inFlight.delete(slug);
   }
 }
