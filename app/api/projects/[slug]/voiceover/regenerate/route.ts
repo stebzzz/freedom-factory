@@ -38,6 +38,25 @@ function transcodeToWav(input: string, output: string): Promise<void> {
   });
 }
 
+/** Run scripts/remove-silences-clean.mjs on a wav in place (2-pass detect +
+ *  atrim + micro-fade, no clicks). eleven_v3 adds long dramatic pauses, so we
+ *  tighten them automatically after synthesis. */
+async function cleanSilencesInPlace(wavPath: string): Promise<void> {
+  const scriptPath = path.join(process.cwd(), "scripts", "remove-silences-clean.mjs");
+  if (!existsSync(scriptPath)) return; // non-blocking if the script isn't shipped
+  const tmpOut = `${wavPath}.clean.wav`;
+  await new Promise<void>((resolve, reject) => {
+    const child = spawn(process.execPath, [
+      scriptPath, wavPath, tmpOut, "--threshold=-35dB", "--min=0.4", "--pad=0.08", "--fade=0.02",
+    ], { stdio: ["ignore", "ignore", "pipe"] });
+    let stderr = "";
+    child.stderr.on("data", (b: Buffer) => { stderr += b.toString(); });
+    child.on("error", (e) => reject(new Error(`remove-silences spawn: ${e.message}`)));
+    child.on("exit", (code) => (code === 0 ? resolve() : reject(new Error(`remove-silences exit ${code}: ${stderr.slice(-300)}`))));
+  });
+  await rename(tmpOut, wavPath);
+}
+
 export async function POST(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const project = getProject(slug);
@@ -57,10 +76,11 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
   if (scenes.length === 0) return NextResponse.json({ error: "aucune scène dans le script" }, { status: 400 });
 
   // Optional voice override from the body; default to the configured voice.
-  const body = (await req.json().catch(() => ({}))) as { voix?: string; align?: boolean };
+  const body = (await req.json().catch(() => ({}))) as { voix?: string; align?: boolean; cleanSilences?: boolean };
   const config = await getConfig();
   const voix = body.voix || config.elevenlabsVoiceId || "male-en";
   const doAlign = body.align !== false;
+  const doClean = body.cleanSilences !== false; // default ON — v3 leaves long pauses
 
   // Full spoken text = scene narrations joined (verbatim, no rewriting).
   const fullScript = scenes.map((s) => s.narration?.trim()).filter(Boolean).join("\n\n");
@@ -91,6 +111,18 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
   }
   await unlink(tmpMp3).catch(() => {});
 
+  // 2.5) Auto-remove silences (v3 leaves long dramatic pauses). Runs BEFORE
+  // alignment so Whisper sees the final, tightened audio.
+  let cleaned = false;
+  if (doClean) {
+    try {
+      await cleanSilencesInPlace(voPath);
+      cleaned = true;
+    } catch (err) {
+      console.warn(`[regen-vo] nettoyage silences échec (non-bloquant): ${(err as Error).message}`);
+    }
+  }
+
   // 3) Re-align scene durations on the new audio (keeps the montage in sync).
   let matchPct: number | null = null;
   let totalAudioSec: number | null = null;
@@ -116,6 +148,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
     model: "eleven_v3",
     voix,
     chars: fullScript.length,
+    silencesCleaned: cleaned,
     aligned: matchPct !== null,
     matchPct,
     totalAudioSec,

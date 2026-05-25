@@ -108,7 +108,7 @@ export function PipelineFinalizePanel({ slug, onAction }: Props) {
   const regenVoiceover = async () => {
     setBusy("regen-vo");
     setError(null);
-    setInfo("Régénération de la voix off (Eleven v3)… puis ré-alignement Whisper. Peut prendre 1-3 min.");
+    setInfo("Régénération de la voix off (Eleven v3) → nettoyage silences → ré-alignement Whisper. Peut prendre 1-3 min. La connexion peut couper à 60s mais le serveur continue.");
     try {
       const res = await fetch(`/api/projects/${slug}/voiceover/regenerate`, {
         method: "POST",
@@ -117,8 +117,9 @@ export function PipelineFinalizePanel({ slug, onAction }: Props) {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+      const clean = data.silencesCleaned ? " · silences nettoyés" : "";
       const align = data.aligned ? ` · aligné Whisper ${data.matchPct}% (${data.totalAudioSec}s)` : " · alignement ignoré";
-      setInfo(`Voix off régénérée (Eleven v3, ${data.chars} chars)${align}. Ancienne VO sauvegardée.`);
+      setInfo(`Voix off régénérée (Eleven v3, ${data.chars} chars)${clean}${align}. Ancienne VO sauvegardée.`);
       setVoPresent(true);
       onAction();
     } catch (e) {
