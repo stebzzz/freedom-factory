@@ -34,6 +34,36 @@ interface ScriptMeta {
   scenes?: ScriptScene[];
 }
 
+/**
+ * Build a per-scene reference-image resolver from refs-mapping.json (written by
+ * the pipeline when it ranked the style-kit refs for each scene). Without this,
+ * a regenerated image is created with no style/character references and drifts
+ * away from the rest of the video. Returns undefined for jobs that have no
+ * refs-mapping (e.g. plain T2V jobs), in which case generateImages just runs
+ * ref-less as before.
+ */
+function buildRefsResolver(outDir: string): ((idx: number) => Promise<string[]>) | undefined {
+  const p = path.join(outDir, "refs-mapping.json");
+  if (!existsSync(p)) return undefined;
+  try {
+    const data = JSON.parse(readFileSync(p, "utf-8")) as {
+      scenes?: Array<{ sceneIndex: number; refs?: Array<{ url: string }> }>;
+    };
+    const publicDir = path.join(process.cwd(), "public");
+    const map = new Map<number, string[]>();
+    for (const row of data.scenes ?? []) {
+      const paths = (row.refs ?? [])
+        .map((r) => (r.url.startsWith("/") ? path.join(publicDir, r.url.slice(1)) : r.url))
+        .filter((fp) => fp && existsSync(fp));
+      if (paths.length) map.set(row.sceneIndex, paths);
+    }
+    if (map.size === 0) return undefined;
+    return async (idx: number) => map.get(idx) ?? [];
+  } catch {
+    return undefined;
+  }
+}
+
 export async function POST(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const project = getProject(slug);
@@ -109,11 +139,13 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
         : {};
 
   const imagesDir = path.join(project.outDir, "images");
+  const resolveRefsForScene = buildRefsResolver(project.outDir);
   const failures = new Map<number, string>();
   try {
     await generateImages(targets, imagesDir, () => {}, {
       concurrency: 3,
       ...modelOpt,
+      ...(resolveRefsForScene ? { resolveRefsForScene } : {}),
       onImageFailed: (idx: number, reason: string) => failures.set(idx, reason),
     });
   } catch (err) {

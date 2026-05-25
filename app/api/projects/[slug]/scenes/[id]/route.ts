@@ -32,6 +32,30 @@ function readScriptMeta(outDir: string): {
   }
 }
 
+/** Per-scene reference resolver from refs-mapping.json — keeps a regenerated
+ *  image consistent with the style/character refs the pipeline picked for it. */
+function buildRefsResolver(outDir: string): ((idx: number) => Promise<string[]>) | undefined {
+  const p = path.join(outDir, "refs-mapping.json");
+  if (!existsSync(p)) return undefined;
+  try {
+    const data = JSON.parse(readFileSync(p, "utf-8")) as {
+      scenes?: Array<{ sceneIndex: number; refs?: Array<{ url: string }> }>;
+    };
+    const publicDir = path.join(process.cwd(), "public");
+    const map = new Map<number, string[]>();
+    for (const row of data.scenes ?? []) {
+      const paths = (row.refs ?? [])
+        .map((r) => (r.url.startsWith("/") ? path.join(publicDir, r.url.slice(1)) : r.url))
+        .filter((fp) => fp && existsSync(fp));
+      if (paths.length) map.set(row.sceneIndex, paths);
+    }
+    if (map.size === 0) return undefined;
+    return async (idx: number) => map.get(idx) ?? [];
+  } catch {
+    return undefined;
+  }
+}
+
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -97,6 +121,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ sl
       // and returns whatever scenes succeeded. Capture the failure reason so the
       // route can return a real error instead of pretending the regen worked.
       let failureReason: string | null = null;
+      const resolveRefsForScene = buildRefsResolver(project!.outDir);
       const results = await generateImages(
         [{ index: sceneId, imagePrompt: prompt }],
         imagesDir,
@@ -104,6 +129,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ sl
         {
           concurrency: 1,
           ...modelOpt,
+          ...(resolveRefsForScene ? { resolveRefsForScene } : {}),
           onImageFailed: (_idx: number, reason: string) => {
             failureReason = reason;
           },
