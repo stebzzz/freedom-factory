@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { CheckSquare, X, ImageIcon } from "lucide-react";
 import type { Scene } from "@/lib/projects/types";
 import { SceneCard } from "./SceneCard";
 
@@ -9,6 +10,8 @@ type Filter = "all" | "done" | "image-only" | "pending" | "failed" | "stuck" | "
 interface Props {
   scenes: Scene[];
   onSceneClick: (scene: Scene) => void;
+  slug: string;
+  onAction: () => void;
 }
 
 const FILTERS: { value: Filter; label: string }[] = [
@@ -21,9 +24,13 @@ const FILTERS: { value: Filter; label: string }[] = [
   { value: "not-started", label: "Non lancé" },
 ];
 
-export function ScenesGrid({ scenes, onSceneClick }: Props) {
+export function ScenesGrid({ scenes, onSceneClick, slug, onAction }: Props) {
   const [filter, setFilter] = useState<Filter>("all");
   const [search, setSearch] = useState("");
+  const [selectMode, setSelectMode] = useState(false);
+  const [selected, setSelected] = useState<Set<number>>(new Set());
+  const [regenBusy, setRegenBusy] = useState(false);
+  const [regenMsg, setRegenMsg] = useState<string | null>(null);
 
   const counts = useMemo(() => {
     const c: Record<Filter, number> = { all: scenes.length, done: 0, "image-only": 0, pending: 0, failed: 0, stuck: 0, "not-started": 0 };
@@ -63,6 +70,56 @@ export function ScenesGrid({ scenes, onSceneClick }: Props) {
     return arr;
   }, [scenes, filter, search]);
 
+  const toggleSelect = (id: number) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const exitSelectMode = () => {
+    setSelectMode(false);
+    setSelected(new Set());
+    setRegenMsg(null);
+  };
+
+  // Select-all targets only the currently filtered/searched scenes — matches
+  // what the user actually sees, so "Échec" filter + select-all = retry all fails.
+  const selectAllFiltered = () => {
+    setSelected(new Set(filtered.map((s) => s.id)));
+  };
+
+  const batchRegen = async () => {
+    const ids = [...selected];
+    if (ids.length === 0) return;
+    setRegenBusy(true);
+    setRegenMsg(`Régénération de ${ids.length} image(s)…`);
+    try {
+      const res = await fetch(`/api/projects/${slug}/regen-images`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+      const failed = data.failed ?? 0;
+      setRegenMsg(
+        `${data.regenerated}/${data.requested} régénérées${failed ? `, ${failed} en échec` : ""}.`,
+      );
+      onAction();
+      if (!failed) {
+        setSelected(new Set());
+        setSelectMode(false);
+      }
+    } catch (e) {
+      setRegenMsg(`Erreur : ${(e as Error).message}`);
+    } finally {
+      setRegenBusy(false);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2">
@@ -80,6 +137,17 @@ export function ScenesGrid({ scenes, onSceneClick }: Props) {
           </button>
         ))}
         <div className="flex-1" />
+        {!selectMode && (
+          <button
+            onClick={() => setSelectMode(true)}
+            className="btn-glass flex-shrink-0"
+            style={{ padding: "5px 12px", fontSize: 12 }}
+            title="Sélectionner plusieurs scènes pour régénérer leurs images en lot"
+          >
+            <CheckSquare size={14} />
+            Sélectionner
+          </button>
+        )}
         <input
           type="text"
           value={search}
@@ -96,9 +164,50 @@ export function ScenesGrid({ scenes, onSceneClick }: Props) {
         />
       </div>
 
+      {/* Selection action bar */}
+      {selectMode && (
+        <div
+          className="glass-static flex flex-wrap items-center gap-2 px-3 py-2.5"
+          style={{ borderRadius: "var(--radius-sm)" }}
+        >
+          <span className="mono-sm" style={{ minWidth: 90 }}>
+            {selected.size} sélectionnée{selected.size > 1 ? "s" : ""}
+          </span>
+          <button onClick={selectAllFiltered} disabled={regenBusy} className="btn-glass" style={{ padding: "4px 10px", fontSize: 12 }}>
+            Tout ({filtered.length})
+          </button>
+          <button onClick={() => setSelected(new Set())} disabled={regenBusy || selected.size === 0} className="btn-glass" style={{ padding: "4px 10px", fontSize: 12, opacity: regenBusy || selected.size === 0 ? 0.5 : 1 }}>
+            Désélectionner
+          </button>
+          {regenMsg && (
+            <span className="mono-sm" style={{ opacity: 0.8 }}>{regenMsg}</span>
+          )}
+          <div className="flex-1" />
+          <button
+            onClick={batchRegen}
+            disabled={regenBusy || selected.size === 0}
+            className="btn-primary"
+            style={{ padding: "5px 14px", fontSize: 12, opacity: regenBusy || selected.size === 0 ? 0.5 : 1 }}
+          >
+            <ImageIcon size={14} />
+            {regenBusy ? "Régénération…" : `Regen ${selected.size || ""} image${selected.size > 1 ? "s" : ""}`}
+          </button>
+          <button onClick={exitSelectMode} disabled={regenBusy} className="btn-glass" style={{ padding: "5px 10px", fontSize: 12 }}>
+            <X size={14} />
+            Annuler
+          </button>
+        </div>
+      )}
+
       <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))" }}>
         {filtered.map((scene) => (
-          <SceneCard key={scene.id} scene={scene} onClick={() => onSceneClick(scene)} />
+          <SceneCard
+            key={scene.id}
+            scene={scene}
+            selectable={selectMode}
+            selected={selected.has(scene.id)}
+            onClick={() => (selectMode ? toggleSelect(scene.id) : onSceneClick(scene))}
+          />
         ))}
       </div>
 

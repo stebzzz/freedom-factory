@@ -8,9 +8,11 @@ import { usePreviewAudio } from "./usePreviewAudio";
 interface Props {
   scene: Scene;
   onClick: () => void;
+  selectable?: boolean;
+  selected?: boolean;
 }
 
-export function SceneCard({ scene, onClick }: Props) {
+export function SceneCard({ scene, onClick, selectable = false, selected = false }: Props) {
   const [hover, setHover] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [audioEnabled] = usePreviewAudio();
@@ -43,7 +45,11 @@ export function SceneCard({ scene, onClick }: Props) {
       onMouseLeave={onLeave}
       onClick={onClick}
       className="group glass-static text-left overflow-hidden relative aspect-video w-full transition-all duration-200 hover:scale-[1.015]"
-      style={{ borderRadius: "var(--radius-sm)" }}
+      style={{
+        borderRadius: "var(--radius-sm)",
+        outline: selected ? "3px solid var(--accent)" : undefined,
+        outlineOffset: selected ? "-3px" : undefined,
+      }}
     >
       {scene.clipUrl ? (
         <video
@@ -68,6 +74,24 @@ export function SceneCard({ scene, onClick }: Props) {
         className="absolute inset-0 pointer-events-none"
         style={{ background: "linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0) 50%)" }}
       />
+
+      {/* Selection checkbox (visible in select mode) */}
+      {selectable && (
+        <div
+          className="absolute top-2.5 left-2.5 w-5 h-5 rounded flex items-center justify-center z-10"
+          style={{
+            background: selected ? "var(--accent)" : "rgba(0,0,0,0.5)",
+            border: `2px solid ${selected ? "var(--accent)" : "rgba(255,255,255,0.7)"}`,
+            backdropFilter: "blur(4px)",
+          }}
+        >
+          {selected && (
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5">
+              <path d="M20 6L9 17l-5-5" />
+            </svg>
+          )}
+        </div>
+      )}
 
       {/* Status dot */}
       <div

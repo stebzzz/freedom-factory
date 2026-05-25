@@ -118,7 +118,7 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
         <PipelineFinalizePanel slug={slug} onAction={refetch} />
       )}
 
-      <ScenesGrid scenes={scenes} onSceneClick={(s) => setOpenScene(s)} />
+      <ScenesGrid scenes={scenes} onSceneClick={(s) => setOpenScene(s)} slug={slug} onAction={refetch} />
 
       <ScenePromptDrawer
         slug={slug}
