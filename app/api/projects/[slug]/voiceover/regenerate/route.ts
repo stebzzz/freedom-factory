@@ -122,17 +122,25 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
   const scenes = data.scenes ?? [];
   if (scenes.length === 0) return NextResponse.json({ error: "aucune scène dans le script" }, { status: 400 });
 
-  const body = (await req.json().catch(() => ({}))) as { voix?: string; align?: boolean; cleanSilences?: boolean };
+  const body = (await req.json().catch(() => ({}))) as { voix?: string; align?: boolean; cleanSilences?: boolean; alignOnly?: boolean };
   const config = await getConfig();
   const voix = body.voix || config.elevenlabsVoiceId || "male-en";
-  const doAlign = body.align !== false;
-  const doClean = body.cleanSilences !== false;
+  // alignOnly = re-sync scene durations to the EXISTING voiceover.wav (no new TTS,
+  // no silence pass). Fixes projects whose script.json durations never matched the
+  // real audio (uploaded jobs aligned with the old code, or a stale alignment).
+  const alignOnly = body.alignOnly === true;
+  const doAlign = alignOnly ? true : body.align !== false;
+  const doClean = alignOnly ? false : body.cleanSilences !== false;
+
+  if (alignOnly && !existsSync(path.join(project.outDir, "voiceover.wav"))) {
+    return NextResponse.json({ error: "voiceover.wav absent — rien à resynchroniser" }, { status: 400 });
+  }
 
   const fullScript = scenes.map((s) => s.narration?.trim()).filter(Boolean).join("\n\n");
   if (!fullScript) return NextResponse.json({ error: "narrations vides" }, { status: 400 });
 
   const state: RegenState = {
-    status: "running", step: "tts", startedAt: Date.now(), updatedAt: Date.now(), chars: fullScript.length,
+    status: "running", step: alignOnly ? "align" : "tts", startedAt: Date.now(), updatedAt: Date.now(), chars: fullScript.length,
   };
   runs.set(slug, state);
   persist(project.outDir, state);
@@ -143,23 +151,25 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
     const voPath = path.join(project.outDir, "voiceover.wav");
     const tmpMp3 = path.join(tmpdir(), `regen-vo-${slug}-${Date.now()}.mp3`);
     try {
-      // 1) TTS
-      await generateVoiceover(fullScript, voix, tmpMp3, { voiceModel: "elevenlabs" });
-      if (!existsSync(tmpMp3)) throw new Error("TTS n'a produit aucun fichier");
+      if (!alignOnly) {
+        // 1) TTS
+        await generateVoiceover(fullScript, voix, tmpMp3, { voiceModel: "elevenlabs" });
+        if (!existsSync(tmpMp3)) throw new Error("TTS n'a produit aucun fichier");
 
-      // 2) backup + transcode to wav
-      bump("transcode");
-      if (existsSync(voPath)) {
-        await copyFile(voPath, path.join(project.outDir, `voiceover.prev-${Date.now()}.wav`)).catch(() => {});
-      }
-      await transcodeToWav(tmpMp3, voPath);
-      await unlink(tmpMp3).catch(() => {});
+        // 2) backup + transcode to wav
+        bump("transcode");
+        if (existsSync(voPath)) {
+          await copyFile(voPath, path.join(project.outDir, `voiceover.prev-${Date.now()}.wav`)).catch(() => {});
+        }
+        await transcodeToWav(tmpMp3, voPath);
+        await unlink(tmpMp3).catch(() => {});
 
-      // 2.5) clean silences
-      if (doClean) {
-        bump("clean");
-        try { await cleanSilencesInPlace(voPath); state.silencesCleaned = true; }
-        catch (err) { console.warn(`[regen-vo] nettoyage silences échec: ${(err as Error).message}`); }
+        // 2.5) clean silences
+        if (doClean) {
+          bump("clean");
+          try { await cleanSilencesInPlace(voPath); state.silencesCleaned = true; }
+          catch (err) { console.warn(`[regen-vo] nettoyage silences échec: ${(err as Error).message}`); }
+        }
       }
 
       // 3) whisper align

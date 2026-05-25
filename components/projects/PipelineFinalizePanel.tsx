@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Upload, Film, Trash2, CheckCircle2, Scissors, Mic } from "lucide-react";
+import { Upload, Film, Trash2, CheckCircle2, Scissors, Mic, RefreshCw } from "lucide-react";
 
 interface Props {
   slug: string;
@@ -10,7 +10,7 @@ interface Props {
 
 export function PipelineFinalizePanel({ slug, onAction }: Props) {
   const [voPresent, setVoPresent] = useState<boolean | null>(null);
-  const [busy, setBusy] = useState<null | "upload" | "delete" | "finalize" | "clean" | "regen-vo">(null);
+  const [busy, setBusy] = useState<null | "upload" | "delete" | "finalize" | "clean" | "regen-vo" | "realign">(null);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [elapsedSec, setElapsedSec] = useState<number>(0);
@@ -162,6 +162,51 @@ export function PipelineFinalizePanel({ slug, onAction }: Props) {
     }
   };
 
+  // Re-sync scene durations to the existing voiceover via Whisper (no new TTS).
+  // Fixes the montage when script.json durations don't match the real audio.
+  const realign = async () => {
+    setBusy("realign");
+    setError(null);
+    setInfo("Resynchronisation des durées sur l'audio (Whisper)…");
+    try {
+      const res = await fetch(`/api/projects/${slug}/voiceover/regenerate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ alignOnly: true }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.status !== 409 && !res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+      await new Promise<void>((resolve) => {
+        const poll = setInterval(async () => {
+          try {
+            const r = await fetch(`/api/projects/${slug}/voiceover/regenerate`);
+            const s = await r.json();
+            if (s.status === "running") {
+              setInfo("Resynchronisation en cours — alignement Whisper…");
+            } else if (s.status === "done") {
+              clearInterval(poll);
+              setInfo(
+                s.aligned
+                  ? `Durées resynchronisées (Whisper ${s.matchPct}%, ${s.totalAudioSec}s). Relance le montage pour appliquer.`
+                  : "Resynchronisation terminée mais l'alignement a échoué (voir logs).",
+              );
+              onAction();
+              resolve();
+            } else if (s.status === "error") {
+              clearInterval(poll);
+              setError(`Resynchronisation échouée : ${s.error ?? "inconnue"}`);
+              resolve();
+            }
+          } catch { /* transient */ }
+        }, 4000);
+      });
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(null);
+    }
+  };
+
   const cleanSilences = async () => {
     setBusy("clean");
     setError(null);
@@ -299,6 +344,19 @@ export function PipelineFinalizePanel({ slug, onAction }: Props) {
           <Mic size={14} />
           {busy === "regen-vo" ? "Régénération…" : "Régénérer la voix off"}
         </button>
+
+        {voPresent && (
+          <button
+            onClick={realign}
+            disabled={busy !== null}
+            className="btn-glass"
+            style={{ opacity: busy !== null ? 0.5 : 1 }}
+            title="Resynchronise les durées des scènes sur le voiceover ACTUEL (Whisper), sans régénérer l'audio. À utiliser quand le montage est décalé. Relance le montage ensuite."
+          >
+            <RefreshCw size={14} />
+            {busy === "realign" ? "Resync…" : "Resynchroniser"}
+          </button>
+        )}
 
         <div className="w-px h-6" style={{ background: "var(--border-glass)" }} />
 
