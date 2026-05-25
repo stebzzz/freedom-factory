@@ -1,10 +1,9 @@
-import { writeFile, unlink, mkdtemp, readdir } from "fs/promises";
+import { writeFile, unlink, mkdtemp, readdir, rename } from "fs/promises";
 import { tmpdir } from "os";
 import path from "path";
 import { spawn } from "child_process";
 import { VoiceoverResult } from "@/lib/pipeline/types";
 import { getConfig } from "@/lib/config";
-import { applyAudioSpeed } from "./voiceover";
 
 const API_BASE = "https://api.elevenlabs.io/v1";
 
@@ -47,6 +46,7 @@ async function ttsOneChunk(
   text: string,
   voiceId: string,
   apiKey: string,
+  speed: number,
 ): Promise<Buffer> {
   const res = await fetch(`${API_BASE}/text-to-speech/${voiceId}`, {
     method: "POST",
@@ -57,13 +57,14 @@ async function ttsOneChunk(
     body: JSON.stringify({
       text,
       model_id: "eleven_multilingual_v2",
-      // Only fields the public ElevenLabs API actually accepts.
-      // `speed` is NOT one of them — passing it caused silent issues.
-      // Use applyAudioSpeed() post-process for pacing.
       voice_settings: {
         stability: 0.5,
         similarity_boost: 0.75,
         style: 0.3,
+        // ElevenLabs accepts `speed` (0.7–1.2) but eleven_multilingual_v2
+        // barely honours it (~1% change for a 20% request — measured). We still
+        // pass it as a small nudge, but the real pacing is done by atempo below.
+        speed: Math.max(0.7, Math.min(1.2, speed)),
       },
     }),
   });
@@ -76,6 +77,31 @@ async function ttsOneChunk(
     throw err;
   }
   return Buffer.from(await res.arrayBuffer());
+}
+
+/**
+ * Time-stretch an audio file in place via ffmpeg `atempo` (pitch-preserving).
+ * Implemented locally to avoid importing from voiceover.ts — that module
+ * dynamically imports THIS one, and a static back-import created a circular
+ * dependency that left the imported function undefined at runtime, silently
+ * skipping the speed-up (the bug that made voiceSpeed feel ignored).
+ */
+async function applyAtempo(filePath: string, factor: number): Promise<void> {
+  if (!Number.isFinite(factor) || Math.abs(factor - 1) < 0.01) return;
+  // atempo is valid in [0.5, 2.0] per stage; our voiceSpeed range (0.7–1.2)
+  // always fits in a single stage.
+  const clamped = Math.max(0.5, Math.min(2.0, factor));
+  const tmpOut = `${filePath}.atempo.mp3`;
+  await new Promise<void>((resolve, reject) => {
+    const child = spawn("ffmpeg", [
+      "-y", "-i", filePath, "-filter:a", `atempo=${clamped}`, "-c:a", "libmp3lame", "-q:a", "2", tmpOut,
+    ], { stdio: ["ignore", "ignore", "pipe"] });
+    let stderr = "";
+    child.stderr.on("data", (b: Buffer) => { stderr += b.toString(); });
+    child.on("error", (e) => reject(new Error(`ffmpeg atempo spawn: ${e.message}`)));
+    child.on("exit", (code) => (code === 0 ? resolve() : reject(new Error(`atempo exit ${code}: ${stderr.slice(-300)}`))));
+  });
+  await rename(tmpOut, filePath);
 }
 
 /** Concatenate mp3 chunks losslessly via ffmpeg concat demuxer. */
@@ -120,11 +146,12 @@ export async function generateVoiceover(
     : DEFAULT_VOICE_MAP[voix] || config.elevenlabsVoiceId || DEFAULT_VOICE_MAP["male-fr"];
 
   const chunks = chunkScript(script);
-  console.log(`[ElevenLabs] TTS — voice=${voiceId.slice(0, 8)}…, ${script.length} chars in ${chunks.length} chunk(s)`);
+  const speed = Math.max(0.7, Math.min(1.2, options.speed ?? 1));
+  console.log(`[ElevenLabs] TTS — voice=${voiceId.slice(0, 8)}…, ${script.length} chars in ${chunks.length} chunk(s), speed=${speed}`);
 
   try {
     if (chunks.length === 1) {
-      const buf = await ttsOneChunk(chunks[0], voiceId, apiKey);
+      const buf = await ttsOneChunk(chunks[0], voiceId, apiKey, speed);
       await writeFile(outputPath, buf);
     } else {
       // Multiple chunks — write each as a temp mp3 then concat losslessly.
@@ -132,7 +159,7 @@ export async function generateVoiceover(
       const partPaths: string[] = [];
       try {
         for (let i = 0; i < chunks.length; i++) {
-          const buf = await ttsOneChunk(chunks[i], voiceId, apiKey);
+          const buf = await ttsOneChunk(chunks[i], voiceId, apiKey, speed);
           const p = path.join(tmp, `part-${String(i).padStart(3, "0")}.mp3`);
           await writeFile(p, buf);
           partPaths.push(p);
@@ -158,18 +185,18 @@ export async function generateVoiceover(
     throw err;
   }
 
-  // Apply pacing as a post-process (atempo). The public ElevenLabs API doesn't
-  // accept a `speed` field on voice_settings — passing it had no effect.
-  if (options.speed && Math.abs(options.speed - 1) > 0.01) {
+  // Real pacing: atempo time-stretch (native ElevenLabs speed is near-inert on
+  // multilingual_v2). The small native nudge above + this gives the requested rate.
+  if (Math.abs(speed - 1) > 0.01) {
     try {
-      await applyAudioSpeed(outputPath, options.speed);
+      await applyAtempo(outputPath, speed);
     } catch (err) {
-      console.warn(`[ElevenLabs] atempo ${options.speed} failed (${(err as Error).message}) — keeping native speed`);
+      console.warn(`[ElevenLabs] atempo ×${speed} échoué (${(err as Error).message}) — audio à vitesse native`);
     }
   }
 
-  const durationSeconds = Math.round(script.split(/\s+/).length / 2.5);
-  console.log(`[ElevenLabs] Audio genere : ${outputPath} (~${durationSeconds}s)`);
+  const durationSeconds = Math.round((script.split(/\s+/).length / 2.5) / speed);
+  console.log(`[ElevenLabs] Audio genere : ${outputPath} (~${durationSeconds}s, speed=${speed})`);
   return { audioPath: outputPath, durationSeconds };
 }
 

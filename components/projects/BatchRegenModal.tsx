@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { X, ImageIcon, Trash2 } from "lucide-react";
+import { X, ImageIcon, Trash2, Sparkles } from "lucide-react";
 import type { Scene } from "@/lib/projects/types";
 
 interface Props {
@@ -25,6 +25,8 @@ export function BatchRegenModal({ slug, scenes, onClose, onDone }: Props) {
   const [busy, setBusy] = useState(false);
   const [results, setResults] = useState<ResultRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // ids currently being rewritten from their VO
+  const [rewriting, setRewriting] = useState<Set<number>>(new Set());
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -48,6 +50,31 @@ export function BatchRegenModal({ slug, scenes, onClose, onDone }: Props) {
 
   const sceneById = new Map(scenes.map((s) => [s.id, s]));
   const removeRow = (id: number) => setOrder((o) => o.filter((x) => x !== id));
+
+  const rewriteRow = async (id: number) => {
+    const scene = sceneById.get(id);
+    const vo = scene?.vo?.trim();
+    if (!vo) {
+      setError(`Scène #${id} : pas de voice-over pour réécrire le prompt`);
+      return;
+    }
+    setRewriting((s) => new Set(s).add(id));
+    setError(null);
+    try {
+      const res = await fetch(`/api/projects/${slug}/scenes/${id}/rewrite-prompt`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ vo, currentPrompt: prompts[id] ?? "" }),
+      });
+      const data = (await res.json()) as { imagePrompt?: string; error?: string };
+      if (!res.ok || !data.imagePrompt) throw new Error(data.error ?? `HTTP ${res.status}`);
+      setPrompts((p) => ({ ...p, [id]: data.imagePrompt as string }));
+    } catch (e) {
+      setError(`Réécriture #${id} : ${(e as Error).message}`);
+    } finally {
+      setRewriting((s) => { const n = new Set(s); n.delete(id); return n; });
+    }
+  };
 
   const launch = async () => {
     if (order.length === 0) return;
@@ -168,21 +195,35 @@ export function BatchRegenModal({ slug, scenes, onClose, onDone }: Props) {
                       lineHeight: 1.45,
                     }}
                   />
+                  {rewriting.has(id) && (
+                    <span className="mono-sm" style={{ opacity: 0.7 }}>réécriture depuis la VO…</span>
+                  )}
                   {r && !r.ok && (
                     <span className="mono-sm" style={{ color: "var(--red)" }}>{r.error}</span>
                   )}
                 </div>
 
-                {/* Remove from batch */}
-                <button
-                  onClick={() => removeRow(id)}
-                  disabled={busy}
-                  className="btn-glass flex-shrink-0 self-start"
-                  style={{ padding: 6, opacity: busy ? 0.5 : 1 }}
-                  title="Retirer de la sélection"
-                >
-                  <Trash2 size={13} />
-                </button>
+                {/* Per-row actions: rewrite prompt from VO, remove from batch */}
+                <div className="flex flex-col gap-1.5 flex-shrink-0 self-start">
+                  <button
+                    onClick={() => rewriteRow(id)}
+                    disabled={busy || rewriting.has(id) || !scene.vo?.trim()}
+                    className="btn-glass"
+                    style={{ padding: 6, opacity: busy || rewriting.has(id) || !scene.vo?.trim() ? 0.5 : 1 }}
+                    title={scene.vo?.trim() ? "Réécrire l'image prompt depuis la voice-over (Claude)" : "Pas de voice-over sur cette scène"}
+                  >
+                    <Sparkles size={13} />
+                  </button>
+                  <button
+                    onClick={() => removeRow(id)}
+                    disabled={busy}
+                    className="btn-glass"
+                    style={{ padding: 6, opacity: busy ? 0.5 : 1 }}
+                    title="Retirer de la sélection"
+                  >
+                    <Trash2 size={13} />
+                  </button>
+                </div>
               </div>
             );
           })}
