@@ -94,25 +94,33 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
         </Link>
       </div>
 
-      {project.masterUrl && (
-        <div className="glass-static p-4 flex items-center gap-4">
-          <Film size={18} style={{ color: "var(--accent)" }} />
-          <div className="flex-1">
-            <div className="heading-md">master.mp4</div>
-            <div className="mono-sm">
-              {project.masterUpdatedAt ? new Date(project.masterUpdatedAt).toLocaleString() : ""}
+      {project.masterUrl && (() => {
+        // Download the final cut named after the project title (e.g. "Phones
+        // Existed.mp4") instead of the generic output.mp4. The server file is
+        // left as-is (registry detects output.mp4/master.mp4); only the browser
+        // download filename is set via the `download` attribute.
+        const safeTitle = (project.label || "video").replace(/[\\/:*?"<>|]/g, "").trim() || "video";
+        const downloadName = `${safeTitle}.mp4`;
+        return (
+          <div className="glass-static p-4 flex items-center gap-4">
+            <Film size={18} style={{ color: "var(--accent)" }} />
+            <div className="flex-1">
+              <div className="heading-md">{downloadName}</div>
+              <div className="mono-sm">
+                {project.masterUpdatedAt ? new Date(project.masterUpdatedAt).toLocaleString() : ""}
+              </div>
             </div>
+            <a href={project.masterUrl} target="_blank" rel="noreferrer" className="btn-glass">
+              <Film size={14} />
+              Preview
+            </a>
+            <a href={project.masterUrl} download={downloadName} className="btn-glass">
+              <Download size={14} />
+              Télécharger
+            </a>
           </div>
-          <a href={project.masterUrl} target="_blank" rel="noreferrer" className="btn-glass">
-            <Film size={14} />
-            Preview
-          </a>
-          <a href={project.masterUrl} download className="btn-glass">
-            <Download size={14} />
-            Télécharger
-          </a>
-        </div>
-      )}
+        );
+      })()}
 
       {!project.script && (
         <PipelineFinalizePanel slug={slug} onAction={refetch} />
