@@ -26,6 +26,8 @@ export interface CallClaudeOptions {
   imagePath?: string;
   /** Optional system prompt — prepended to the user content before sending. */
   system?: string;
+  /** Optional model hint passed to the wrapper (e.g. "haiku" for fast bulk QC). */
+  model?: string;
 }
 
 // ===================================================================
@@ -90,7 +92,7 @@ function messagesToPrompt(
 // ===================================================================
 // Core call
 // ===================================================================
-async function callViaWrapper(prompt: string, imagePath?: string): Promise<string> {
+async function callViaWrapper(prompt: string, imagePath?: string, model?: string): Promise<string> {
   const config = await getConfig();
   if (!config.claudeWrapperToken) {
     throw new Error("claudeWrapperToken manquant — défini CLAUDE_WRAPPER_TOKEN ou config/settings.json");
@@ -102,6 +104,10 @@ async function callViaWrapper(prompt: string, imagePath?: string): Promise<strin
     const form = new FormData();
     form.append("token", config.claudeWrapperToken);
     form.append("prompt", prompt);
+    // Optional model hint. The wrapper passes it through as `claude -p --model <model>`
+    // when present; older wrappers that don't read this field just ignore it.
+    // Used to route bulk vision QC to a fast model (haiku) instead of the default (Opus).
+    if (model) form.append("model", model);
 
     if (imagePath) {
       const buffer = await readFile(imagePath);
@@ -148,7 +154,7 @@ export async function callClaude(
   options?: CallClaudeOptions,
 ): Promise<ClaudeMessage> {
   const prompt = messagesToPrompt(messages, options?.system);
-  const text = await callViaWrapper(prompt, options?.imagePath);
+  const text = await callViaWrapper(prompt, options?.imagePath, options?.model);
   return { content: [{ type: "text", text }] };
 }
 
@@ -197,13 +203,14 @@ export async function callClaudeWithImage(
   imagePath: string,
   system?: string,
   label = "Claude Vision",
+  model?: string,
 ): Promise<string> {
   const msg = await callClaudeRetry(
     "",
     0,
     [{ role: "user", content: prompt }],
     label,
-    { imagePath, system },
+    { imagePath, system, model },
   );
   return msg.content[0]?.text ?? "";
 }

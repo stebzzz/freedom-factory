@@ -130,6 +130,7 @@ export async function findImageIssues(imagePath: string): Promise<ImageIssueResu
     imagePath,
     QC_SYSTEM,
     "Claude Vision QC",
+    "haiku", // bulk QC → fast model; the wrapper maps this to `claude -p --model haiku`
   );
   const stripped = raw.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/, "").trim();
   try {

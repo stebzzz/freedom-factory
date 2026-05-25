@@ -14,7 +14,7 @@ interface AnalysisState {
   flagged?: Array<{ id: number; severity: "minor" | "bad"; issues: string[] }>;
 }
 
-type Filter = "all" | "done" | "image-only" | "pending" | "failed" | "stuck" | "not-started";
+type Filter = "all" | "done" | "image-only" | "pending" | "failed" | "stuck" | "not-started" | "flagged";
 
 interface Props {
   scenes: Scene[];
@@ -91,15 +91,9 @@ export function ScenesGrid({ scenes, onSceneClick, slug, onAction }: Props) {
     } catch { /* ignore */ }
   };
 
-  const selectFlagged = () => {
-    const ids = (analysis.flagged ?? []).map((f) => f.id);
-    if (ids.length === 0) return;
-    setSelectMode(true);
-    setSelected(new Set(ids));
-  };
 
   const counts = useMemo(() => {
-    const c: Record<Filter, number> = { all: scenes.length, done: 0, "image-only": 0, pending: 0, failed: 0, stuck: 0, "not-started": 0 };
+    const c: Record<Filter, number> = { all: scenes.length, done: 0, "image-only": 0, pending: 0, failed: 0, stuck: 0, "not-started": 0, flagged: flagById.size };
     for (const s of scenes) {
       if (s.status === "done") c.done++;
       else if (s.status === "image-only") c["image-only"]++;
@@ -109,12 +103,13 @@ export function ScenesGrid({ scenes, onSceneClick, slug, onAction }: Props) {
       else c["not-started"]++;
     }
     return c;
-  }, [scenes]);
+  }, [scenes, flagById]);
 
   const filtered = useMemo(() => {
     let arr = scenes;
     if (filter !== "all") {
       arr = arr.filter((s) => {
+        if (filter === "flagged") return flagById.has(s.id);
         if (filter === "done") return s.status === "done";
         if (filter === "image-only") return s.status === "image-only";
         if (filter === "pending") return s.status === "video-pending" || s.status === "image-pending";
@@ -134,7 +129,7 @@ export function ScenesGrid({ scenes, onSceneClick, slug, onAction }: Props) {
       );
     }
     return arr;
-  }, [scenes, filter, search]);
+  }, [scenes, filter, search, flagById]);
 
   const toggleSelect = (id: number) => {
     setSelected((prev) => {
@@ -194,12 +189,12 @@ export function ScenesGrid({ scenes, onSceneClick, slug, onAction }: Props) {
             </button>
             {(analysis.flagged?.length ?? 0) > 0 && (
               <button
-                onClick={selectFlagged}
-                className="btn-glass flex-shrink-0"
-                style={{ padding: "5px 12px", fontSize: 12, color: "var(--red)" }}
-                title="Sélectionne les images flaggées par l'analyse pour les régénérer en lot"
+                onClick={() => setFilter(filter === "flagged" ? "all" : "flagged")}
+                className={filter === "flagged" ? "btn-primary flex-shrink-0" : "btn-glass flex-shrink-0"}
+                style={{ padding: "5px 12px", fontSize: 12, color: filter === "flagged" ? undefined : "var(--red)" }}
+                title="Affiche uniquement les images flaggées par l'analyse (clic pour filtrer/défiltrer)"
               >
-                <X size={14} />
+                <ScanEye size={14} />
                 Ratées ({analysis.flagged?.length})
               </button>
             )}
