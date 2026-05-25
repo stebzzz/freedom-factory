@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, writeFileSync, copyFileSync } from "fs";
+import { existsSync, readFileSync, writeFileSync, copyFileSync, statSync } from "fs";
 import path from "path";
 import type {
   ProjectState,
@@ -69,11 +69,26 @@ function readJson<T>(p: string, fallback: T): T {
   }
 }
 
+/**
+ * Append `?v=<mtimeMs>` to a public asset URL so a regenerated file (same name,
+ * overwritten in place — e.g. scene_005.png after a "Regen image") actually
+ * re-fetches in the browser instead of serving the stale cached copy. The value
+ * is stable while the file is untouched, so normal HTTP caching still applies.
+ */
+function withCacheBust(relUrl: string, absPath: string): string {
+  try {
+    return `${relUrl}?v=${Math.floor(statSync(absPath).mtimeMs)}`;
+  } catch {
+    return relUrl;
+  }
+}
+
 function publicUrlFor(localPath: string | undefined): string | undefined {
   if (!localPath) return undefined;
   const idx = localPath.indexOf("/public/");
   if (idx === -1) return undefined;
-  return localPath.slice(idx + "/public".length);
+  const rel = localPath.slice(idx + "/public".length);
+  return withCacheBust(rel, localPath);
 }
 
 function loadScenes(promptsPath: string): RawScene[] {
@@ -127,8 +142,8 @@ function buildPipelineProjectState(project: ProjectSummary): ProjectState {
     const clipPathRel = `/generated/${project.slug}/clips/clip_${padded}.mp4`;
     const imageAbs = path.join(ROOT, "public", imagePathRel.replace(/^\//, ""));
     const clipAbs = path.join(ROOT, "public", clipPathRel.replace(/^\//, ""));
-    const imageUrl = existsSync(imageAbs) ? imagePathRel : undefined;
-    const clipUrl = existsSync(clipAbs) ? clipPathRel : undefined;
+    const imageUrl = existsSync(imageAbs) ? withCacheBust(imagePathRel, imageAbs) : undefined;
+    const clipUrl = existsSync(clipAbs) ? withCacheBust(clipPathRel, clipAbs) : undefined;
     let status: SceneStatus = "not-started";
     if (clipUrl) status = "done";
     else if (imageUrl) status = "image-only";
