@@ -10,9 +10,10 @@ interface Props {
   onClick: () => void;
   selectable?: boolean;
   selected?: boolean;
+  flag?: { severity: "minor" | "bad"; issues: string[] };
 }
 
-export function SceneCard({ scene, onClick, selectable = false, selected = false }: Props) {
+export function SceneCard({ scene, onClick, selectable = false, selected = false, flag }: Props) {
   const [hover, setHover] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [audioEnabled] = usePreviewAudio();
@@ -98,6 +99,23 @@ export function SceneCard({ scene, onClick, selectable = false, selected = false
         className="absolute top-2.5 left-2.5 w-2 h-2 rounded-full ring-2 ring-black/20"
         style={{ background: statusDot(scene.status), boxShadow: `0 0 10px ${statusDot(scene.status)}` }}
       />
+
+      {/* Vision QC flag badge */}
+      {flag && !selectable && (
+        <div
+          className="absolute bottom-1.5 right-1.5 z-10 px-1.5 py-0.5 rounded mono-sm flex items-center gap-1"
+          style={{
+            background: flag.severity === "bad" ? "var(--red)" : "var(--orange)",
+            color: "white",
+            fontSize: 9,
+            maxWidth: "85%",
+            textShadow: "0 1px 1px rgba(0,0,0,0.4)",
+          }}
+          title={flag.issues.join(" · ")}
+        >
+          ⚠ {flag.issues[0] ?? (flag.severity === "bad" ? "à refaire" : "imparfait")}
+        </div>
+      )}
 
       {/* ID + duration */}
       <div className="absolute top-2 right-2.5 mono-sm text-white/85" style={{ textShadow: "0 1px 2px rgba(0,0,0,0.6)" }}>

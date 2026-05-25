@@ -94,3 +94,53 @@ export async function describeImage(imagePath: string): Promise<string> {
     "Claude Vision Describe",
   )).trim();
 }
+
+export interface ImageIssueResult {
+  severity: "ok" | "minor" | "bad";
+  issues: string[];
+}
+
+const QC_SYSTEM = `You are a strict quality-control reviewer for AI-generated illustration frames used in a YouTube video. Look at the single image and flag concrete defects that would make it unusable or jarring on screen.
+
+Check for, in priority order:
+- Anatomy errors: malformed/extra/missing fingers or hands, fused limbs, broken faces, melted features, wrong number of eyes.
+- Gibberish text or fake letters/words rendered in the image (signs, books, labels) that read as nonsense.
+- Bad artifacts: smearing, duplicated/cloned subjects, warped objects, glitch textures, heavy noise.
+- Composition fails: subject cropped badly, empty/blank frame, watermark, border, collage of mismatched panels.
+- Style breaks: photorealistic face on a cartoon body, a subject that clearly doesn't match the intended illustration style.
+
+Do NOT flag normal stylistic choices (flat colors, simple shapes, intentional minimalism) as defects.
+
+Reply with ONE LINE of strict JSON, nothing else:
+{"severity":"ok|minor|bad","issues":["short issue","..."]}
+
+- "bad"   = clearly broken, must be regenerated.
+- "minor" = small imperfection, usable but not great.
+- "ok"    = no defect worth flagging (issues = []).
+Keep each issue under 8 words.`;
+
+/**
+ * QC one generated image. Returns a severity + list of concrete defects.
+ * Tolerant parser: any non-parseable answer is treated as "ok" (we don't want
+ * a flaky model response to spuriously flag a good frame).
+ */
+export async function findImageIssues(imagePath: string): Promise<ImageIssueResult> {
+  const raw = await callClaudeWithImage(
+    "Review this frame for defects.",
+    imagePath,
+    QC_SYSTEM,
+    "Claude Vision QC",
+  );
+  const stripped = raw.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/, "").trim();
+  try {
+    const parsed = JSON.parse(stripped) as { severity?: string; issues?: unknown };
+    const severity = parsed.severity === "bad" ? "bad" : parsed.severity === "minor" ? "minor" : "ok";
+    const issues = Array.isArray(parsed.issues)
+      ? parsed.issues.map((i) => String(i)).filter(Boolean).slice(0, 6)
+      : [];
+    return { severity, issues: severity === "ok" ? [] : issues };
+  } catch {
+    // Couldn't parse → assume ok rather than flag a good image on a bad reply.
+    return { severity: "ok", issues: [] };
+  }
+}

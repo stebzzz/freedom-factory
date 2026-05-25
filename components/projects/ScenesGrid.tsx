@@ -1,10 +1,18 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { CheckSquare, X, ImageIcon } from "lucide-react";
+import { useMemo, useState, useEffect, useRef } from "react";
+import { CheckSquare, X, ImageIcon, ScanEye } from "lucide-react";
 import type { Scene } from "@/lib/projects/types";
 import { SceneCard } from "./SceneCard";
 import { BatchRegenModal } from "./BatchRegenModal";
+
+interface SceneFlag { severity: "minor" | "bad"; issues: string[] }
+interface AnalysisState {
+  status: "running" | "done" | "error" | "none";
+  total?: number;
+  done?: number;
+  flagged?: Array<{ id: number; severity: "minor" | "bad"; issues: string[] }>;
+}
 
 type Filter = "all" | "done" | "image-only" | "pending" | "failed" | "stuck" | "not-started";
 
@@ -31,6 +39,64 @@ export function ScenesGrid({ scenes, onSceneClick, slug, onAction }: Props) {
   const [selectMode, setSelectMode] = useState(false);
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [modalOpen, setModalOpen] = useState(false);
+  const [analysis, setAnalysis] = useState<AnalysisState>({ status: "none" });
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Load any existing analysis on mount + poll while one is running.
+  useEffect(() => {
+    let cancelled = false;
+    const fetchOnce = async () => {
+      try {
+        const r = await fetch(`/api/projects/${slug}/analyze-images`);
+        const d = (await r.json()) as AnalysisState;
+        if (!cancelled) setAnalysis(d);
+        if (d.status !== "running" && pollRef.current) {
+          clearInterval(pollRef.current);
+          pollRef.current = null;
+        }
+      } catch { /* ignore */ }
+    };
+    fetchOnce();
+    return () => {
+      cancelled = true;
+      if (pollRef.current) clearInterval(pollRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slug]);
+
+  const flagById = useMemo(() => {
+    const m = new Map<number, SceneFlag>();
+    for (const f of analysis.flagged ?? []) m.set(f.id, { severity: f.severity, issues: f.issues });
+    return m;
+  }, [analysis]);
+
+  const startAnalysis = async () => {
+    try {
+      const r = await fetch(`/api/projects/${slug}/analyze-images`, { method: "POST" });
+      const d = await r.json();
+      if (r.ok || r.status === 409) {
+        setAnalysis(d.state ?? { status: "running", done: 0, total: 0, flagged: [] });
+        if (!pollRef.current) {
+          pollRef.current = setInterval(async () => {
+            const rr = await fetch(`/api/projects/${slug}/analyze-images`);
+            const dd = (await rr.json()) as AnalysisState;
+            setAnalysis(dd);
+            if (dd.status !== "running" && pollRef.current) {
+              clearInterval(pollRef.current);
+              pollRef.current = null;
+            }
+          }, 5000);
+        }
+      }
+    } catch { /* ignore */ }
+  };
+
+  const selectFlagged = () => {
+    const ids = (analysis.flagged ?? []).map((f) => f.id);
+    if (ids.length === 0) return;
+    setSelectMode(true);
+    setSelected(new Set(ids));
+  };
 
   const counts = useMemo(() => {
     const c: Record<Filter, number> = { all: scenes.length, done: 0, "image-only": 0, pending: 0, failed: 0, stuck: 0, "not-started": 0 };
@@ -113,15 +179,45 @@ export function ScenesGrid({ scenes, onSceneClick, slug, onAction }: Props) {
         ))}
         <div className="flex-1" />
         {!selectMode && (
-          <button
-            onClick={() => setSelectMode(true)}
-            className="btn-glass flex-shrink-0"
-            style={{ padding: "5px 12px", fontSize: 12 }}
-            title="Sélectionner plusieurs scènes pour régénérer leurs images en lot"
-          >
-            <CheckSquare size={14} />
-            Sélectionner
-          </button>
+          <>
+            <button
+              onClick={startAnalysis}
+              disabled={analysis.status === "running"}
+              className="btn-glass flex-shrink-0"
+              style={{ padding: "5px 12px", fontSize: 12, opacity: analysis.status === "running" ? 0.6 : 1 }}
+              title="Analyse toutes les images avec Claude Vision et flague les ratées (mains, texte, artefacts…). Long : ~15-25s/image, en arrière-plan."
+            >
+              <ScanEye size={14} />
+              {analysis.status === "running"
+                ? `Analyse ${analysis.done ?? 0}/${analysis.total ?? "?"}…`
+                : "Analyser (Vision)"}
+            </button>
+            {(analysis.flagged?.length ?? 0) > 0 && (
+              <button
+                onClick={selectFlagged}
+                className="btn-glass flex-shrink-0"
+                style={{ padding: "5px 12px", fontSize: 12, color: "var(--red)" }}
+                title="Sélectionne les images flaggées par l'analyse pour les régénérer en lot"
+              >
+                <X size={14} />
+                Ratées ({analysis.flagged?.length})
+              </button>
+            )}
+            {analysis.status === "done" && (analysis.flagged?.length ?? 0) === 0 && (
+              <span className="mono-sm flex-shrink-0" style={{ color: "var(--green)", fontSize: 12 }}>
+                ✓ aucune ratée
+              </span>
+            )}
+            <button
+              onClick={() => setSelectMode(true)}
+              className="btn-glass flex-shrink-0"
+              style={{ padding: "5px 12px", fontSize: 12 }}
+              title="Sélectionner plusieurs scènes pour régénérer leurs images en lot"
+            >
+              <CheckSquare size={14} />
+              Sélectionner
+            </button>
+          </>
         )}
         <input
           type="text"
@@ -178,6 +274,7 @@ export function ScenesGrid({ scenes, onSceneClick, slug, onAction }: Props) {
             scene={scene}
             selectable={selectMode}
             selected={selected.has(scene.id)}
+            flag={flagById.get(scene.id)}
             onClick={() => (selectMode ? toggleSelect(scene.id) : onSceneClick(scene))}
           />
         ))}
