@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { X, Sparkles, RefreshCw, Loader2, Save } from "lucide-react";
 import type { RemotionClip } from "@/remotion/types";
 
@@ -23,6 +24,12 @@ export function SceneModal({ clip, slug, fps, onClose, onClipUpdated }: Props) {
   const [prompt, setPrompt] = useState<string>(clip.prompt ?? "");
   const [aiInstruction, setAiInstruction] = useState("");
   const [phase, setPhase] = useState<Phase>({ kind: "idle" });
+  // Portal to <body> — the edit page root has `.animate-in` (a translateY
+  // keyframe, fill-mode forwards) which keeps a transform on the ancestor and
+  // would otherwise be the containing block for this `fixed` modal, pushing it
+  // off-center down the page.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   // Reset state when a different clip is opened.
   useEffect(() => {
@@ -88,7 +95,7 @@ export function SceneModal({ clip, slug, fps, onClose, onClipUpdated }: Props) {
 
   const isBusy = phase.kind === "ai-rewriting" || phase.kind === "regenerating";
 
-  return (
+  const modal = (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       style={{ background: "rgba(0,0,0,0.88)", backdropFilter: "blur(8px)" }}
@@ -224,4 +231,6 @@ export function SceneModal({ clip, slug, fps, onClose, onClipUpdated }: Props) {
       </div>
     </div>
   );
+
+  return mounted ? createPortal(modal, document.body) : null;
 }

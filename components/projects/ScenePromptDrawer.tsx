@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { X, Save, RotateCcw, Image as ImageIcon, Sparkles } from "lucide-react";
 import type { Scene, RunMode } from "@/lib/projects/types";
 import { StatusBadge } from "./StatusBadge";
@@ -22,6 +23,13 @@ export function ScenePromptDrawer({ slug, scene, kind, onClose, onSaved }: Props
   // bumped after each regen to cache-bust the <img>
   const [imgRev, setImgRev] = useState(0);
   const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined);
+  // The page root carries `.animate-in` (a translateY keyframe with fill-mode
+  // forwards), so it stays a transformed ancestor and becomes the containing
+  // block for any descendant `position: fixed`. Rendering the modal through a
+  // portal to <body> escapes that subtree so `fixed inset-0` resolves against
+  // the viewport and the modal actually centers.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     if (scene) {
@@ -106,7 +114,7 @@ export function ScenePromptDrawer({ slug, scene, kind, onClose, onSaved }: Props
 
   const cacheBustedPreview = previewUrl ? `${previewUrl}${previewUrl.includes("?") ? "&" : "?"}v=${imgRev}` : undefined;
 
-  return (
+  const modal = (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-6"
       style={{
@@ -334,4 +342,6 @@ export function ScenePromptDrawer({ slug, scene, kind, onClose, onSaved }: Props
       </div>
     </div>
   );
+
+  return mounted ? createPortal(modal, document.body) : null;
 }
