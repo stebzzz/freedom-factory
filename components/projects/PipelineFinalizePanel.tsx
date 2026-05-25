@@ -105,23 +105,56 @@ export function PipelineFinalizePanel({ slug, onAction }: Props) {
     }
   };
 
+  const REGEN_STEP_LABEL: Record<string, string> = {
+    tts: "synthèse Eleven v3",
+    transcode: "conversion WAV",
+    clean: "nettoyage des silences",
+    align: "alignement Whisper",
+  };
+
   const regenVoiceover = async () => {
     setBusy("regen-vo");
     setError(null);
-    setInfo("Régénération de la voix off (Eleven v3) → nettoyage silences → ré-alignement Whisper. Peut prendre 1-3 min. La connexion peut couper à 60s mais le serveur continue.");
+    setInfo("Démarrage de la régénération (Eleven v3)…");
     try {
+      // Fire-and-poll: the pipeline takes minutes and the proxy drops the
+      // connection at ~60s. We start the background job, then poll its status.
       const res = await fetch(`/api/projects/${slug}/voiceover/regenerate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({}),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
-      const clean = data.silencesCleaned ? " · silences nettoyés" : "";
-      const align = data.aligned ? ` · aligné Whisper ${data.matchPct}% (${data.totalAudioSec}s)` : " · alignement ignoré";
-      setInfo(`Voix off régénérée (Eleven v3, ${data.chars} chars)${clean}${align}. Ancienne VO sauvegardée.`);
-      setVoPresent(true);
-      onAction();
+      const data = await res.json().catch(() => ({}));
+      if (res.status === 409) {
+        setInfo("Une régénération est déjà en cours — on attend la fin…");
+      } else if (!res.ok) {
+        throw new Error(data.error ?? `HTTP ${res.status}`);
+      }
+
+      // Poll until done/error.
+      await new Promise<void>((resolve) => {
+        const poll = setInterval(async () => {
+          try {
+            const r = await fetch(`/api/projects/${slug}/voiceover/regenerate`);
+            const s = await r.json();
+            if (s.status === "running") {
+              setInfo(`Régénération en cours — ${REGEN_STEP_LABEL[s.step] ?? s.step}…`);
+            } else if (s.status === "done") {
+              clearInterval(poll);
+              const clean = s.silencesCleaned ? " · silences nettoyés" : "";
+              const align = s.aligned ? ` · aligné Whisper ${s.matchPct}% (${s.totalAudioSec}s)` : " · alignement ignoré";
+              setInfo(`Voix off régénérée (Eleven v3, ${s.chars} chars)${clean}${align}. Ancienne VO sauvegardée.`);
+              setVoPresent(true);
+              onAction();
+              resolve();
+            } else if (s.status === "error") {
+              clearInterval(poll);
+              setError(`Régénération échouée : ${s.error ?? "inconnue"}`);
+              resolve();
+            }
+          } catch { /* transient — keep polling */ }
+        }, 5000);
+      });
     } catch (e) {
       setError((e as Error).message);
     } finally {

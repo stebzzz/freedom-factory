@@ -1,7 +1,12 @@
 // Regenerate the project's voiceover from its script via ElevenLabs (eleven_v3,
-// native base speed — no atempo), then re-align scene durations to the new audio
-// with Whisper so the montage stays in sync. The previous voiceover.wav is
-// backed up to voiceover.prev-<ts>.wav.
+// native base speed — no atempo), auto-remove silences, then re-align scene
+// durations to the new audio with Whisper so the montage stays in sync. The
+// previous voiceover.wav is backed up to voiceover.prev-<ts>.wav.
+//
+// Runs as a DETACHED background job: the whole pipeline takes minutes and the
+// proxy cuts the HTTP connection at ~60s. POST starts it (409 if one is already
+// running for this slug — prevents the double-TTS we saw on retry/double-click);
+// GET polls progress. State persists to <jobDir>/voiceover-regen.json.
 import { NextRequest, NextResponse } from "next/server";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { copyFile, rename, unlink } from "node:fs/promises";
@@ -25,7 +30,36 @@ interface ScriptJson {
   scenes?: ScriptScene[];
 }
 
-/** Transcode any audio (mp3 from ElevenLabs) to a real 44.1k mono PCM wav. */
+type RegenStep = "tts" | "transcode" | "clean" | "align" | "done" | "error";
+interface RegenState {
+  status: "running" | "done" | "error";
+  step: RegenStep;
+  startedAt: number;
+  updatedAt: number;
+  chars?: number;
+  silencesCleaned?: boolean;
+  aligned?: boolean;
+  matchPct?: number | null;
+  totalAudioSec?: number | null;
+  error?: string;
+}
+
+// One in-memory run per slug. Source of truth = the persisted JSON (survives the
+// connection drop + page refresh); memory just gives the running lock.
+const runs = new Map<string, RegenState>();
+
+function statePath(outDir: string): string {
+  return path.join(outDir, "voiceover-regen.json");
+}
+function persist(outDir: string, s: RegenState): void {
+  try { writeFileSync(statePath(outDir), JSON.stringify(s, null, 2)); } catch { /* non-blocking */ }
+}
+function readState(outDir: string): RegenState | null {
+  const p = statePath(outDir);
+  if (!existsSync(p)) return null;
+  try { return JSON.parse(readFileSync(p, "utf-8")) as RegenState; } catch { return null; }
+}
+
 function transcodeToWav(input: string, output: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const child = spawn("ffmpeg", [
@@ -38,12 +72,9 @@ function transcodeToWav(input: string, output: string): Promise<void> {
   });
 }
 
-/** Run scripts/remove-silences-clean.mjs on a wav in place (2-pass detect +
- *  atrim + micro-fade, no clicks). eleven_v3 adds long dramatic pauses, so we
- *  tighten them automatically after synthesis. */
 async function cleanSilencesInPlace(wavPath: string): Promise<void> {
   const scriptPath = path.join(process.cwd(), "scripts", "remove-silences-clean.mjs");
-  if (!existsSync(scriptPath)) return; // non-blocking if the script isn't shipped
+  if (!existsSync(scriptPath)) return;
   const tmpOut = `${wavPath}.clean.wav`;
   await new Promise<void>((resolve, reject) => {
     const child = spawn(process.execPath, [
@@ -57,10 +88,26 @@ async function cleanSilencesInPlace(wavPath: string): Promise<void> {
   await rename(tmpOut, wavPath);
 }
 
+export async function GET(_req: Request, { params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const mem = runs.get(slug);
+  if (mem) return NextResponse.json(mem);
+  const project = getProject(slug);
+  if (!project) return NextResponse.json({ status: "none" });
+  const persisted = readState(project.outDir);
+  return NextResponse.json(persisted ?? { status: "none" });
+}
+
 export async function POST(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const project = getProject(slug);
   if (!project) return NextResponse.json({ error: "projet inconnu" }, { status: 404 });
+
+  // Concurrency lock — refuse a second run while one is in flight.
+  const existing = runs.get(slug);
+  if (existing && existing.status === "running") {
+    return NextResponse.json({ error: "régénération déjà en cours", state: existing }, { status: 409 });
+  }
 
   const scriptPath = path.join(project.outDir, "script.json");
   if (!existsSync(scriptPath)) {
@@ -75,82 +122,74 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
   const scenes = data.scenes ?? [];
   if (scenes.length === 0) return NextResponse.json({ error: "aucune scène dans le script" }, { status: 400 });
 
-  // Optional voice override from the body; default to the configured voice.
   const body = (await req.json().catch(() => ({}))) as { voix?: string; align?: boolean; cleanSilences?: boolean };
   const config = await getConfig();
   const voix = body.voix || config.elevenlabsVoiceId || "male-en";
   const doAlign = body.align !== false;
-  const doClean = body.cleanSilences !== false; // default ON — v3 leaves long pauses
+  const doClean = body.cleanSilences !== false;
 
-  // Full spoken text = scene narrations joined (verbatim, no rewriting).
   const fullScript = scenes.map((s) => s.narration?.trim()).filter(Boolean).join("\n\n");
   if (!fullScript) return NextResponse.json({ error: "narrations vides" }, { status: 400 });
 
-  const voPath = path.join(project.outDir, "voiceover.wav");
-  const tmpMp3 = path.join(tmpdir(), `regen-vo-${slug}-${Date.now()}.mp3`);
+  const state: RegenState = {
+    status: "running", step: "tts", startedAt: Date.now(), updatedAt: Date.now(), chars: fullScript.length,
+  };
+  runs.set(slug, state);
+  persist(project.outDir, state);
+  const bump = (step: RegenStep) => { state.step = step; state.updatedAt = Date.now(); persist(project.outDir, state); };
 
-  // 1) Generate via ElevenLabs (voiceover.ts → elevenlabs, default eleven_v3, no atempo).
-  try {
-    await generateVoiceover(fullScript, voix, tmpMp3, { voiceModel: "elevenlabs" });
-  } catch (err) {
-    return NextResponse.json({ error: `TTS: ${(err as Error).message}` }, { status: 502 });
-  }
-  if (!existsSync(tmpMp3)) {
-    return NextResponse.json({ error: "TTS n'a produit aucun fichier" }, { status: 502 });
-  }
-
-  // 2) Back up the old VO, transcode the new one into voiceover.wav.
-  if (existsSync(voPath)) {
-    await copyFile(voPath, path.join(project.outDir, `voiceover.prev-${Date.now()}.wav`)).catch(() => {});
-  }
-  try {
-    await transcodeToWav(tmpMp3, voPath);
-  } catch (err) {
-    await unlink(tmpMp3).catch(() => {});
-    return NextResponse.json({ error: `transcodage wav: ${(err as Error).message}` }, { status: 500 });
-  }
-  await unlink(tmpMp3).catch(() => {});
-
-  // 2.5) Auto-remove silences (v3 leaves long dramatic pauses). Runs BEFORE
-  // alignment so Whisper sees the final, tightened audio.
-  let cleaned = false;
-  if (doClean) {
+  // Detached pipeline — not awaited. POST returns immediately.
+  void (async () => {
+    const voPath = path.join(project.outDir, "voiceover.wav");
+    const tmpMp3 = path.join(tmpdir(), `regen-vo-${slug}-${Date.now()}.mp3`);
     try {
-      await cleanSilencesInPlace(voPath);
-      cleaned = true;
-    } catch (err) {
-      console.warn(`[regen-vo] nettoyage silences échec (non-bloquant): ${(err as Error).message}`);
-    }
-  }
+      // 1) TTS
+      await generateVoiceover(fullScript, voix, tmpMp3, { voiceModel: "elevenlabs" });
+      if (!existsSync(tmpMp3)) throw new Error("TTS n'a produit aucun fichier");
 
-  // 3) Re-align scene durations on the new audio (keeps the montage in sync).
-  let matchPct: number | null = null;
-  let totalAudioSec: number | null = null;
-  if (doAlign) {
-    try {
-      const language = detectScriptLanguage(scenes.map((s) => s.narration ?? ""));
-      const aligned = await alignScenesWithWhisper(scenes, voPath, { language });
-      matchPct = Math.round(aligned.matchedWordRatio * 100);
-      totalAudioSec = Math.round(aligned.totalAudioSec * 10) / 10;
-      // Persist updated durations (scenes mutated in place).
-      writeFileSync(scriptPath, JSON.stringify(
-        { title: data.title, niche: data.niche, wordCount: data.wordCount, scenes },
-        null, 2,
-      ));
-    } catch (err) {
-      // Non-blocking — the new audio is already in place; durations stay as-is.
-      console.warn(`[regen-vo] Whisper align échec: ${(err as Error).message}`);
-    }
-  }
+      // 2) backup + transcode to wav
+      bump("transcode");
+      if (existsSync(voPath)) {
+        await copyFile(voPath, path.join(project.outDir, `voiceover.prev-${Date.now()}.wav`)).catch(() => {});
+      }
+      await transcodeToWav(tmpMp3, voPath);
+      await unlink(tmpMp3).catch(() => {});
 
-  return NextResponse.json({
-    ok: true,
-    model: "eleven_v3",
-    voix,
-    chars: fullScript.length,
-    silencesCleaned: cleaned,
-    aligned: matchPct !== null,
-    matchPct,
-    totalAudioSec,
-  });
+      // 2.5) clean silences
+      if (doClean) {
+        bump("clean");
+        try { await cleanSilencesInPlace(voPath); state.silencesCleaned = true; }
+        catch (err) { console.warn(`[regen-vo] nettoyage silences échec: ${(err as Error).message}`); }
+      }
+
+      // 3) whisper align
+      if (doAlign) {
+        bump("align");
+        try {
+          const language = detectScriptLanguage(scenes.map((s) => s.narration ?? ""));
+          const aligned = await alignScenesWithWhisper(scenes, voPath, { language });
+          state.matchPct = Math.round(aligned.matchedWordRatio * 100);
+          state.totalAudioSec = Math.round(aligned.totalAudioSec * 10) / 10;
+          state.aligned = true;
+          writeFileSync(scriptPath, JSON.stringify(
+            { title: data.title, niche: data.niche, wordCount: data.wordCount, scenes }, null, 2,
+          ));
+        } catch (err) {
+          console.warn(`[regen-vo] Whisper align échec: ${(err as Error).message}`);
+          state.aligned = false;
+        }
+      }
+
+      state.status = "done"; state.step = "done"; state.updatedAt = Date.now();
+      persist(project.outDir, state);
+      console.log(`[regen-vo] ${slug} done (${fullScript.length} chars, aligned=${state.aligned}, cleaned=${state.silencesCleaned})`);
+    } catch (err) {
+      await unlink(tmpMp3).catch(() => {});
+      state.status = "error"; state.step = "error"; state.error = (err as Error).message; state.updatedAt = Date.now();
+      persist(project.outDir, state);
+      console.warn(`[regen-vo] ${slug} ÉCHEC: ${state.error}`);
+    }
+  })();
+
+  return NextResponse.json({ ok: true, started: true, state });
 }
