@@ -3,7 +3,7 @@
 // (Wan defaults to 3-wide) — far faster and less fiddly than firing N separate
 // /scenes/[id] PATCH requests from the browser.
 import { NextRequest, NextResponse } from "next/server";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync, copyFileSync } from "node:fs";
 import path from "node:path";
 import { getProject } from "@/lib/projects/registry";
 import { generateImages as generateImagesGenAIPro } from "@/lib/api/genaipro";
@@ -39,7 +39,11 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
   const project = getProject(slug);
   if (!project) return NextResponse.json({ error: "projet inconnu" }, { status: 404 });
 
-  let body: { ids?: number[] };
+  // Accepts either { ids: [...] } or { ids, prompts: { "<id>": "edited prompt" } }.
+  // When prompts are supplied (from the batch review modal), they're persisted to
+  // script.json before regeneration so the new image uses the edited prompt and
+  // the edit sticks for future runs.
+  let body: { ids?: number[]; prompts?: Record<string, string> };
   try {
     body = await req.json();
   } catch {
@@ -57,6 +61,28 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
     meta = JSON.parse(readFileSync(scriptPath, "utf-8")) as ScriptMeta;
   } catch {
     return NextResponse.json({ error: "script.json illisible" }, { status: 500 });
+  }
+
+  // Persist any edited prompts into script.json (single backup, single write).
+  const prompts = body.prompts ?? {};
+  const editedIds = Object.keys(prompts).map((k) => parseInt(k, 10)).filter((n) => Number.isInteger(n));
+  if (editedIds.length > 0 && Array.isArray(meta.scenes)) {
+    let changed = false;
+    for (const sc of meta.scenes) {
+      const edit = prompts[String(sc.index)];
+      if (typeof edit === "string" && edit.trim() && edit !== sc.imagePrompt) {
+        sc.imagePrompt = edit.trim();
+        changed = true;
+      }
+    }
+    if (changed) {
+      try {
+        copyFileSync(scriptPath, scriptPath.replace(/\.json$/, `.backup-${Date.now()}.json`));
+        writeFileSync(scriptPath, JSON.stringify(meta, null, 2));
+      } catch (e) {
+        return NextResponse.json({ error: `écriture script.json: ${(e as Error).message}` }, { status: 500 });
+      }
+    }
   }
 
   const byIndex = new Map((meta.scenes ?? []).map((s) => [s.index, s]));

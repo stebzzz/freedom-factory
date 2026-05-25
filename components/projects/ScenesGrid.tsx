@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { CheckSquare, X, ImageIcon } from "lucide-react";
 import type { Scene } from "@/lib/projects/types";
 import { SceneCard } from "./SceneCard";
+import { BatchRegenModal } from "./BatchRegenModal";
 
 type Filter = "all" | "done" | "image-only" | "pending" | "failed" | "stuck" | "not-started";
 
@@ -29,8 +30,7 @@ export function ScenesGrid({ scenes, onSceneClick, slug, onAction }: Props) {
   const [search, setSearch] = useState("");
   const [selectMode, setSelectMode] = useState(false);
   const [selected, setSelected] = useState<Set<number>>(new Set());
-  const [regenBusy, setRegenBusy] = useState(false);
-  const [regenMsg, setRegenMsg] = useState<string | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const counts = useMemo(() => {
     const c: Record<Filter, number> = { all: scenes.length, done: 0, "image-only": 0, pending: 0, failed: 0, stuck: 0, "not-started": 0 };
@@ -82,7 +82,6 @@ export function ScenesGrid({ scenes, onSceneClick, slug, onAction }: Props) {
   const exitSelectMode = () => {
     setSelectMode(false);
     setSelected(new Set());
-    setRegenMsg(null);
   };
 
   // Select-all targets only the currently filtered/searched scenes — matches
@@ -91,34 +90,10 @@ export function ScenesGrid({ scenes, onSceneClick, slug, onAction }: Props) {
     setSelected(new Set(filtered.map((s) => s.id)));
   };
 
-  const batchRegen = async () => {
-    const ids = [...selected];
-    if (ids.length === 0) return;
-    setRegenBusy(true);
-    setRegenMsg(`Régénération de ${ids.length} image(s)…`);
-    try {
-      const res = await fetch(`/api/projects/${slug}/regen-images`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ids }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
-      const failed = data.failed ?? 0;
-      setRegenMsg(
-        `${data.regenerated}/${data.requested} régénérées${failed ? `, ${failed} en échec` : ""}.`,
-      );
-      onAction();
-      if (!failed) {
-        setSelected(new Set());
-        setSelectMode(false);
-      }
-    } catch (e) {
-      setRegenMsg(`Erreur : ${(e as Error).message}`);
-    } finally {
-      setRegenBusy(false);
-    }
-  };
+  const selectedScenes = useMemo(
+    () => scenes.filter((s) => selected.has(s.id)),
+    [scenes, selected],
+  );
 
   return (
     <div className="space-y-4">
@@ -173,26 +148,23 @@ export function ScenesGrid({ scenes, onSceneClick, slug, onAction }: Props) {
           <span className="mono-sm" style={{ minWidth: 90 }}>
             {selected.size} sélectionnée{selected.size > 1 ? "s" : ""}
           </span>
-          <button onClick={selectAllFiltered} disabled={regenBusy} className="btn-glass" style={{ padding: "4px 10px", fontSize: 12 }}>
+          <button onClick={selectAllFiltered} className="btn-glass" style={{ padding: "4px 10px", fontSize: 12 }}>
             Tout ({filtered.length})
           </button>
-          <button onClick={() => setSelected(new Set())} disabled={regenBusy || selected.size === 0} className="btn-glass" style={{ padding: "4px 10px", fontSize: 12, opacity: regenBusy || selected.size === 0 ? 0.5 : 1 }}>
+          <button onClick={() => setSelected(new Set())} disabled={selected.size === 0} className="btn-glass" style={{ padding: "4px 10px", fontSize: 12, opacity: selected.size === 0 ? 0.5 : 1 }}>
             Désélectionner
           </button>
-          {regenMsg && (
-            <span className="mono-sm" style={{ opacity: 0.8 }}>{regenMsg}</span>
-          )}
           <div className="flex-1" />
           <button
-            onClick={batchRegen}
-            disabled={regenBusy || selected.size === 0}
+            onClick={() => setModalOpen(true)}
+            disabled={selected.size === 0}
             className="btn-primary"
-            style={{ padding: "5px 14px", fontSize: 12, opacity: regenBusy || selected.size === 0 ? 0.5 : 1 }}
+            style={{ padding: "5px 14px", fontSize: 12, opacity: selected.size === 0 ? 0.5 : 1 }}
           >
             <ImageIcon size={14} />
-            {regenBusy ? "Régénération…" : `Regen ${selected.size || ""} image${selected.size > 1 ? "s" : ""}`}
+            {`Regen ${selected.size || ""} image${selected.size > 1 ? "s" : ""}`}
           </button>
-          <button onClick={exitSelectMode} disabled={regenBusy} className="btn-glass" style={{ padding: "5px 10px", fontSize: 12 }}>
+          <button onClick={exitSelectMode} className="btn-glass" style={{ padding: "5px 10px", fontSize: 12 }}>
             <X size={14} />
             Annuler
           </button>
@@ -215,6 +187,15 @@ export function ScenesGrid({ scenes, onSceneClick, slug, onAction }: Props) {
         <div className="glass-static py-16 text-center" style={{ color: "var(--text-tertiary)" }}>
           Aucune scène correspondante.
         </div>
+      )}
+
+      {modalOpen && (
+        <BatchRegenModal
+          slug={slug}
+          scenes={selectedScenes}
+          onClose={() => setModalOpen(false)}
+          onDone={onAction}
+        />
       )}
     </div>
   );
