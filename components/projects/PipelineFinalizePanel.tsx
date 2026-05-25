@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Upload, Film, Trash2, CheckCircle2, Scissors } from "lucide-react";
+import { Upload, Film, Trash2, CheckCircle2, Scissors, Mic } from "lucide-react";
 
 interface Props {
   slug: string;
@@ -10,7 +10,7 @@ interface Props {
 
 export function PipelineFinalizePanel({ slug, onAction }: Props) {
   const [voPresent, setVoPresent] = useState<boolean | null>(null);
-  const [busy, setBusy] = useState<null | "upload" | "delete" | "finalize" | "clean">(null);
+  const [busy, setBusy] = useState<null | "upload" | "delete" | "finalize" | "clean" | "regen-vo">(null);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [elapsedSec, setElapsedSec] = useState<number>(0);
@@ -98,6 +98,29 @@ export function PipelineFinalizePanel({ slug, onAction }: Props) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
       setVoPresent(false);
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const regenVoiceover = async () => {
+    setBusy("regen-vo");
+    setError(null);
+    setInfo("Régénération de la voix off (Eleven v3)… puis ré-alignement Whisper. Peut prendre 1-3 min.");
+    try {
+      const res = await fetch(`/api/projects/${slug}/voiceover/regenerate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+      const align = data.aligned ? ` · aligné Whisper ${data.matchPct}% (${data.totalAudioSec}s)` : " · alignement ignoré";
+      setInfo(`Voix off régénérée (Eleven v3, ${data.chars} chars)${align}. Ancienne VO sauvegardée.`);
+      setVoPresent(true);
+      onAction();
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -231,6 +254,17 @@ export function PipelineFinalizePanel({ slug, onAction }: Props) {
             {busy === "clean" ? "Nettoyage…" : "Nettoyer silences"}
           </button>
         )}
+
+        <button
+          onClick={regenVoiceover}
+          disabled={busy !== null}
+          className="btn-glass"
+          style={{ opacity: busy !== null ? 0.5 : 1 }}
+          title="Régénère la voix off depuis le script via ElevenLabs (modèle eleven_v3, vitesse native) puis ré-aligne les durées sur l'audio (Whisper). Ancienne VO sauvegardée."
+        >
+          <Mic size={14} />
+          {busy === "regen-vo" ? "Régénération…" : "Régénérer la voix off"}
+        </button>
 
         <div className="w-px h-6" style={{ background: "var(--border-glass)" }} />
 

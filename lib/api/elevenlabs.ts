@@ -7,6 +7,11 @@ import { getConfig } from "@/lib/config";
 
 const API_BASE = "https://api.elevenlabs.io/v1";
 
+// Default TTS model. Eleven v3 is the most expressive model; its pacing is good
+// natively so we do NOT atempo-stretch v3 output (we keep the raw base speed).
+// Overridable per-call via options.model or the ELEVENLABS_MODEL env var.
+const DEFAULT_MODEL = process.env.ELEVENLABS_MODEL || "eleven_v3";
+
 // ElevenLabs caps /v1/text-to-speech at ~5000 chars per call on standard plans.
 // We chunk at sentence boundaries with a generous safety margin.
 const MAX_CHARS_PER_CHUNK = 4500;
@@ -47,7 +52,14 @@ async function ttsOneChunk(
   voiceId: string,
   apiKey: string,
   speed: number,
+  model: string,
 ): Promise<Buffer> {
+  const isV3 = /eleven_v3|^v3$/i.test(model);
+  // v3 expects a leaner voice_settings (no `style`/`speed`); other models keep
+  // the expressive style + a speed nudge.
+  const voice_settings = isV3
+    ? { stability: 0.5, similarity_boost: 0.75 }
+    : { stability: 0.5, similarity_boost: 0.75, style: 0.3, speed: Math.max(0.7, Math.min(1.2, speed)) };
   const res = await fetch(`${API_BASE}/text-to-speech/${voiceId}`, {
     method: "POST",
     headers: {
@@ -56,16 +68,8 @@ async function ttsOneChunk(
     },
     body: JSON.stringify({
       text,
-      model_id: "eleven_multilingual_v2",
-      voice_settings: {
-        stability: 0.5,
-        similarity_boost: 0.75,
-        style: 0.3,
-        // ElevenLabs accepts `speed` (0.7–1.2) but eleven_multilingual_v2
-        // barely honours it (~1% change for a 20% request — measured). We still
-        // pass it as a small nudge, but the real pacing is done by atempo below.
-        speed: Math.max(0.7, Math.min(1.2, speed)),
-      },
+      model_id: isV3 ? "eleven_v3" : model,
+      voice_settings,
     }),
   });
   if (!res.ok) {
@@ -129,7 +133,7 @@ export async function generateVoiceover(
   script: string,
   voix: string,
   outputPath: string,
-  options: { speed?: number } = {},
+  options: { speed?: number; model?: string } = {},
 ): Promise<VoiceoverResult> {
   const config = await getConfig();
   const apiKey = config.elevenlabsKey;
@@ -145,13 +149,15 @@ export async function generateVoiceover(
     ? voix
     : DEFAULT_VOICE_MAP[voix] || config.elevenlabsVoiceId || DEFAULT_VOICE_MAP["male-fr"];
 
+  const model = options.model || DEFAULT_MODEL;
+  const isV3 = /eleven_v3|^v3$/i.test(model);
   const chunks = chunkScript(script);
   const speed = Math.max(0.7, Math.min(1.2, options.speed ?? 1));
-  console.log(`[ElevenLabs] TTS — voice=${voiceId.slice(0, 8)}…, ${script.length} chars in ${chunks.length} chunk(s), speed=${speed}`);
+  console.log(`[ElevenLabs] TTS — model=${model}, voice=${voiceId.slice(0, 8)}…, ${script.length} chars in ${chunks.length} chunk(s)${isV3 ? " (v3: base speed, no atempo)" : `, speed=${speed}`}`);
 
   try {
     if (chunks.length === 1) {
-      const buf = await ttsOneChunk(chunks[0], voiceId, apiKey, speed);
+      const buf = await ttsOneChunk(chunks[0], voiceId, apiKey, speed, model);
       await writeFile(outputPath, buf);
     } else {
       // Multiple chunks — write each as a temp mp3 then concat losslessly.
@@ -159,7 +165,7 @@ export async function generateVoiceover(
       const partPaths: string[] = [];
       try {
         for (let i = 0; i < chunks.length; i++) {
-          const buf = await ttsOneChunk(chunks[i], voiceId, apiKey, speed);
+          const buf = await ttsOneChunk(chunks[i], voiceId, apiKey, speed, model);
           const p = path.join(tmp, `part-${String(i).padStart(3, "0")}.mp3`);
           await writeFile(p, buf);
           partPaths.push(p);
@@ -185,9 +191,10 @@ export async function generateVoiceover(
     throw err;
   }
 
-  // Real pacing: atempo time-stretch (native ElevenLabs speed is near-inert on
-  // multilingual_v2). The small native nudge above + this gives the requested rate.
-  if (Math.abs(speed - 1) > 0.01) {
+  // Pacing: atempo time-stretch for models whose native speed is near-inert
+  // (e.g. multilingual_v2). v3 keeps its natural base speed — no atempo.
+  const effectiveSpeed = isV3 ? 1 : speed;
+  if (!isV3 && Math.abs(speed - 1) > 0.01) {
     try {
       await applyAtempo(outputPath, speed);
     } catch (err) {
@@ -195,8 +202,8 @@ export async function generateVoiceover(
     }
   }
 
-  const durationSeconds = Math.round((script.split(/\s+/).length / 2.5) / speed);
-  console.log(`[ElevenLabs] Audio genere : ${outputPath} (~${durationSeconds}s, speed=${speed})`);
+  const durationSeconds = Math.round((script.split(/\s+/).length / 2.5) / effectiveSpeed);
+  console.log(`[ElevenLabs] Audio genere : ${outputPath} (~${durationSeconds}s)`);
   return { audioPath: outputPath, durationSeconds };
 }
 
