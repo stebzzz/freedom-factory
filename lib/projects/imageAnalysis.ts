@@ -48,7 +48,15 @@ export function getAnalysis(slug: string): AnalysisState | null {
   const p = analysisPath(project.outDir);
   if (!existsSync(p)) return null;
   try {
-    return JSON.parse(readFileSync(p, "utf-8")) as AnalysisState;
+    const persisted = JSON.parse(readFileSync(p, "utf-8")) as AnalysisState;
+    // Zombie guard: a persisted "running" with no in-memory run means the loop
+    // was killed (e.g. by a redeploy). If it hasn't advanced in >2min, surface
+    // it as interrupted so the UI doesn't show a forever-spinning run.
+    if (persisted.status === "running" && Date.now() - (persisted.updatedAt ?? 0) > 120_000) {
+      persisted.status = "error";
+      persisted.error = "analyse interrompue (redémarrage serveur) — relance-la";
+    }
+    return persisted;
   } catch {
     return null;
   }
@@ -87,22 +95,29 @@ export function startAnalysis(slug: string): { ok: boolean; state?: AnalysisStat
   persist(project.outDir, state);
 
   // Detached loop — not awaited. The standalone Node server keeps it alive.
+  // Images are QC'd 3-wide; findImageIssues uses the wrapper's "light" lane
+  // (LIGHT_MAX_CONCURRENT=3) so the 3 calls actually hit the wrapper in
+  // parallel rather than queueing behind the serial heavy lane.
+  const CONCURRENCY = 3;
   void (async () => {
-    for (const img of images) {
-      try {
-        const res = await findImageIssues(img.file);
-        if (res.severity !== "ok") {
-          state.flagged.push({ id: img.id, severity: res.severity, issues: res.issues });
+    for (let i = 0; i < images.length; i += CONCURRENCY) {
+      const batch = images.slice(i, i + CONCURRENCY);
+      await Promise.all(batch.map(async (img) => {
+        try {
+          const res = await findImageIssues(img.file);
+          if (res.severity !== "ok") {
+            state.flagged.push({ id: img.id, severity: res.severity, issues: res.issues });
+          }
+        } catch (err) {
+          // A single failed call shouldn't abort the whole run.
+          console.warn(`[imageAnalysis] scene ${img.id} QC failed: ${(err as Error).message}`);
         }
-      } catch (err) {
-        // A single failed call shouldn't abort the whole run.
-        console.warn(`[imageAnalysis] scene ${img.id} QC failed: ${(err as Error).message}`);
-      }
-      state.done += 1;
-      state.updatedAt = Date.now();
-      // Persist every few images so a poll/refresh sees fresh progress without
-      // hammering the disk on every single one.
-      if (state.done % 3 === 0 || state.done === state.total) persist(project.outDir, state);
+        state.done += 1;
+        state.updatedAt = Date.now();
+      }));
+      // Keep flagged sorted by scene id (parallel pushes arrive out of order).
+      state.flagged.sort((a, b) => a.id - b.id);
+      persist(project.outDir, state);
     }
     state.status = "done";
     state.updatedAt = Date.now();

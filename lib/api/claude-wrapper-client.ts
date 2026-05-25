@@ -28,6 +28,8 @@ export interface CallClaudeOptions {
   system?: string;
   /** Optional model hint passed to the wrapper (e.g. "haiku" for fast bulk QC). */
   model?: string;
+  /** Use the wider "light" concurrency lane (short arg-prompt calls — vision). */
+  light?: boolean;
 }
 
 // ===================================================================
@@ -44,7 +46,21 @@ const MAX_CONCURRENT = 1;
 let inflight = 0;
 const waitQueue: Array<() => void> = [];
 
-async function acquire(): Promise<void> {
+// Separate, wider lane for "light" calls: short prompts sent as a CLI ARG
+// (vision QC, classify, describe) — not via stdin — so the stdin race that
+// forced the heavy lane to serial does NOT apply. Running these 3-wide cuts
+// bulk image analysis from ~45min to ~15min for ~270 frames.
+const LIGHT_MAX_CONCURRENT = 3;
+let lightInflight = 0;
+const lightQueue: Array<() => void> = [];
+
+async function acquire(light = false): Promise<void> {
+  if (light) {
+    if (lightInflight < LIGHT_MAX_CONCURRENT) { lightInflight++; return; }
+    await new Promise<void>((resolve) => lightQueue.push(resolve));
+    lightInflight++;
+    return;
+  }
   if (inflight < MAX_CONCURRENT) {
     inflight++;
     return;
@@ -53,7 +69,13 @@ async function acquire(): Promise<void> {
   inflight++;
 }
 
-function release(): void {
+function release(light = false): void {
+  if (light) {
+    lightInflight--;
+    const next = lightQueue.shift();
+    if (next) next();
+    return;
+  }
   inflight--;
   const next = waitQueue.shift();
   if (next) next();
@@ -92,14 +114,14 @@ function messagesToPrompt(
 // ===================================================================
 // Core call
 // ===================================================================
-async function callViaWrapper(prompt: string, imagePath?: string, model?: string): Promise<string> {
+async function callViaWrapper(prompt: string, imagePath?: string, model?: string, light = false): Promise<string> {
   const config = await getConfig();
   if (!config.claudeWrapperToken) {
     throw new Error("claudeWrapperToken manquant — défini CLAUDE_WRAPPER_TOKEN ou config/settings.json");
   }
   const url = config.claudeWrapperUrl;
 
-  await acquire();
+  await acquire(light);
   try {
     const form = new FormData();
     form.append("token", config.claudeWrapperToken);
@@ -138,7 +160,7 @@ async function callViaWrapper(prompt: string, imagePath?: string, model?: string
 
     return data.response ?? "";
   } finally {
-    release();
+    release(light);
   }
 }
 
@@ -154,7 +176,7 @@ export async function callClaude(
   options?: CallClaudeOptions,
 ): Promise<ClaudeMessage> {
   const prompt = messagesToPrompt(messages, options?.system);
-  const text = await callViaWrapper(prompt, options?.imagePath, options?.model);
+  const text = await callViaWrapper(prompt, options?.imagePath, options?.model, options?.light);
   return { content: [{ type: "text", text }] };
 }
 
@@ -210,7 +232,7 @@ export async function callClaudeWithImage(
     0,
     [{ role: "user", content: prompt }],
     label,
-    { imagePath, system, model },
+    { imagePath, system, model, light: true },
   );
   return msg.content[0]?.text ?? "";
 }
