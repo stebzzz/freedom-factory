@@ -16,6 +16,7 @@ import { loadAllPresets } from "@/lib/presets/custom-presets-store";
 startQueueWorker().catch((e) => console.error("[CF integration] worker start failed", e));
 
 const DEFAULT_ORIGINS = [
+  "https://cf.ytaa.fr", // domaine custom ChannelFlow
   "https://channelflow-5d14a.web.app",
   "https://channelflow-5d14a.firebaseapp.com",
   "http://localhost:3000",
