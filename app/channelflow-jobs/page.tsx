@@ -14,6 +14,7 @@ interface CFParams {
   styleKitSlug?: string;
   voix?: string;
   customScript?: string;
+  pilotMode?: boolean;
   channelflowVideoId?: string;
   channelflowChannelId?: string;
   voiceModel?: string;
@@ -273,6 +274,7 @@ export default function ChannelFlowJobsPage() {
                       <span>durée : {e.params.duration ?? "—"} min</span>
                       <span>kit : {e.params.styleKitSlug || "style-kit-def"}</span>
                       <span>preset : {e.params.presetId || "défaut"}</span>
+                      {e.params.pilotMode && <span style={{ color: "var(--accent)" }}>🔬 pilote</span>}
                       <span>ajouté {fmtDate(e.addedAt)}</span>
                       {e.status === "running" && <span style={{ color: "var(--accent)" }}>{jobProgress(job)}</span>}
                     </div>
@@ -337,6 +339,7 @@ function EditModal({
   const [styleKitSlug, setStyleKitSlug] = useState(entry.params.styleKitSlug ?? "style-kit-def");
   const [voix, setVoix] = useState(entry.params.voix ?? "");
   const [customScript, setCustomScript] = useState(entry.params.customScript ?? "");
+  const [pilotMode, setPilotMode] = useState(entry.params.pilotMode ?? false);
 
   const field = "w-full rounded-[10px] px-3 py-2 text-[13px] mb-3";
   const fieldStyle = { background: "var(--bg-glass-strong, #1e1e1e)", border: "1px solid var(--border-glass)", color: "var(--text-primary)" } as const;
@@ -386,6 +389,12 @@ function EditModal({
           </div>
         </div>
 
+        <label className="flex items-center gap-2 mb-3 cursor-pointer select-none">
+          <input type="checkbox" checked={pilotMode} onChange={(e) => setPilotMode(e.target.checked)} className="w-4 h-4" />
+          <span className="text-[13px]" style={{ color: "var(--text-primary)" }}>Mode pilote</span>
+          <span className="text-[11px]" style={{ color: "var(--text-secondary)" }}>— QA 5 scènes, pas de montage</span>
+        </label>
+
         <label className="text-[12px] font-medium" style={{ color: "var(--text-secondary)" }}>Script</label>
         <textarea rows={8} className={field + " font-mono"} style={fieldStyle} value={customScript} onChange={(e) => setCustomScript(e.target.value)} />
 
@@ -401,6 +410,7 @@ function EditModal({
                 styleKitSlug: styleKitSlug.trim() || "style-kit-def",
                 voix: voix.trim() || "",
                 customScript: customScript,
+                pilotMode: pilotMode,
               })
             }
             className="px-4 py-2 rounded-[10px] text-[13px] font-semibold text-white"

@@ -57,6 +57,8 @@ interface CFPayload {
   presetId?: string;
   styleKitSlug?: string;
   voix?: string;
+  pilotMode?: boolean;
+  pilotSampleSize?: number;
   channelflowVideoId?: string;
   channelflowChannelId?: string;
 }
@@ -139,6 +141,10 @@ export async function POST(request: NextRequest) {
     wanModel: "wan2.7-image",
     styleKitSlug: body.styleKitSlug?.trim() || "style-kit-def",
     subtitlesEnabled: true,
+    // Mode pilote : QA 5 scènes (images uniquement, pas de montage → pas de retour vidéo).
+    pilotMode: body.pilotMode === true || undefined,
+    pilotSampleSize:
+      typeof body.pilotSampleSize === "number" && body.pilotSampleSize > 0 ? body.pilotSampleSize : undefined,
     // --- Liaison retour ---
     channelflowVideoId: body.channelflowVideoId?.trim() || undefined,
     channelflowChannelId: body.channelflowChannelId?.trim() || undefined,
