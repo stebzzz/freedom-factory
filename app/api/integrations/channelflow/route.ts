@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { addToQueue, startQueueWorker } from "@/lib/pipeline/queue";
 import type { PipelineJobParams } from "@/lib/pipeline/types";
+import { listKits } from "@/lib/style-kit/import";
+import { loadAllPresets } from "@/lib/presets/custom-presets-store";
 
 // Endpoint d'intégration appelé par ChannelFlow (navigateur) au passage d'une
 // vidéo en "production". Authentifié par token Bearer + CORS allowlist.
@@ -31,7 +33,7 @@ function corsHeaders(origin: string | null): Record<string, string> {
   const allow = origin && list.includes(origin) ? origin : list[0];
   return {
     "Access-Control-Allow-Origin": allow,
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Authorization, Content-Type",
     "Access-Control-Max-Age": "86400",
     Vary: "Origin",
@@ -60,6 +62,33 @@ interface CFPayload {
 
 export async function OPTIONS(request: NextRequest) {
   return new NextResponse(null, { status: 204, headers: corsHeaders(request.headers.get("origin")) });
+}
+
+// GET → métadonnées pour peupler le ChannelForm (style kits + presets), avec CORS
+// + token (les routes /api/style-kit et /api/presets n'ont pas de CORS).
+export async function GET(request: NextRequest) {
+  const cors = corsHeaders(request.headers.get("origin"));
+  if (!tokenOk(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401, headers: cors });
+  }
+  try {
+    const [kits, presets] = await Promise.all([listKits(), loadAllPresets()]);
+    const styleKits = (kits as Array<{ slug: string; previewUrl?: string; mode?: string }>).map((k) => ({
+      slug: k.slug,
+      previewUrl: k.previewUrl,
+      mode: k.mode,
+    }));
+    const presetList = (presets as Array<{ id: string; label: string; emoji?: string }>).map((p) => ({
+      id: p.id,
+      label: p.label,
+      emoji: p.emoji,
+    }));
+    return NextResponse.json({ styleKits, presets: presetList }, { headers: cors });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("[CF integration GET]", msg);
+    return NextResponse.json({ error: msg }, { status: 500, headers: cors });
+  }
 }
 
 export async function POST(request: NextRequest) {

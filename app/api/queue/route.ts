@@ -8,6 +8,8 @@ import {
   getQueueSnapshot,
   setWorkerEnabled,
   startQueueWorker,
+  runQueueEntryNow,
+  updateQueueEntryParams,
 } from "@/lib/pipeline/queue";
 import type { PipelineJobParams } from "@/lib/pipeline/types";
 
@@ -151,12 +153,36 @@ export async function DELETE(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
-    const body = await request.json() as { workerEnabled?: boolean };
-    if (typeof body.workerEnabled !== "boolean") {
-      return NextResponse.json({ error: "workerEnabled boolean requis" }, { status: 400 });
+    const body = (await request.json()) as {
+      workerEnabled?: boolean;
+      id?: string;
+      params?: Partial<PipelineJobParams>;
+      run?: boolean;
+    };
+
+    // Lancer maintenant une entrée précise (même worker en pause)
+    if (body.id && body.run) {
+      const r = await runQueueEntryNow(body.id);
+      if (!r.ok) return NextResponse.json({ error: r.error }, { status: 400 });
+      return NextResponse.json(getQueueSnapshot());
     }
-    await setWorkerEnabled(body.workerEnabled);
-    return NextResponse.json(getQueueSnapshot());
+
+    // Éditer les params d'une entrée en attente
+    if (body.id && body.params) {
+      const ok = await updateQueueEntryParams(body.id, body.params);
+      if (!ok) {
+        return NextResponse.json({ error: "Entrée introuvable ou déjà lancée." }, { status: 400 });
+      }
+      return NextResponse.json(getQueueSnapshot());
+    }
+
+    // Pause / reprise du worker
+    if (typeof body.workerEnabled === "boolean") {
+      await setWorkerEnabled(body.workerEnabled);
+      return NextResponse.json(getQueueSnapshot());
+    }
+
+    return NextResponse.json({ error: "Requête PATCH non reconnue." }, { status: 400 });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ error: msg }, { status: 500 });

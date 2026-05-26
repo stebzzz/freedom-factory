@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Workflow, DollarSign, Settings, ChevronLeft, ChevronRight, Palette, LayoutGrid, Search, Brush, ListChecks } from "lucide-react";
+import { Workflow, DollarSign, Settings, ChevronLeft, ChevronRight, Palette, LayoutGrid, Search, Brush, ListChecks, Link2 } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
 import { useEffect, useState } from "react";
 
@@ -10,6 +10,7 @@ const navItems = [
   { href: "/projects", label: "Projects", icon: LayoutGrid },
   { href: "/pipeline", label: "Pipeline", icon: Workflow },
   { href: "/queue", label: "Queue", icon: ListChecks },
+  { href: "/channelflow-jobs", label: "Jobs ChannelFlow", icon: Link2 },
   { href: "/sourcing", label: "Sourcing", icon: Search },
   { href: "/style-kit", label: "Style Kit", icon: Brush },
   { href: "/presets", label: "Presets", icon: Palette },

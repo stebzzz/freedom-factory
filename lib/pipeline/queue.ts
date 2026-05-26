@@ -110,12 +110,10 @@ export async function setWorkerEnabled(enabled: boolean): Promise<void> {
 // --- Worker singleton ------------------------------------------------------
 // One job at a time. Polls every 3s. Survives Turbopack HMR via globalThis flag.
 
-async function workerTick(): Promise<void> {
+// Lance une entrée (réservée à un seul job concurrent via __ff_queue_running) et
+// suit le job jusqu'à sa fin. Utilisé par le worker ET par runQueueEntryNow.
+async function runEntry(next: QueueEntry): Promise<void> {
   if (global.__ff_queue_running) return;
-  if (!state.workerEnabled) return;
-  const next = state.entries.find((e) => e.status === "waiting");
-  if (!next) return;
-
   global.__ff_queue_running = true;
   next.status = "running";
   next.startedAt = new Date().toISOString();
@@ -153,6 +151,37 @@ async function workerTick(): Promise<void> {
   } finally {
     global.__ff_queue_running = false;
   }
+}
+
+async function workerTick(): Promise<void> {
+  if (global.__ff_queue_running) return;
+  if (!state.workerEnabled) return;
+  const next = state.entries.find((e) => e.status === "waiting");
+  if (!next) return;
+  await runEntry(next);
+}
+
+// Met à jour les params d'une entrée encore en attente (édition depuis l'UI).
+export async function updateQueueEntryParams(
+  id: string,
+  patch: Partial<PipelineJobParams>,
+): Promise<boolean> {
+  const entry = state.entries.find((e) => e.id === id);
+  if (!entry || entry.status !== "waiting") return false;
+  entry.params = { ...entry.params, ...patch };
+  await persist();
+  return true;
+}
+
+// Lance immédiatement une entrée en attente, même si le worker global est en
+// pause. Ne bloque pas jusqu'à la fin (fire-and-forget) — l'UI suit via /api/pipeline.
+export async function runQueueEntryNow(id: string): Promise<{ ok: boolean; error?: string }> {
+  const entry = state.entries.find((e) => e.id === id);
+  if (!entry) return { ok: false, error: "Entrée introuvable." };
+  if (entry.status !== "waiting") return { ok: false, error: "Entrée déjà traitée ou en cours." };
+  if (global.__ff_queue_running) return { ok: false, error: "Un job tourne déjà — réessaie après." };
+  void runEntry(entry).catch((e) => console.error("[Queue] runEntryNow", e));
+  return { ok: true };
 }
 
 export async function startQueueWorker(): Promise<void> {
