@@ -16,6 +16,7 @@ import { fetchArchivesForScenes } from "@/lib/api/archives";
 import { alignScenesWithWhisper } from "@/lib/api/whisper";
 import { getConfig } from "@/lib/config";
 import { getPresetOrDefault } from "@/lib/presets/channel-presets";
+import { syncJobToChannelFlow, markChannelFlowFailed } from "@/lib/integrations/channelflow-sync";
 
 // Global store — survit aux hot-reloads Turbopack en dev
 declare global {
@@ -206,6 +207,8 @@ export async function startPipeline(params: PipelineJobParams): Promise<string> 
     j.status = "failed";
     j.error = err.message;
     emit(id, { step: j.currentStep || "script", status: "failed", progress: 0, message: err.message });
+    // Synchro retour ChannelFlow (no-op si pas de channelflowVideoId).
+    void markChannelFlowFailed(j);
   });
 
   return id;
@@ -1340,4 +1343,7 @@ async function runPipeline(jobId: string, jobDir: string) {
   job.status = "completed";
   job.currentStep = null;
   console.log(`[Pipeline] Job ${jobId} termine avec succes`);
+
+  // Synchro retour ChannelFlow (no-op si le job n'a pas de channelflowVideoId).
+  await syncJobToChannelFlow(job);
 }

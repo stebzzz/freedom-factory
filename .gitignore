@@ -34,6 +34,8 @@ next-env.d.ts
 /config/settings.json
 /config/pipeline-queue.json
 /config/custom-presets.json
+# Firebase Admin service account (intégration ChannelFlow) — jamais commité
+/config/firebase-service-account.json
 
 # ── Editor / OS noise ──────────────────────────────────────────────────
 .DS_Store

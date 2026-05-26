@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
     "@remotion/renderer",
     "@remotion/bundler",
     "fluent-ffmpeg",
+    "firebase-admin",
   ],
   turbopack: {
     root: __dirname,

@@ -71,6 +71,11 @@ export interface PipelineJobParams {
   voiceoverGate?: boolean;
   /** When true, the pipeline runs ONLY the script step (segmentation + imagePrompts via Claude) then stops. */
   scriptOnly?: boolean;
+  /** ChannelFlow integration: id of the source video in ChannelFlow's Firestore.
+   *  When set, the runner writes the result back (status, video file, thumbnail) on completion. */
+  channelflowVideoId?: string;
+  /** ChannelFlow integration: id of the source channel (informational / logging). */
+  channelflowChannelId?: string;
 }
 
 export interface ScriptScene {
