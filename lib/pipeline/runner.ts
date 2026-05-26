@@ -2,7 +2,8 @@ import { mkdir, writeFile, cp, readFile, readdir, stat, unlink } from "fs/promis
 import path from "path";
 import { PipelineJob, PipelineJobParams, PipelineStepName, PipelineStepEvent, AnimationResult, ImageResult, ScriptScene } from "./types";
 import { generateScript, parseCustomScript, extractCustomScriptWithPrompts, generateStickyPrompts, parseImagePromptsTxt, splitScriptInto2sScenes, generateScript2sScenes } from "@/lib/api/claude";
-import { generateVoiceover, applyAudioSpeed } from "@/lib/api/voiceover";
+import { generateVoiceover, applyAudioSpeed, removeSilences } from "@/lib/api/voiceover";
+import { findImageIssues } from "@/lib/api/claude-vision";
 import { generateImages as generateImagesGenAIPro, generateThumbnail } from "@/lib/api/genaipro";
 import { animateImages as animateImagesGenAIPro, generateT2VClip, generateIngredientsClip } from "@/lib/api/genaipro";
 import { generateImages as generateImagesGeminigen } from "@/lib/api/geminigen";
@@ -683,6 +684,16 @@ async function runPipeline(jobId: string, jobDir: string) {
           }
         }
 
+        // Suppression des silences (toujours actif) AVANT l'alignement Whisper,
+        // pour que les durées de scènes soient calées sur l'audio nettoyé.
+        try {
+          emit(jobId, { step: "voiceover", status: "running", progress: 97, message: "Suppression des silences..." });
+          const dur = await removeSilences(voiceover.audioPath);
+          voiceover.durationSeconds = Math.round(dur);
+        } catch (err) {
+          console.warn(`[Pipeline] désilence échouée, audio inchangé:`, (err as Error).message);
+        }
+
         emit(jobId, { step: "voiceover", status: "completed", progress: 100, message: `Audio ${voiceover.durationSeconds}s genere` });
 
         // --- Whisper alignment: align scene durations on the real voiceover timing ---
@@ -1055,6 +1066,50 @@ async function runPipeline(jobId: string, jobDir: string) {
         )
       : [];
     job.result.images = [...reusedImages, ...images].sort((a, b) => a.sceneIndex - b.sceneIndex);
+
+    // --- Contrôle qualité (vision) + regen auto des images "bad" (1 passe) ---
+    // Toujours actif (hors pilote, qui est lui-même une QA visuelle manuelle).
+    if (!isPilot && job.result.images.length > 0) {
+      emit(jobId, { step: "images", status: "running", progress: 100, message: "Contrôle qualité (vision)..." });
+      const bad: ImageResult[] = [];
+      const CONC = 3;
+      const list = job.result.images;
+      for (let i = 0; i < list.length; i += CONC) {
+        const verdicts = await Promise.all(
+          list.slice(i, i + CONC).map(async (img) => {
+            try { return { img, sev: (await findImageIssues(img.imagePath)).severity }; }
+            catch { return { img, sev: "ok" as const }; }
+          }),
+        );
+        for (const v of verdicts) if (v.sev === "bad") bad.push(v.img);
+      }
+      if (bad.length > 0) {
+        emit(jobId, { step: "images", status: "running", progress: 100, message: `${bad.length} image(s) ratée(s) → regen...` });
+        const regenScenes = bad.map((img) => {
+          const sc = script.scenes.find((s) => s.index === img.sceneIndex);
+          const base = sc ? sc.imagePrompt : img.prompt;
+          return { index: img.sceneIndex, imagePrompt: `${refPrefix}${styleHint ? `${base}, ${styleHint}` : base}` };
+        });
+        try {
+          const regenerated = await generateImagesFn(regenScenes, imagesDir, () => {}, {
+            premiumScenes,
+            referenceImagePaths: !kitResolver && userRefs.length ? userRefs : undefined,
+            resolveRefsForScene: kitResolver,
+            ...(provider === "geminigen" ? { model: params.geminigenModel ?? "nano-banana-2" } : {}),
+            ...(provider === "wan" ? { model: params.wanModel ?? "wan2.7-image" } : {}),
+          });
+          const byIdx = new Map(job.result.images.map((im) => [im.sceneIndex, im]));
+          for (const r of regenerated) byIdx.set(r.sceneIndex, r);
+          job.result.images = [...byIdx.values()].sort((a, b) => a.sceneIndex - b.sceneIndex);
+          emit(jobId, { step: "images", status: "running", progress: 100, message: `${regenerated.length} image(s) régénérée(s) (QC vision)` });
+        } catch (err) {
+          console.warn("[Pipeline] regen QC vision échoué:", (err as Error).message);
+        }
+      } else {
+        emit(jobId, { step: "images", status: "running", progress: 100, message: "QC vision : aucune image ratée" });
+      }
+    }
+
     const reusedNote = reusedImages.length > 0 ? ` (+${reusedImages.length} réutilisées)` : "";
     const pilotNote = isPilot ? ` · pilot` : "";
     emit(jobId, { step: "images", status: "completed", progress: 100,

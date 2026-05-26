@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   Loader2, Trash2, Play, Pause, CheckCircle2, AlertCircle, Clock, Activity,
-  RefreshCw, Pencil, X, ExternalLink, Film,
+  RefreshCw, Pencil, X, Film, ScanSearch, Wand2,
 } from "lucide-react";
 
 interface CFParams {
@@ -87,6 +87,7 @@ export default function ChannelFlowJobsPage() {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [notice, setNotice] = useState<{ type: "ok" | "err"; msg: string } | null>(null);
   const [editing, setEditing] = useState<QEntry | null>(null);
+  const [qcJob, setQcJob] = useState<string | null>(null);
   const [kits, setKits] = useState<string[]>([]);
   const [presets, setPresets] = useState<{ id: string; label: string }[]>([]);
 
@@ -301,6 +302,11 @@ export default function ChannelFlowJobsPage() {
                         </button>
                       </>
                     )}
+                    {e.jobId && (
+                      <button onClick={() => setQcJob(e.jobId!)} className="btn-glass" title="QC vision — détecter et régénérer les images ratées">
+                        <ScanSearch size={14} />
+                      </button>
+                    )}
                     {(e.status === "waiting" || e.status === "completed" || e.status === "failed") && (
                       <button onClick={() => onRemove(e.id)} disabled={isBusy} className="btn-glass" title="Retirer" style={{ color: "var(--red, #e0625a)" }}>
                         <Trash2 size={14} />
@@ -323,6 +329,150 @@ export default function ChannelFlowJobsPage() {
           onSave={onSaveEdit}
         />
       )}
+
+      {qcJob && <QcModal jobId={qcJob} onClose={() => setQcJob(null)} />}
+    </div>
+  );
+}
+
+interface Flag {
+  sceneIndex: number;
+  url: string;
+  severity: string;
+  issues: string[];
+  prompt: string;
+}
+
+function QcModal({ jobId, onClose }: { jobId: string; onClose: () => void }) {
+  const [loading, setLoading] = useState(true);
+  const [flagged, setFlagged] = useState<Flag[]>([]);
+  const [total, setTotal] = useState(0);
+  const [err, setErr] = useState<string | null>(null);
+  const [regenning, setRegenning] = useState(false);
+  const [doneIdx, setDoneIdx] = useState<Set<number>>(new Set());
+
+  const analyze = useCallback(async () => {
+    setLoading(true);
+    setErr(null);
+    setDoneIdx(new Set());
+    try {
+      const res = await fetch("/api/pipeline/analyze-images", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jobId }),
+      });
+      const j = await res.json();
+      if (!res.ok) throw new Error(j.error || `HTTP ${res.status}`);
+      setFlagged(j.flagged || []);
+      setTotal(j.total || 0);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : String(e));
+    } finally {
+      setLoading(false);
+    }
+  }, [jobId]);
+
+  useEffect(() => {
+    analyze();
+  }, [analyze]);
+
+  async function regenAll() {
+    const idxs = flagged.map((f) => f.sceneIndex).filter((i) => !doneIdx.has(i));
+    if (idxs.length === 0) return;
+    setRegenning(true);
+    setErr(null);
+    try {
+      const res = await fetch("/api/pipeline/regen-images", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jobId, sceneIndices: idxs }),
+      });
+      const j = await res.json();
+      if (!res.ok) throw new Error(j.error || `HTTP ${res.status}`);
+      const urlByIdx = new Map<number, string>((j.results || []).filter((r: { ok: boolean }) => r.ok).map((r: { sceneIndex: number; url: string }) => [r.sceneIndex, r.url]));
+      setFlagged((prev) => prev.map((f) => (urlByIdx.has(f.sceneIndex) ? { ...f, url: urlByIdx.get(f.sceneIndex)! } : f)));
+      setDoneIdx((prev) => {
+        const n = new Set(prev);
+        for (const r of j.results || []) if (r.ok) n.add(r.sceneIndex);
+        return n;
+      });
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : String(e));
+    } finally {
+      setRegenning(false);
+    }
+  }
+
+  const remaining = flagged.filter((f) => !doneIdx.has(f.sceneIndex)).length;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.6)" }} onClick={onClose}>
+      <div
+        className="w-full max-w-[820px] max-h-[88vh] overflow-y-auto rounded-[18px] p-5"
+        style={{ background: "var(--bg-primary, #161616)", border: "1px solid var(--border-glass)" }}
+        onClick={(ev) => ev.stopPropagation()}
+      >
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-[16px] font-bold" style={{ color: "var(--text-primary)" }}>QC vision — images ratées</h2>
+          <button onClick={onClose} className="btn-glass"><X size={14} /></button>
+        </div>
+
+        {loading ? (
+          <div className="flex items-center gap-2 text-[13px] py-10 justify-center" style={{ color: "var(--text-secondary)" }}>
+            <Loader2 size={16} className="animate-spin" /> Analyse vision en cours…
+          </div>
+        ) : err ? (
+          <div className="text-[13px] mb-3" style={{ color: "var(--red, #e0625a)" }}>{err}</div>
+        ) : flagged.length === 0 ? (
+          <div className="text-[13px] py-8 text-center" style={{ color: "var(--text-secondary)" }}>
+            Aucune image ratée détectée sur {total} image(s). 🎉
+          </div>
+        ) : (
+          <>
+            <div className="text-[12px] mb-3" style={{ color: "var(--text-secondary)" }}>
+              {flagged.length} image(s) signalée(s) sur {total}. {remaining > 0 ? `${remaining} à régénérer.` : "Toutes régénérées."}
+            </div>
+            <div className="grid grid-cols-3 gap-3 max-[640px]:grid-cols-2">
+              {flagged.map((f) => {
+                const regen = doneIdx.has(f.sceneIndex);
+                return (
+                  <div key={f.sceneIndex} className="rounded-[12px] overflow-hidden" style={{ border: "1px solid var(--border-glass)", background: "var(--bg-glass)" }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={f.url} alt={`scene ${f.sceneIndex}`} className="w-full aspect-video object-cover" />
+                    <div className="p-2">
+                      <div className="flex items-center gap-1.5 mb-1">
+                        <span className="text-[11px] font-semibold" style={{ color: "var(--text-primary)" }}>#{f.sceneIndex}</span>
+                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: f.severity === "bad" ? "var(--red, #e0625a)" : "var(--bg-glass-strong, #2a2a2a)", color: f.severity === "bad" ? "#fff" : "var(--text-secondary)" }}>
+                          {f.severity}
+                        </span>
+                        {regen && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "var(--green, #4caf7d)", color: "#fff" }}>regénérée ✓</span>}
+                      </div>
+                      <div className="text-[10px]" style={{ color: "var(--text-tertiary)" }}>{f.issues.join(", ")}</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        )}
+
+        <div className="flex justify-end gap-2 mt-4">
+          <button onClick={analyze} disabled={loading || regenning} className="btn-glass text-[13px]">
+            <RefreshCw size={13} /> <span className="ml-1">Ré-analyser</span>
+          </button>
+          {flagged.length > 0 && (
+            <button
+              onClick={regenAll}
+              disabled={regenning || remaining === 0}
+              className="px-4 py-2 rounded-[10px] text-[13px] font-semibold text-white inline-flex items-center gap-1.5 disabled:opacity-50"
+              style={{ background: "var(--accent)" }}
+            >
+              {regenning ? <Loader2 size={14} className="animate-spin" /> : <Wand2 size={14} />}
+              {regenning ? "Régénération…" : `Régénérer les ${remaining} ratées`}
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

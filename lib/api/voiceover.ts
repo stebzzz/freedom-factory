@@ -89,6 +89,35 @@ export async function applyAudioSpeed(audioPath: string, factor: number): Promis
   return dur;
 }
 
+// Supprime les blancs de la voix off : coupe le silence de tête + resserre les
+// pauses internes/de fin plus longues que ~0.6s en gardant ~0.25s de respiration.
+// Retourne la nouvelle durée (secondes). À lancer AVANT l'alignement Whisper.
+export async function removeSilences(audioPath: string): Promise<number> {
+  const tmpPath = `${audioPath}.desilence${path.extname(audioPath) || ".wav"}`;
+  const filter =
+    "silenceremove=start_periods=1:start_duration=0.1:start_threshold=-38dB:" +
+    "stop_periods=-1:stop_duration=0.6:stop_threshold=-38dB:stop_silence=0.25";
+  await new Promise<void>((resolve, reject) => {
+    const proc = spawn("ffmpeg", [
+      "-y", "-hide_banner", "-loglevel", "error",
+      "-i", audioPath,
+      "-filter:a", filter,
+      "-vn", tmpPath,
+    ]);
+    let err = "";
+    proc.stderr.on("data", (c) => { err += c.toString(); });
+    proc.on("error", reject);
+    proc.on("exit", (code) => code === 0
+      ? resolve()
+      : reject(new Error(`ffmpeg silenceremove exit ${code}: ${err.slice(-400)}`)));
+  });
+  await unlink(audioPath).catch(() => {});
+  await rename(tmpPath, audioPath);
+  const dur = await probeDuration(audioPath);
+  console.log(`[Voiceover] silences retirés → ${audioPath} (${dur.toFixed(2)}s)`);
+  return dur;
+}
+
 async function probeDuration(audioPath: string): Promise<number> {
   return await new Promise<number>((resolve, reject) => {
     const proc = spawn("ffprobe", [
