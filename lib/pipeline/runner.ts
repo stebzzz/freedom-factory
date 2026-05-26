@@ -17,7 +17,7 @@ import { fetchArchivesForScenes } from "@/lib/api/archives";
 import { alignScenesWithWhisper } from "@/lib/api/whisper";
 import { getConfig } from "@/lib/config";
 import { getPresetOrDefault } from "@/lib/presets/channel-presets";
-import { syncJobToChannelFlow, markChannelFlowFailed, reportChannelFlowProgress, markChannelFlowPilotDone } from "@/lib/integrations/channelflow-sync";
+import { syncJobToChannelFlow, markChannelFlowFailed, reportChannelFlowProgress, markChannelFlowPilotDone, writeChannelFlowMarker } from "@/lib/integrations/channelflow-sync";
 
 // Global store — survit aux hot-reloads Turbopack en dev
 declare global {
@@ -172,6 +172,10 @@ export async function startPipeline(params: PipelineJobParams): Promise<string> 
   const id = generateId();
   const jobDir = path.join(process.cwd(), "public", "generated", id);
   await mkdir(jobDir, { recursive: true });
+
+  // Marqueur de liaison ChannelFlow : permet au re-concat (mode projet) de
+  // resynchroniser la vidéo même hors du pipeline. No-op si pas de channelflowVideoId.
+  writeChannelFlowMarker(jobDir, params.channelflowVideoId, params.channelflowChannelId);
 
   // Build initial steps based on what's enabled
   const allSteps: PipelineStepName[] = [

@@ -15,7 +15,8 @@
 // service account configuré, getApp() renvoie null et les fonctions sont no-op.
 
 import { readFile } from "fs/promises";
-import { readFileSync } from "fs";
+import { readFileSync, writeFileSync, existsSync } from "fs";
+import path from "path";
 import admin from "firebase-admin";
 import type { PipelineJob, PipelineStepEvent } from "@/lib/pipeline/types";
 
@@ -151,6 +152,62 @@ export async function syncJobToChannelFlow(job: PipelineJob): Promise<void> {
     console.log(`[CF sync] vidéo ${videoId} → to_schedule (job ${job.id})`);
   } catch (e) {
     console.error(`[CF sync] write-back échoué pour la vidéo ${videoId}:`, e);
+  }
+}
+
+// Écrit un marqueur dans le dossier du job pour relier ce dossier à une vidéo
+// ChannelFlow. Permet à TOUTE (re)génération de montage (pipeline OU re-concat
+// du mode projet) de retrouver la vidéo cible et de la synchroniser.
+export function writeChannelFlowMarker(jobDir: string, videoId?: string, channelId?: string): void {
+  if (!videoId) return;
+  try {
+    writeFileSync(path.join(jobDir, "channelflow.json"), JSON.stringify({ videoId, channelId: channelId ?? null }));
+  } catch (e) {
+    console.warn("[CF sync] écriture du marqueur channelflow.json échouée:", e);
+  }
+}
+
+// Synchronise un montage (re)généré vers ChannelFlow à partir du dossier du job.
+// No-op si le dossier n'a pas de marqueur channelflow.json. Utilisé par le
+// re-concat du mode projet (et utilisable par tout chemin produisant un montage).
+export async function syncMontageToChannelFlowByDir(jobDir: string, montagePath: string): Promise<void> {
+  let videoId: string | undefined;
+  try {
+    const markerPath = path.join(jobDir, "channelflow.json");
+    if (existsSync(markerPath)) {
+      videoId = (JSON.parse(readFileSync(markerPath, "utf-8")) as { videoId?: string }).videoId;
+    }
+  } catch {
+    /* pas de marqueur lisible */
+  }
+  if (!videoId) return; // ce dossier ne vient pas de ChannelFlow
+
+  const application = getApp();
+  if (!application) return;
+  try {
+    const update: Record<string, unknown> = {
+      status: "to_schedule",
+      ffStatus: "completed",
+      ffStep: null,
+      ffStepMessage: null,
+      ffProgress: 100,
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    };
+    if (existsSync(montagePath)) {
+      const fileName = `${path.basename(jobDir)}.mp4`;
+      const up = await cloudinaryUpload(montagePath, "video", fileName);
+      if (up) {
+        update.videoFileUrl = up.secureUrl;
+        update.videoFilePath = up.publicId;
+        update.videoFileName = fileName;
+      } else {
+        console.warn(`[CF sync] montage non uploadé pour ${videoId} (Cloudinary).`);
+      }
+    }
+    await admin.firestore(application).collection("videos").doc(videoId).update(update);
+    console.log(`[CF sync] montage (re-concat) → vidéo ${videoId} mise à jour`);
+  } catch (e) {
+    console.error(`[CF sync] sync montage (dir) échoué pour ${videoId}:`, e);
   }
 }
 

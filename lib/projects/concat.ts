@@ -3,6 +3,7 @@ import { readdirSync, writeFileSync, existsSync, mkdirSync, statSync, unlinkSync
 import path from "path";
 import { randomBytes } from "crypto";
 import { getProject } from "./registry";
+import { syncMontageToChannelFlowByDir } from "@/lib/integrations/channelflow-sync";
 
 const ROOT = process.cwd();
 
@@ -107,6 +108,8 @@ class ConcatRunner {
           job.status = "done";
           job.outPath = outPath;
           job.outUrl = `/generated/${slug}/master.mp4?ts=${Date.now()}`;
+          // Resync ChannelFlow si ce dossier vient d'un job CF (marqueur channelflow.json).
+          void syncMontageToChannelFlowByDir(project.outDir, outPath);
         } else {
           job.status = "error";
           job.error = `ffmpeg exit ${code}`;
