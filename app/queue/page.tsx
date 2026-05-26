@@ -390,7 +390,7 @@ export default function QueuePage() {
                       <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>·</span>
                       <span className="text-[11px]" style={{ color: "var(--text-secondary)" }}>{e.params.duration}min</span>
                       {e.params.pilotMode && (
-                        <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ background: "var(--accent-bg)", color: "var(--accent)" }}>pilot</span>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "var(--accent)", color: "#fff" }}>🔬 PILOTE</span>
                       )}
                       {e.params.videoMode && (
                         <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ background: "var(--bg-glass-strong, #2a2a2a)", color: "var(--text-tertiary)" }}>{e.params.videoMode}</span>

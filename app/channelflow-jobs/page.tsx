@@ -268,13 +268,17 @@ export default function ChannelFlowJobsPage() {
                       <span className="text-[11px] px-2 py-0.5 rounded-full" style={{ background: "var(--bg-glass-strong, #2a2a2a)", color: v.color }}>
                         {v.label}
                       </span>
+                      {e.params.pilotMode && (
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "var(--accent)", color: "#fff" }}>
+                          🔬 PILOTE
+                        </span>
+                      )}
                     </div>
                     <div className="text-[12px] mt-1 flex flex-wrap gap-x-3 gap-y-0.5" style={{ color: "var(--text-secondary)" }}>
                       <span>niche : {e.params.niche || "—"}</span>
                       <span>durée : {e.params.duration ?? "—"} min</span>
                       <span>kit : {e.params.styleKitSlug || "style-kit-def"}</span>
                       <span>preset : {e.params.presetId || "défaut"}</span>
-                      {e.params.pilotMode && <span style={{ color: "var(--accent)" }}>🔬 pilote</span>}
                       <span>ajouté {fmtDate(e.addedAt)}</span>
                       {e.status === "running" && <span style={{ color: "var(--accent)" }}>{jobProgress(job)}</span>}
                     </div>
