@@ -17,10 +17,14 @@
 import { readFile } from "fs/promises";
 import { readFileSync } from "fs";
 import admin from "firebase-admin";
-import type { PipelineJob } from "@/lib/pipeline/types";
+import type { PipelineJob, PipelineStepEvent } from "@/lib/pipeline/types";
 
 let app: admin.app.App | null = null;
 let initFailed = false;
+
+// Throttle des écritures de progression, par vidéo (évite de spammer Firestore).
+const lastProgressWrite = new Map<string, number>();
+const PROGRESS_THROTTLE_MS = 4000;
 
 function loadServiceAccount(): admin.ServiceAccount | null {
   const json = process.env.FIREBASE_SERVICE_ACCOUNT;
@@ -117,6 +121,9 @@ export async function syncJobToChannelFlow(job: PipelineJob): Promise<void> {
     const update: Record<string, unknown> = {
       status: "to_schedule",
       ffStatus: "completed",
+      ffStep: null,
+      ffStepMessage: null,
+      ffProgress: 100,
       ffJobId: job.id,
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     };
@@ -161,5 +168,61 @@ export async function markChannelFlowFailed(job: PipelineJob): Promise<void> {
     });
   } catch (e) {
     console.error(`[CF sync] mark failed échoué pour la vidéo ${videoId}:`, e);
+  }
+}
+
+// Progression temps réel : appelée à chaque event du pipeline (throttlé). Écrit
+// ffStatus="running" + étape + % global dans Firestore → ChannelFlow l'affiche en live.
+export async function reportChannelFlowProgress(job: PipelineJob, event: PipelineStepEvent): Promise<void> {
+  const videoId = job.params.channelflowVideoId;
+  if (!videoId) return;
+  const application = getApp();
+  if (!application) return;
+
+  const now = Date.now();
+  const isTransition = event.status !== "running"; // queued/completed/failed = rare → toujours écrit
+  const last = lastProgressWrite.get(videoId) ?? 0;
+  if (!isTransition && now - last < PROGRESS_THROTTLE_MS) return;
+  lastProgressWrite.set(videoId, now);
+
+  // % global approximatif : étapes terminées + fraction de l'étape courante.
+  const stepStates = Object.values(job.steps || {});
+  const total = stepStates.length || 1;
+  const done = stepStates.filter((s) => s?.status === "completed").length;
+  const curFrac = event.status === "running" ? (event.progress || 0) / 100 : 0;
+  let overall = Math.round(((done + curFrac) / total) * 100);
+  if (overall > 99) overall = 99; // 100 réservé à la complétion finale
+
+  try {
+    await admin.firestore(application).collection("videos").doc(videoId).update({
+      ffStatus: "running",
+      ffStep: event.step,
+      ffProgress: overall,
+      ffStepMessage: event.message || null,
+      ffJobId: job.id,
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+  } catch {
+    /* best-effort : ne pas perturber le pipeline */
+  }
+}
+
+// Fin d'un job pilote : statut terminal côté ChannelFlow (pas de vidéo finale).
+export async function markChannelFlowPilotDone(job: PipelineJob): Promise<void> {
+  const videoId = job.params.channelflowVideoId;
+  if (!videoId) return;
+  const application = getApp();
+  if (!application) return;
+  try {
+    await admin.firestore(application).collection("videos").doc(videoId).update({
+      ffStatus: "completed",
+      ffStep: null,
+      ffStepMessage: "Pilote terminé (QA visuelle) — pas de vidéo finale",
+      ffProgress: 100,
+      ffJobId: job.id,
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+  } catch (e) {
+    console.error(`[CF sync] pilot done échoué pour ${videoId}:`, e);
   }
 }

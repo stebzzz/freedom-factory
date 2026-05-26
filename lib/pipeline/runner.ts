@@ -16,7 +16,7 @@ import { fetchArchivesForScenes } from "@/lib/api/archives";
 import { alignScenesWithWhisper } from "@/lib/api/whisper";
 import { getConfig } from "@/lib/config";
 import { getPresetOrDefault } from "@/lib/presets/channel-presets";
-import { syncJobToChannelFlow, markChannelFlowFailed } from "@/lib/integrations/channelflow-sync";
+import { syncJobToChannelFlow, markChannelFlowFailed, reportChannelFlowProgress, markChannelFlowPilotDone } from "@/lib/integrations/channelflow-sync";
 
 // Global store — survit aux hot-reloads Turbopack en dev
 declare global {
@@ -76,6 +76,8 @@ function emit(jobId: string, event: PipelineStepEvent) {
     };
     if (event.status === "running") job.currentStep = event.step;
   }
+  // Progression temps réel vers ChannelFlow (no-op si pas de channelflowVideoId).
+  if (job?.params.channelflowVideoId) void reportChannelFlowProgress(job, event);
   const listeners = jobListeners.get(jobId) || [];
   listeners.forEach((fn) => fn(event));
 }
@@ -1290,6 +1292,7 @@ async function runPipeline(jobId: string, jobDir: string) {
       : (job.result.animation?.length ?? 0);
     const noun = isStaticPilot ? "images" : "clips";
     console.log(`[Pipeline] PILOT ${jobId} terminé — ${count} ${noun} à valider`);
+    await markChannelFlowPilotDone(job);
     return;
   }
 
