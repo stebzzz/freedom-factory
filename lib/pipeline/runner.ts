@@ -8,6 +8,7 @@ import { generateImages as generateImagesGenAIPro, generateThumbnail } from "@/l
 import { animateImages as animateImagesGenAIPro, generateT2VClip, generateIngredientsClip } from "@/lib/api/genaipro";
 import { generateImages as generateImagesGeminigen } from "@/lib/api/geminigen";
 import { generateImages as generateImagesWan, animateImages as animateImagesWan } from "@/lib/api/wan";
+import { generateImages as generateImagesFlowmax } from "@/lib/api/flowmax";
 import { generateMusic } from "@/lib/api/music";
 import { assembleMontage } from "@/lib/api/ffmpeg";
 import { resolveRefsForScene as resolveKitRefs, resolveSplitRefsForScene, resolveSplitBriefForScene, getKit, buildDescribeKitMapping } from "@/lib/style-kit/import";
@@ -1021,10 +1022,12 @@ async function runPipeline(jobId: string, jobDir: string) {
     const generateImagesFn: ImagesFn =
       (provider === "geminigen" ? generateImagesGeminigen
       : provider === "wan" ? generateImagesWan
+      : provider === "flowmax" ? generateImagesFlowmax
       : generateImagesGenAIPro) as unknown as ImagesFn;
     const providerLabel =
       provider === "geminigen" ? `Geminigen/${params.geminigenModel ?? "nano-banana-2"}`
       : provider === "wan" ? `WAN/${params.wanModel ?? "wan2.7-image"}`
+      : provider === "flowmax" ? "FlowMax (Google Flow)"
       : "GenAIPro Veo";
     console.log(`[Pipeline] image provider = ${providerLabel}`);
 

@@ -46,8 +46,9 @@ export interface PipelineJobParams {
   /** Which API generates the per-scene images.
    *  "genaipro" (default) = GenAIPro Veo (existing behavior).
    *  "geminigen"          = GeminiGen.AI (nano-banana-2 by default).
-   *  "wan"                = Alibaba DashScope WAN 2.7 (Beijing region). */
-  imageProvider?: "genaipro" | "geminigen" | "wan";
+   *  "wan"                = Alibaba DashScope WAN 2.7 (Beijing region).
+   *  "flowmax"            = Google Flow réel via les workers FlowMax (réf @ par nom). */
+  imageProvider?: "genaipro" | "geminigen" | "wan" | "flowmax";
   /** Optional override for the geminigen model. Ignored when imageProvider != "geminigen". */
   geminigenModel?: "nano-banana-pro" | "nano-banana-2" | "imagen-4";
   /** Optional override for the WAN model. Ignored when imageProvider != "wan". */

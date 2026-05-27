@@ -7,6 +7,7 @@ import { multiRunner } from "@/lib/projects/runner";
 import { generateImages as generateImagesGenAIPro } from "@/lib/api/genaipro";
 import { generateImages as generateImagesGeminigen } from "@/lib/api/geminigen";
 import { generateImages as generateImagesWan } from "@/lib/api/wan";
+import { generateImages as generateImagesFlowmax } from "@/lib/api/flowmax";
 import type { ImageResult } from "@/lib/pipeline/types";
 import type { RunMode } from "@/lib/projects/types";
 
@@ -111,7 +112,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ sl
       const generateImages: ImagesFn =
         (provider === "geminigen" ? generateImagesGeminigen
           : provider === "wan" ? generateImagesWan
-            : generateImagesGenAIPro) as unknown as ImagesFn;
+            : provider === "flowmax" ? generateImagesFlowmax
+              : generateImagesGenAIPro) as unknown as ImagesFn;
       const modelOpt =
         provider === "geminigen" ? { model: meta.geminigenModel ?? "nano-banana-2" }
           : provider === "wan" ? { model: meta.wanModel ?? "wan2.7-image" }

@@ -79,7 +79,7 @@ export default function PipelinePage() {
   const [customVoiceId, setCustomVoiceId] = useState("");
   const [customScript, setCustomScript] = useState("");
   const [describeKitScriptSource, setDescribeKitScriptSource] = useState<"auto" | "custom">("auto");
-  const [imageProvider, setImageProvider] = useState<"genaipro" | "geminigen" | "wan">("genaipro");
+  const [imageProvider, setImageProvider] = useState<"genaipro" | "geminigen" | "wan" | "flowmax">("genaipro");
   const [geminigenModel, setGeminigenModel] = useState<"nano-banana-pro" | "nano-banana-2" | "imagen-4">("nano-banana-2");
   const [wanModel, setWanModel] = useState<"wan2.7-image" | "wan2.7-image-pro">("wan2.7-image");
   const [animationProvider, setAnimationProvider] = useState<"genaipro" | "wan">("genaipro");
@@ -637,6 +637,12 @@ export default function PipelinePage() {
                   label: "WAN 2.7 (Alibaba)",
                   sub: "Direct DashScope",
                   desc: "Tongyi Wanxiang 2.7 via DashScope Beijing. Sync API (pas de polling), jusqu'à 9 refs par scène, 4K dispo.",
+                },
+                {
+                  id: "flowmax" as const,
+                  label: "FlowMax (Google Flow)",
+                  sub: "Workers Chrome réels",
+                  desc: "Google Flow réel piloté par les workers FlowMax. Réf @ par NOM (image importée dans Flow = basename de la réf). Nécessite FLOWMAX_SERVER_URL + workers en ligne.",
                 },
               ].map((p) => (
                 <button

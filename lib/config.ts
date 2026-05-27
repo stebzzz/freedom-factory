@@ -10,6 +10,8 @@ export interface AppSettings {
   siliconflowKey: string;
   genaiproKey: string;
   geminigenKey: string;
+  flowmaxServerUrl: string;
+  flowmaxApiKey: string;
   dashscopeKey: string;
   elevenlabsKey: string;
   elevenlabsVoiceId: string;
@@ -35,6 +37,8 @@ const DEFAULTS: AppSettings = {
   siliconflowKey: "",
   genaiproKey: "",
   geminigenKey: "",
+  flowmaxServerUrl: "",
+  flowmaxApiKey: "",
   dashscopeKey: "",
   elevenlabsKey: "",
   elevenlabsVoiceId: "",

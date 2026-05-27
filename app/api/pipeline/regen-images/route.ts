@@ -7,6 +7,7 @@ import { getJob } from "@/lib/pipeline/runner";
 import { generateImages as genGenAIPro } from "@/lib/api/genaipro";
 import { generateImages as genGeminigen } from "@/lib/api/geminigen";
 import { generateImages as genWan } from "@/lib/api/wan";
+import { generateImages as genFlowmax } from "@/lib/api/flowmax";
 import type { ImageResult } from "@/lib/pipeline/types";
 
 export const dynamic = "force-dynamic";
@@ -81,12 +82,15 @@ export async function POST(req: NextRequest) {
 
   const provider: ImageProvider = (job.params.imageProvider as ImageProvider) ?? "genaipro";
   const generateImages: ImagesFn =
-    (provider === "geminigen" ? genGeminigen : provider === "wan" ? genWan : genGenAIPro) as unknown as ImagesFn;
+    (provider === "geminigen" ? genGeminigen
+      : provider === "wan" ? genWan
+      : provider === "flowmax" ? genFlowmax
+      : genGenAIPro) as unknown as ImagesFn;
   const modelOpt =
     provider === "geminigen" ? { model: job.params.geminigenModel ?? "nano-banana-2" }
     : provider === "wan" ? { model: job.params.wanModel ?? "wan2.7-image" }
     : {};
-  const ext = provider === "geminigen" ? "jpg" : "png";
+  const ext = provider === "geminigen" || provider === "flowmax" ? "jpg" : "png";
 
   const jobDir = path.join(process.cwd(), "public", "generated", jobId);
   const imagesDir = path.join(jobDir, "images");
