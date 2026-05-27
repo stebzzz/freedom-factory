@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 export const maxDuration = 600;
 
-type ImageProvider = "genaipro" | "geminigen" | "wan";
+type ImageProvider = "genaipro" | "geminigen" | "wan" | "flowmax";
 type ImagesFn = (
   scenes: { index: number; imagePrompt: string }[],
   outDir: string,

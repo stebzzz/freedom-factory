@@ -9,13 +9,14 @@ import { getProject } from "@/lib/projects/registry";
 import { generateImages as generateImagesGenAIPro } from "@/lib/api/genaipro";
 import { generateImages as generateImagesGeminigen } from "@/lib/api/geminigen";
 import { generateImages as generateImagesWan } from "@/lib/api/wan";
+import { generateImages as generateImagesFlowmax } from "@/lib/api/flowmax";
 import type { ImageResult } from "@/lib/pipeline/types";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 export const maxDuration = 600;
 
-type ImageProvider = "genaipro" | "geminigen" | "wan";
+type ImageProvider = "genaipro" | "geminigen" | "wan" | "flowmax";
 type ImagesFn = (
   scenes: { index: number; imagePrompt: string }[],
   outDir: string,
@@ -132,7 +133,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
   const generateImages: ImagesFn =
     (provider === "geminigen" ? generateImagesGeminigen
       : provider === "wan" ? generateImagesWan
-        : generateImagesGenAIPro) as unknown as ImagesFn;
+        : provider === "flowmax" ? generateImagesFlowmax
+          : generateImagesGenAIPro) as unknown as ImagesFn;
   const modelOpt =
     provider === "geminigen" ? { model: meta.geminigenModel ?? "nano-banana-2" }
       : provider === "wan" ? { model: meta.wanModel ?? "wan2.7-image" }

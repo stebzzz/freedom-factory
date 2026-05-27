@@ -11,7 +11,7 @@ import { generateImages as generateImagesFlowmax } from "@/lib/api/flowmax";
 import type { ImageResult } from "@/lib/pipeline/types";
 import type { RunMode } from "@/lib/projects/types";
 
-type ImageProvider = "genaipro" | "geminigen" | "wan";
+type ImageProvider = "genaipro" | "geminigen" | "wan" | "flowmax";
 type ImagesFn = (
   scenes: { index: number; imagePrompt: string }[],
   outDir: string,
