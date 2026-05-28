@@ -973,6 +973,14 @@ function segmentScriptVerbatim(text: string): Array<{ narration: string; duratio
       const next = normalized[i + 1];
       // Don't split inside numbers ("300,000", "29.5").
       if ((ch === "," || ch === ".") && prev && next && isDigit(prev) && isDigit(next)) continue;
+      // Don't split on a period that's part of an initialism/abbreviation: a single
+      // letter at a word boundary, e.g. "U.S.", "U. S.", "a.m.", "Ph.D." — otherwise
+      // "U.S." is cut into "U." + "S." and rejoined as "U. S.", breaking the verbatim
+      // guarantee (splitScriptInto2sScenes narration-divergence guard then throws).
+      if (ch === "." && prev && /[a-zA-Z]/.test(prev)) {
+        const before = normalized[i - 2];
+        if (before === undefined || before === " " || before === ".") continue;
+      }
       // Pull any trailing closing-quote into the current chunk so "Ave Maria," stays a single token
       // instead of being split into "Ave Maria, and a stranded ".
       while (i + 1 < normalized.length && `"'’”»`.includes(normalized[i + 1])) {
