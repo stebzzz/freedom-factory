@@ -13,8 +13,9 @@ import { getConfig } from "@/lib/config";
 // Auth : header `X-API-Key: <key>` (si le serveur a une API_KEY).
 //
 // La référence d'image (@) se fait par NOM : `style_name` doit correspondre à une
-// image DÉJÀ IMPORTÉE dans le compte Flow. On dérive ce nom du basename du 1er
-// chemin de référence fourni par le pipeline (ex: ref-style/perso.png → "perso.png").
+// image DÉJÀ IMPORTÉE dans le compte Flow (style-kit). Format de prompt FlowMax :
+//   "texte du prompt | NomDuStyle"  → prompt = avant le dernier "|", style = après.
+// Sans "|", on retombe sur le basename de la 1ʳᵉ référence du pipeline.
 
 const POLL_INTERVAL_MS = 8_000;
 const POLL_TIMEOUT_MS = 45 * 60 * 1000; // batch entier (plusieurs workers + cooldowns)
@@ -68,6 +69,25 @@ function refNameFromPath(p: string | undefined): string | null {
   return path.basename(p);
 }
 
+/**
+ * Parsing SPÉCIFIQUE FlowMax du format de prompt : "texte du prompt | NomDuStyle".
+ * Le segment après le DERNIER "|" est le nom de l'image de style (déjà importée
+ * dans Flow → mention @). On envoie la partie gauche comme prompt et la droite
+ * comme `style_name`. Sans "|", on retombe sur le basename de la 1ʳᵉ référence.
+ */
+function parseFlowmaxPrompt(
+  imagePrompt: string,
+  refPaths: string[],
+): { prompt: string; styleName: string | null } {
+  const idx = imagePrompt.lastIndexOf("|");
+  if (idx !== -1) {
+    const prompt = imagePrompt.slice(0, idx).trim();
+    const styleName = imagePrompt.slice(idx + 1).trim().replace(/^@/, "");
+    return { prompt: prompt || imagePrompt.trim(), styleName: styleName || null };
+  }
+  return { prompt: imagePrompt.trim(), styleName: refNameFromPath(refPaths[0]) };
+}
+
 export async function generateImages(
   scenes: Array<{ index: number; imagePrompt: string }>,
   outputDir: string,
@@ -104,8 +124,9 @@ export async function generateImages(
   const tasks: Array<{ prompt: string; style_name: string | null }> = [];
   for (const scene of scenes) {
     const refs = resolver ? await resolver(scene.index, scene.imagePrompt) : refPaths;
-    const styleName = refNameFromPath(refs[0]);
-    tasks.push({ prompt: scene.imagePrompt, style_name: styleName });
+    // Format FlowMax : "prompt | NomDuStyle" (style-kit importé dans Flow).
+    const { prompt, styleName } = parseFlowmaxPrompt(scene.imagePrompt, refs);
+    tasks.push({ prompt, style_name: styleName });
     submitted.push({
       scene,
       imagePath: `${outputDir}/scene_${String(scene.index).padStart(3, "0")}.jpg`,
