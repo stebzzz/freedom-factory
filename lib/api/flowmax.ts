@@ -55,12 +55,23 @@ function authHeaders(apiKey: string): Record<string, string> {
   return apiKey ? { "X-API-Key": apiKey } : {};
 }
 
-async function downloadToFile(url: string, outputPath: string): Promise<number> {
-  const res = await fetch(url, { redirect: "follow" });
-  if (!res.ok) throw new Error(`download ${res.status}: ${outputPath}`);
-  const buf = Buffer.from(await res.arrayBuffer());
-  await writeFile(outputPath, buf);
-  return buf.length;
+async function downloadToFile(url: string, outputPath: string, attempts = 4): Promise<number> {
+  let lastErr: Error | null = null;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      const res = await fetch(url, { redirect: "follow" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const buf = Buffer.from(await res.arrayBuffer());
+      if (buf.length < 100) throw new Error(`fichier vide (${buf.length}o)`);
+      await writeFile(outputPath, buf);
+      return buf.length;
+    } catch (e) {
+      lastErr = e as Error;
+      // Erreurs transitoires (throttle CDN Google) → retry avec backoff 1s/2s/4s.
+      if (i < attempts - 1) await new Promise((r) => setTimeout(r, 1000 * 2 ** i));
+    }
+  }
+  throw new Error(`download échec après ${attempts} essais (${lastErr?.message}): ${outputPath}`);
 }
 
 /** Dérive le `style_name` Flow (@) à partir d'un chemin de référence local. */
