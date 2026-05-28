@@ -57,11 +57,17 @@ interface CFPayload {
   presetId?: string;
   styleKitSlug?: string;
   voix?: string;
+  imageProvider?: string;
+  voiceModel?: string;
   pilotMode?: boolean;
   pilotSampleSize?: number;
   channelflowVideoId?: string;
   channelflowChannelId?: string;
 }
+
+// Providers acceptés (sinon → défaut). Réglés par chaîne côté ChannelFlow.
+const ALLOWED_IMAGE_PROVIDERS = new Set(["flowmax", "wan", "geminigen", "genaipro"]);
+const ALLOWED_VOICE_MODELS = new Set(["elevenlabs", "genaipro", "fishspeech"]);
 
 export async function OPTIONS(request: NextRequest) {
   return new NextResponse(null, { status: 204, headers: corsHeaders(request.headers.get("origin")) });
@@ -123,6 +129,14 @@ export async function POST(request: NextRequest) {
       ? body.duration
       : 10;
 
+  // Provider d'images / voix : réglés par chaîne côté ChannelFlow (sinon défauts).
+  const imageProvider = (body.imageProvider && ALLOWED_IMAGE_PROVIDERS.has(body.imageProvider.trim())
+    ? body.imageProvider.trim()
+    : "wan") as PipelineJobParams["imageProvider"];
+  const voiceModel = (body.voiceModel && ALLOWED_VOICE_MODELS.has(body.voiceModel.trim())
+    ? body.voiceModel.trim()
+    : "elevenlabs") as PipelineJobParams["voiceModel"];
+
   const params: PipelineJobParams = {
     title,
     niche,
@@ -134,11 +148,12 @@ export async function POST(request: NextRequest) {
     scenario: "A",
     presetId: body.presetId?.trim() || undefined,
     customScript,
-    // --- Paramètres de production figés (intégration ChannelFlow) ---
-    voiceModel: "elevenlabs",
+    // --- Paramètres de production (intégration ChannelFlow) ---
+    // imageProvider / voiceModel réglables par chaîne ; le reste figé.
+    voiceModel,
     videoMode: "static-images",
-    imageProvider: "wan",
-    wanModel: "wan2.7-image",
+    imageProvider,
+    ...(imageProvider === "wan" ? { wanModel: "wan2.7-image" as const } : {}),
     styleKitSlug: body.styleKitSlug?.trim() || "style-kit-def",
     subtitlesEnabled: true,
     // Mode pilote : QA 5 scènes (images uniquement, pas de montage → pas de retour vidéo).
