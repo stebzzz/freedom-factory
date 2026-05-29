@@ -152,8 +152,8 @@ export default function ChannelFlowJobsPage() {
   async function onRun(id: string) {
     setBusyId(id);
     try {
-      await patch({ id, run: true });
-      flash("ok", "Lancement demandé.");
+      const r = await patch({ id, run: true });
+      flash("ok", r?.queued ? "Ajouté à la file — démarrera après le job en cours." : "Lancement démarré.");
       await fetchAll();
     } catch (e) {
       flash("err", e instanceof Error ? e.message : String(e));

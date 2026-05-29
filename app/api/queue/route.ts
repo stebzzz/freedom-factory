@@ -160,11 +160,12 @@ export async function PATCH(request: NextRequest) {
       run?: boolean;
     };
 
-    // Lancer maintenant une entrée précise (même worker en pause)
+    // Lancer une entrée : démarre tout de suite si rien ne tourne, sinon la
+    // laisse en file (le worker l'enchaîne automatiquement) — jamais d'erreur "déjà en cours".
     if (body.id && body.run) {
       const r = await runQueueEntryNow(body.id);
       if (!r.ok) return NextResponse.json({ error: r.error }, { status: 400 });
-      return NextResponse.json(getQueueSnapshot());
+      return NextResponse.json({ ...getQueueSnapshot(), queued: r.queued === true });
     }
 
     // Éditer les params d'une entrée en attente

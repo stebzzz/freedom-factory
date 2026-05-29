@@ -173,13 +173,21 @@ export async function updateQueueEntryParams(
   return true;
 }
 
-// Lance immédiatement une entrée en attente, même si le worker global est en
-// pause. Ne bloque pas jusqu'à la fin (fire-and-forget) — l'UI suit via /api/pipeline.
-export async function runQueueEntryNow(id: string): Promise<{ ok: boolean; error?: string }> {
+// Demande le lancement d'une entrée. Si rien ne tourne, démarre tout de suite
+// (fire-and-forget — l'UI suit via /api/pipeline). Si un job tourne déjà, on ne
+// renvoie PAS d'erreur : l'entrée reste "waiting" et le worker l'enchaînera
+// automatiquement à la fin du job courant. Comportement de vraie file d'attente.
+export async function runQueueEntryNow(id: string): Promise<{ ok: boolean; queued?: boolean; error?: string }> {
   const entry = state.entries.find((e) => e.id === id);
   if (!entry) return { ok: false, error: "Entrée introuvable." };
   if (entry.status !== "waiting") return { ok: false, error: "Entrée déjà traitée ou en cours." };
-  if (global.__ff_queue_running) return { ok: false, error: "Un job tourne déjà — réessaie après." };
+  // On s'assure que le worker tourne — sinon une entrée "waiting" ne partirait jamais.
+  if (!state.workerEnabled) {
+    state.workerEnabled = true;
+    await persist();
+  }
+  // Un job tourne déjà → on laisse l'entrée en file ; workerTick la prendra ensuite.
+  if (global.__ff_queue_running) return { ok: true, queued: true };
   void runEntry(entry).catch((e) => console.error("[Queue] runEntryNow", e));
   return { ok: true };
 }
