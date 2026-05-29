@@ -155,9 +155,13 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
   }
 
   // Verify each target landed on disk — wan pushes placeholders even on failure.
+  // Providers differ on extension (FlowMax → .jpg, others → .png), so probe both.
   const results = targets.map((t) => {
-    const finalPath = path.join(imagesDir, `scene_${String(t.index).padStart(3, "0")}.png`);
-    const ok = existsSync(finalPath) && !failures.has(t.index);
+    const padded = String(t.index).padStart(3, "0");
+    const landed = ["png", "jpg", "jpeg", "webp"].some((ext) =>
+      existsSync(path.join(imagesDir, `scene_${padded}.${ext}`)),
+    );
+    const ok = landed && !failures.has(t.index);
     return { id: t.index, ok, error: ok ? undefined : (failures.get(t.index) ?? "pas de fichier généré") };
   });
 

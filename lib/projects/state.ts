@@ -138,11 +138,18 @@ function buildPipelineProjectState(project: ProjectSummary): ProjectState {
   const script = loadPipelineScript(project.outDir);
   const scenes: Scene[] = (script?.scenes ?? []).map((sc) => {
     const padded = String(sc.index).padStart(3, "0");
-    const imagePathRel = `/generated/${project.slug}/images/scene_${padded}.png`;
+    // Providers write different extensions (GenAIPro/WAN → .png, FlowMax → .jpg),
+    // so probe the known image extensions instead of assuming .png — otherwise a
+    // FlowMax job's .jpg scenes never resolve and the UI shows "no clip" on every
+    // scene even though the images exist on disk.
+    const imageRel = ["png", "jpg", "jpeg", "webp"]
+      .map((ext) => `/generated/${project.slug}/images/scene_${padded}.${ext}`)
+      .find((rel) => existsSync(path.join(ROOT, "public", rel.replace(/^\//, ""))));
     const clipPathRel = `/generated/${project.slug}/clips/clip_${padded}.mp4`;
-    const imageAbs = path.join(ROOT, "public", imagePathRel.replace(/^\//, ""));
     const clipAbs = path.join(ROOT, "public", clipPathRel.replace(/^\//, ""));
-    const imageUrl = existsSync(imageAbs) ? withCacheBust(imagePathRel, imageAbs) : undefined;
+    const imageUrl = imageRel
+      ? withCacheBust(imageRel, path.join(ROOT, "public", imageRel.replace(/^\//, "")))
+      : undefined;
     const clipUrl = existsSync(clipAbs) ? withCacheBust(clipPathRel, clipAbs) : undefined;
     let status: SceneStatus = "not-started";
     if (clipUrl) status = "done";

@@ -138,10 +138,15 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ sl
         },
       );
       // wan.generateImages pushes a placeholder ImageResult even on failure, so we
-      // can't trust the array — verify the actual PNG landed on disk before claiming success.
-      const finalPath = path.join(imagesDir, `scene_${String(sceneId).padStart(3, "0")}.png`);
+      // can't trust the array — verify the actual file landed on disk before claiming success.
+      // Providers differ on extension (FlowMax → .jpg, others → .png), so probe both.
+      const padded = String(sceneId).padStart(3, "0");
+      const finalExt = ["png", "jpg", "jpeg", "webp"].find((ext) =>
+        existsSync(path.join(imagesDir, `scene_${padded}.${ext}`)),
+      );
+      const finalPath = finalExt ? path.join(imagesDir, `scene_${padded}.${finalExt}`) : "";
       const got = results.find((r) => r.sceneIndex === sceneId);
-      if (!got || !existsSync(finalPath) || failureReason) {
+      if (!got || !finalExt || failureReason) {
         const msg = failureReason ?? `image regen via ${provider}: pas de fichier généré`;
         const hint = /401|invalid_token|jwt/i.test(msg)
           ? ` — la clé ${provider} est probablement expirée (JWT Clerk pour GenAIPro), mets-la à jour dans /settings`
@@ -152,7 +157,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ sl
               : "";
         return NextResponse.json({ ok: false, error: `[${provider}] ${msg}${hint}` }, { status: 502 });
       }
-      const url = `/generated/${slug}/images/scene_${String(sceneId).padStart(3, "0")}.png`;
+      const url = `/generated/${slug}/images/scene_${padded}.${finalExt}`;
       return NextResponse.json({ ok: true, imageUrl: url, provider });
     } catch (err) {
       return NextResponse.json({ ok: false, error: `image regen: ${(err as Error).message}` }, { status: 500 });
