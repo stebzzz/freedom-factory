@@ -8,6 +8,7 @@ import { generateImages as generateImagesGenAIPro, generateThumbnail } from "@/l
 import { animateImages as animateImagesGenAIPro, generateT2VClip, generateIngredientsClip } from "@/lib/api/genaipro";
 import { generateImages as generateImagesGeminigen } from "@/lib/api/geminigen";
 import { generateImages as generateImagesWan, animateImages as animateImagesWan } from "@/lib/api/wan";
+import { animateImages as animateImagesSeedance } from "@/lib/api/seedance";
 import { generateImages as generateImagesFlowmax } from "@/lib/api/flowmax";
 import { generateMusic } from "@/lib/api/music";
 import { assembleMontage } from "@/lib/api/ffmpeg";
@@ -634,7 +635,12 @@ async function runPipeline(jobId: string, jobDir: string) {
   // When `voiceoverGate` is true, the runner pauses after each voiceover attempt and waits for an explicit
   // approve / regenerate / cancel decision before continuing.
   let voiceoverFailed = false;
-  if (isEnabled(params, "voiceover")) {
+  let voiceoverError: Error | null = null;
+  // Voix off LANCÉE EN PARALLÈLE des images : le TTS GenAI prend ~40min, on ne bloque
+  // plus la génération d'images/animation derrière. La promesse est AWAITée juste avant
+  // le montage (qui a besoin de l'audio + des durations alignées Whisper).
+  const voiceoverPromise: Promise<void> = (async () => {
+    if (!isEnabled(params, "voiceover")) return;
     const audioPath = path.join(jobDir, "voiceover.wav");
     try {
       let attempt = 0;
@@ -781,7 +787,7 @@ async function runPipeline(jobId: string, jobDir: string) {
       emit(jobId, { step: "voiceover", status: "failed", progress: 0,
         message: `Voix off échouée: ${errMsg.slice(0, 100)} — pipeline continue (images puis stop)` });
     }
-  }
+  })().catch((e: unknown) => { voiceoverError = e instanceof Error ? e : new Error(String(e)); });
 
   // --- Step 3: Images principales (GenAIPro Veo) ---
   const imagesDir = path.join(jobDir, "images");
@@ -1201,8 +1207,8 @@ async function runPipeline(jobId: string, jobDir: string) {
   const videoMode = params.videoMode ?? "t2v";
   const animationProvider = params.animationProvider ?? "genaipro";
   const animationGate = videoMode === "t2v" ? true : !!job.result.images;
-  if (animationProvider === "wan" && (videoMode === "t2v" || videoMode === "ingredients")) {
-    console.warn(`[Pipeline] animationProvider=wan ignoré pour videoMode=${videoMode} (WAN ne supporte pas ce mode) → fallback Veo3.`);
+  if ((animationProvider === "wan" || animationProvider === "seedance") && (videoMode === "t2v" || videoMode === "ingredients")) {
+    console.warn(`[Pipeline] animationProvider=${animationProvider} ignoré pour videoMode=${videoMode} (i2v only) → fallback Veo3.`);
   }
   if (isEnabled(params, "animation") && animationGate) {
     const clipsDir = path.join(jobDir, "clips");
@@ -1286,38 +1292,28 @@ async function runPipeline(jobId: string, jobDir: string) {
           if (doneClipSet.has(img.sceneIndex)) return false;
           return true;
         });
-        const useWanI2V = animationProvider === "wan";
-        const i2vLabel = useWanI2V ? `WAN/${params.wanI2VModel ?? "wan2.2-i2v-flash"}` : "Veo3";
+        const i2vLabel =
+          animationProvider === "wan" ? `WAN/${params.wanI2VModel ?? "wan2.2-i2v-flash"}`
+          : animationProvider === "seedance" ? "Seedance"
+          : "Veo3";
         emit(jobId, { step: "animation", status: "running", progress: 5,
           message: `${i2vLabel} I2V — ${i2vTargets.length} clips${isPilot ? " (pilot)" : ""}${reusedClips.length ? ` (+${reusedClips.length} réutilisés)` : ""}...` });
         const onI2VProgress = (done: number, total: number) => {
           const pct = Math.round((done / total) * 100);
           emit(jobId, { step: "animation", status: "running", progress: pct, message: `${done}/${total} clips ${i2vLabel}` });
         };
-        const animations = i2vTargets.length > 0
-          ? useWanI2V
-            ? await animateImagesWan(
-                i2vTargets.map((img) => ({
-                  imagePath: img.imagePath,
-                  sceneIndex: img.sceneIndex,
-                  motionPrompt: script.scenes[img.sceneIndex]?.motionPrompt,
-                })),
-                clipsDir,
-                script.scenes,
-                onI2VProgress,
-                { model: params.wanI2VModel ?? "wan2.2-i2v-flash" },
-              )
-            : await animateImagesGenAIPro(
-                i2vTargets.map((img) => ({
-                  imagePath: img.imagePath,
-                  sceneIndex: img.sceneIndex,
-                  motionPrompt: script.scenes[img.sceneIndex]?.motionPrompt,
-                })),
-                clipsDir,
-                script.scenes,
-                onI2VProgress,
-              )
-          : [];
+        const i2vInput = i2vTargets.map((img) => ({
+          imagePath: img.imagePath,
+          sceneIndex: img.sceneIndex,
+          motionPrompt: script.scenes[img.sceneIndex]?.motionPrompt,
+        }));
+        const animations = i2vTargets.length === 0
+          ? []
+          : animationProvider === "wan"
+            ? await animateImagesWan(i2vInput, clipsDir, script.scenes, onI2VProgress, { model: params.wanI2VModel ?? "wan2.2-i2v-flash" })
+            : animationProvider === "seedance"
+              ? await animateImagesSeedance(i2vInput, clipsDir, script.scenes, onI2VProgress)
+              : await animateImagesGenAIPro(i2vInput, clipsDir, script.scenes, onI2VProgress);
         job.result.animation = [...reusedClips, ...animations].sort((a, b) => a.sceneIndex - b.sceneIndex);
         emit(jobId, { step: "animation", status: "completed", progress: 100,
           message: `${job.result.animation.length} clips (${i2vLabel})` });
@@ -1357,6 +1353,11 @@ async function runPipeline(jobId: string, jobDir: string) {
     await markChannelFlowPilotDone(job);
     return;
   }
+
+  // Récupère la voix off lancée en parallèle des images (TTS GenAI ~40min).
+  // Le montage a besoin de l'audio + des durations alignées Whisper → on attend ici.
+  await voiceoverPromise;
+  if (voiceoverError) throw voiceoverError;
 
   // --- Step 9: Montage FFmpeg (Ken Burns + audio) ---
   const voiceoverPath = job.result.voiceover?.audioPath;
