@@ -9,7 +9,7 @@ import { getConfig } from "@/lib/config";
 
 const API_BASE = "https://genaipro.io/api";
 const POLL_INTERVAL_MS = 4_000;
-const POLL_TIMEOUT_MS = 20 * 60 * 1000; // 20 min — long scripts (>5k chars) can take 10-15min côté GenAIPro
+const POLL_TIMEOUT_MS = 40 * 60 * 1000; // 40 min — long scripts (>5k chars) can take 10-15min côté GenAIPro
 const STATUS_LOG_INTERVAL_MS = 30_000; // log status every 30s so silent polling is visible
 
 // Same preset map as elevenlabs.ts — Labs accepts the ElevenLabs voice IDs verbatim.
