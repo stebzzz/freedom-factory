@@ -5,8 +5,9 @@ import { callClaudeRetry, type ClaudeMessage } from "./claude-wrapper-client";
 
 // ===================================================================
 // All Claude calls route through the VPS wrapper (lib/api/claude-wrapper-client).
-// The `model` and `maxTokens` arguments are kept for signature compatibility
-// across the call-sites in this file but the wrapper ignores them.
+// `maxTokens` is ignored (handled server-side). The model id IS honoured: the
+// wrapper client maps it to opus/sonnet/haiku, so scriptModel drives the CLI.
+// Default scriptModel = claude-sonnet-4-6 → parsing/script run on Sonnet.
 // ===================================================================
 
 function getModelId(config: { scriptModel: string }): string {

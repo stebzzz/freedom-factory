@@ -164,19 +164,34 @@ async function callViaWrapper(prompt: string, imagePath?: string, model?: string
   }
 }
 
+// Map an Anthropic model id (e.g. "claude-sonnet-4-6") to the short family
+// name the wrapper accepts as `claude -p --model <x>` (opus|sonnet|haiku).
+// Anything unrecognised → undefined (wrapper falls back to its CLI default).
+function toWrapperModel(modelId: string | undefined): string | undefined {
+  if (!modelId) return undefined;
+  const m = modelId.toLowerCase();
+  if (m.includes("opus")) return "opus";
+  if (m.includes("sonnet")) return "sonnet";
+  if (m.includes("haiku")) return "haiku";
+  return undefined;
+}
+
 // ===================================================================
 // PUBLIC: callClaude — drop-in for the old worker-SSE callClaude.
-// `model` and `maxTokens` are accepted for compatibility but ignored
-// (the wrapper handles those server-side).
+// `maxTokens` is accepted for compatibility but ignored (the wrapper
+// handles it server-side). `model` IS honoured: an explicit options.model
+// hint wins, otherwise the model id is mapped to opus/sonnet/haiku so the
+// app's scriptModel setting actually routes the CLI (no longer a dead arg).
 // ===================================================================
 export async function callClaude(
-  _model: string,
+  model: string,
   _maxTokens: number,
   messages: Array<{ role: string; content: string }>,
   options?: CallClaudeOptions,
 ): Promise<ClaudeMessage> {
   const prompt = messagesToPrompt(messages, options?.system);
-  const text = await callViaWrapper(prompt, options?.imagePath, options?.model, options?.light);
+  const wrapperModel = options?.model ?? toWrapperModel(model);
+  const text = await callViaWrapper(prompt, options?.imagePath, wrapperModel, options?.light);
   return { content: [{ type: "text", text }] };
 }
 
