@@ -520,12 +520,34 @@ function buildMontageSimple(
   concatDir: string,
 ) {
   const concatFilePath = path.join(concatDir, "concat.txt");
-  const concatLines = images.map((img, i) => {
+  // Si le provider d'image a échoué sur une scène, son PNG n'existe pas sur le
+  // disque. Le démuxeur concat de ffmpeg s'arrête NET à la première référence
+  // introuvable → la vidéo est tronquée à cet instant et -shortest rogne la voix
+  // d'autant (voix coupée en plein milieu). On substitue toute image manquante
+  // par la dernière image valide (ou la première dispo si c'est au tout début) :
+  // le créneau temporel de chaque scène est préservé, donc la durée totale et la
+  // synchro voix restent intactes.
+  const firstGood = images.find((im) => existsSync(im.imagePath))?.imagePath ?? null;
+  let lastGood: string | null = null;
+  let missing = 0;
+  const concatLines: string[] = [];
+  images.forEach((img, i) => {
     const duration = scenes[i]?.durationSeconds || 5;
-    return `file '${img.imagePath}'\nduration ${duration}`;
+    let file = img.imagePath;
+    if (existsSync(file)) {
+      lastGood = file;
+    } else {
+      missing++;
+      file = lastGood ?? firstGood ?? "";
+      if (!file) return; // aucune image valide nulle part : on saute le créneau
+    }
+    concatLines.push(`file '${file}'\nduration ${duration}`);
   });
-  if (images.length > 0) {
-    concatLines.push(`file '${images[images.length - 1].imagePath}'`);
+  if (missing > 0) {
+    console.warn(`[FFmpeg] Simple fallback: ${missing} image(s) manquante(s) substituée(s) (sinon concat tronqué + voix coupée)`);
+  }
+  if (lastGood) {
+    concatLines.push(`file '${lastGood}'`);
   }
 
   writeFile(concatFilePath, concatLines.join("\n")).then(() => {
