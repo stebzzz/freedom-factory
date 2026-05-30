@@ -6,13 +6,19 @@ import { callClaudeRetry, type ClaudeMessage } from "./claude-wrapper-client";
 // ===================================================================
 // All Claude calls route through the VPS wrapper (lib/api/claude-wrapper-client).
 // `maxTokens` is ignored (handled server-side). The model id IS honoured: the
-// wrapper client maps it to opus/sonnet/haiku, so scriptModel drives the CLI.
-// Default scriptModel = claude-sonnet-4-6 → parsing/script run on Sonnet.
+// wrapper client maps it to opus/sonnet/haiku.
+// SPLIT: la génération de script narratif suit scriptModel (Opus pour la qualité),
+// mais le découpage 2s / image-prompts / parsing tourne TOUJOURS sur Sonnet — Opus
+// sur ces gros prompts (128KB) timeoutait sur le wrapper et faisait planter les jobs.
 // ===================================================================
 
+// Modèle pour la GÉNÉRATION DE SCRIPT narratif (+ réécriture concurrent).
 function getModelId(config: { scriptModel: string }): string {
   return config.scriptModel === "claude-opus-4-6" ? "claude-opus-4-6" : "claude-sonnet-4-6";
 }
+
+// Modèle pour le découpage 2s / image-prompts / parsing — toujours Sonnet (rapide, pas de timeout).
+const PROMPT_MODEL = "claude-sonnet-4-6";
 
 // ===================================================================
 // PUBLIC: generateScript — NO MOCK, throws on error
@@ -270,7 +276,7 @@ export async function parseCustomScript(
   const config = await getConfig();
   const preset = getPresetOrDefault(presetId);
 
-  const modelId = getModelId(config);
+  const modelId = PROMPT_MODEL;
   const [minDur, maxDur] = preset.script.sceneDurationRange;
   const totalDuration = durationMinutes * 60;
 
@@ -342,7 +348,7 @@ export async function extractCustomScriptWithPrompts(
   const config = await getConfig();
   const preset = getPresetOrDefault(presetId);
 
-  const modelId = getModelId(config);
+  const modelId = PROMPT_MODEL;
   const [minDur, maxDur] = preset.script.sceneDurationRange;
   const totalDuration = durationMinutes * 60;
 
@@ -519,7 +525,7 @@ export async function generateStickyPrompts(
   durationMinutes: number,
 ): Promise<ScriptResult> {
   const config = await getConfig();
-  const modelId = getModelId(config);
+  const modelId = PROMPT_MODEL;
 
   const userContent = `${stylePrompt}
 
@@ -624,7 +630,7 @@ Maintenant écris ma version réécrite (juste le texte narratif, rien d'autre) 
 // ===================================================================
 export async function consolidateStyleBrief(perFrameBriefs: string[]): Promise<string> {
   const config = await getConfig();
-  const modelId = getModelId(config);
+  const modelId = PROMPT_MODEL;
 
   const clean = perFrameBriefs.map((b) => b.trim()).filter((b) => b.length > 20);
   if (clean.length === 0) throw new Error("consolidateStyleBrief: aucune description exploitable");
@@ -684,7 +690,7 @@ export async function rankRefsForScenes(
   if (scenes.length === 0 || kitImages.length === 0) return [];
 
   const config = await getConfig();
-  const modelId = getModelId(config);
+  const modelId = PROMPT_MODEL;
 
   const validKit = kitImages.filter((k) => (k.imagePrompt ?? "").trim().length > 20);
   if (validKit.length === 0) throw new Error("rankRefsForScenes: aucun imagePrompt exploitable dans le kit");
@@ -1228,7 +1234,7 @@ export async function splitScriptInto2sScenes(
   pilotSampleSize?: number,
 ): Promise<ScriptResult> {
   const config = await getConfig();
-  const modelId = getModelId(config);
+  const modelId = PROMPT_MODEL;
 
   const totalDurS = Math.max(60, Math.round(durationMinutes * 60));
 
@@ -1490,7 +1496,7 @@ export async function generateScript2sScenes(
   kitImagePrompts: string[] = [],
 ): Promise<ScriptResult> {
   const config = await getConfig();
-  const modelId = getModelId(config);
+  const modelId = PROMPT_MODEL;
 
   const totalDurS = Math.max(60, Math.round(durationMinutes * 60));
   const targetScenes = Math.round(totalDurS / 1.5); // 1.5s par scène en moyenne
