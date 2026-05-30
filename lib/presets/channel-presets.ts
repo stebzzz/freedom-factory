@@ -285,6 +285,57 @@ REGLES :
 };
 
 // -------------------------------------------------------------------
+// PRESET: Alphonse / Storytime perso uploadé (universel)
+// 2D cel-shading "livre pour enfants", visages ronds blancs (style maison).
+// L'IDENTITÉ du perso central vient de l'image @ uploadée (FlowMax) — PAS hardcodée
+// ici → universel, marche pour n'importe quelle niche / n'importe quel "bonhomme".
+// Conçu pour : script custom verbatim + images FlowMax (@ref) + anim Seedance.
+// imageStyleSuffix = fallback (ignoré quand customScriptHasImagePrompts=true).
+// PAS de "|" dans le suffix : casserait le parse styleName de FlowMax.
+// -------------------------------------------------------------------
+export const PRESET_ALPHONSE: ChannelPreset = {
+  id: "alphonse",
+  label: "Alphonse / Storytime perso uploadé",
+  emoji: "🎭",
+  description: "Storytime 2e personne. Le perso central est UPLOADÉ (réf FlowMax @) → universel. Style 2D cartoon doux, images FlowMax + animation Seedance.",
+  language: "en",
+  script: {
+    wordsPerMinute: 130,
+    scenesPerMinute: 7,
+    sceneDurationRange: [4, 8],
+    structure: "dramatic-arc",
+    claudeStylePrompt: `Immersive STORYTIME, 2nd person ("You are ...").
+RULES:
+- Slow, grave, intimate narration with rising tension.
+- Each scene = 1-2 sentences, concrete and visceral.
+- If the arc spans ages/chapters, keep the progression explicit.
+- NOTE: this channel normally runs on a verbatim custom script — do NOT rewrite when one is provided.`,
+    maxScenesPerChunk: 40,
+  },
+  visual: {
+    // Style maison générique. L'identité du perso vient de l'image @ uploadée (FlowMax),
+    // donc on ne décrit PAS un personnage précis ici.
+    imageStyleSuffix: "children's picture book storytime animation, clean 2D cel-shading, bold thick uniform black outlines, flat simple colors, every human face is a pure white round featureless face with only two tiny black dot eyes and one thin mouth line (no nose, no skin tone, no realistic features), soft and gentle look, cinematic 16:9, NOT photorealistic, NOT 3D, NOT anime",
+    kenBurnsSpeed: 0.08,
+    transitionType: "dip-to-black",
+    transitionDuration: 1.0,
+    brollEnabled: false,
+    archiveDensity: "none",
+  },
+  audio: {
+    voiceSpeed: 0.95,
+    musicGenre: "melancholic cinematic ambient, slow sorrowful strings, sparse",
+    musicVolume: 0.16,
+  },
+  subtitles: {
+    style: "none",
+    fontSize: 56,
+    position: "center-bottom",
+  },
+  durationRange: { min: 5, max: 45, default: 20 },
+};
+
+// -------------------------------------------------------------------
 // All presets
 // -------------------------------------------------------------------
 // -------------------------------------------------------------------
@@ -382,6 +433,7 @@ export const ALL_PRESETS: ChannelPreset[] = [
   PRESET_DOCUMENTARY_FR,
   PRESET_MYSTERY,
   PRESET_SLEEPY,
+  PRESET_ALPHONSE,
 ];
 
 export function getPreset(id: string): ChannelPreset | undefined {

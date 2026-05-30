@@ -56,8 +56,9 @@ export interface PipelineJobParams {
   /** Which API generates the per-scene animation clips (I2V mode only).
    *  "genaipro" (default) = GenAIPro Veo3 I2V.
    *  "wan"                = Alibaba DashScope wan-i2v.
-   *  T2V and Ingredients modes always use Veo3 — a `wan` selection falls back to Veo3 there with a warning. */
-  animationProvider?: "genaipro" | "wan";
+   *  "seedance"           = WaveSpeed bytedance/seedance-v1-pro-fast/image-to-video.
+   *  T2V and Ingredients modes always use Veo3 — a `wan`/`seedance` selection falls back to Veo3 there with a warning. */
+  animationProvider?: "genaipro" | "wan" | "seedance";
   /** Optional override for the WAN I2V model. Ignored when animationProvider != "wan". */
   wanI2VModel?: "wan2.2-i2v-flash" | "wan2.2-i2v-plus" | "wanx2.1-i2v-turbo" | "wanx2.1-i2v-plus";
   /** Per-job override of the global voiceModel setting (lib/config.ts). When set, takes precedence. */

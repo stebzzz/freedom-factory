@@ -13,6 +13,7 @@ export interface AppSettings {
   flowmaxServerUrl: string;
   flowmaxApiKey: string;
   dashscopeKey: string;
+  wavespeedKey: string;
   elevenlabsKey: string;
   elevenlabsVoiceId: string;
   mubertKey: string;
@@ -40,6 +41,7 @@ const DEFAULTS: AppSettings = {
   flowmaxServerUrl: "",
   flowmaxApiKey: "",
   dashscopeKey: "",
+  wavespeedKey: "",
   elevenlabsKey: "",
   elevenlabsVoiceId: "",
   mubertKey: "",

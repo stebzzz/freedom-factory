@@ -74,10 +74,12 @@ async function downloadToFile(url: string, outputPath: string, attempts = 4): Pr
   throw new Error(`download échec après ${attempts} essais (${lastErr?.message}): ${outputPath}`);
 }
 
-/** Dérive le `style_name` Flow (@) à partir d'un chemin de référence local. */
+/** Dérive le `style_name` Flow (@) à partir d'un chemin de référence local.
+ *  On enlève l'extension : le @nom Flow est sans extension (ex: alphonse.png → "alphonse").
+ *  Le nom du fichier uploadé EST la référence — il doit matcher une image importée dans Flow. */
 function refNameFromPath(p: string | undefined): string | null {
   if (!p) return null;
-  return path.basename(p);
+  return path.basename(p, path.extname(p));
 }
 
 /**

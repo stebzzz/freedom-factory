@@ -82,7 +82,7 @@ export default function PipelinePage() {
   const [imageProvider, setImageProvider] = useState<"genaipro" | "geminigen" | "wan" | "flowmax">("genaipro");
   const [geminigenModel, setGeminigenModel] = useState<"nano-banana-pro" | "nano-banana-2" | "imagen-4">("nano-banana-2");
   const [wanModel, setWanModel] = useState<"wan2.7-image" | "wan2.7-image-pro">("wan2.7-image");
-  const [animationProvider, setAnimationProvider] = useState<"genaipro" | "wan">("genaipro");
+  const [animationProvider, setAnimationProvider] = useState<"genaipro" | "wan" | "seedance">("genaipro");
   const [wanI2VModel, setWanI2VModel] = useState<"wan2.2-i2v-flash" | "wan2.2-i2v-plus" | "wanx2.1-i2v-turbo" | "wanx2.1-i2v-plus">("wan2.2-i2v-flash");
   const [voiceModel, setVoiceModel] = useState<"genaipro" | "elevenlabs" | "fishspeech">("genaipro");
   const [genaiproTTSModel, setGenaiproTTSModel] = useState<"eleven_multilingual_v2" | "eleven_turbo_v2_5" | "eleven_flash_v2_5" | "eleven_v3">("eleven_multilingual_v2");
@@ -98,6 +98,7 @@ export default function PipelinePage() {
   const [voiceoverEnabled, setVoiceoverEnabled] = useState(true);
   const [keepClipAudio, setKeepClipAudio] = useState(false);
   const [pilotMode, setPilotMode] = useState(false);
+  const [pilotSampleSize, setPilotSampleSize] = useState(5);
   const [customHasImagePrompts, setCustomHasImagePrompts] = useState(false);
   const [subtitlesEnabled, setSubtitlesEnabled] = useState(false);
   const [alignWithWhisper, setAlignWithWhisper] = useState(true);
@@ -199,7 +200,12 @@ export default function PipelinePage() {
       const finalVoice = voiceMode === "custom" && customVoiceId.trim() ? customVoiceId.trim() : voice;
       const finalScript = customScript.trim().length >= 50 ? customScript.trim() : "";
       const kitActive = !!kitSlug && (videoMode === "ingredients" || videoMode === "static-images");
-      const useMultipart = (videoMode === "ingredients" || videoMode === "static-images") && refImages.length > 0 && !kitActive;
+      // FlowMax : le perso de réf (le "bonhomme") est uploadé et sert d'ancre @ sur toutes les scènes,
+      // quel que soit le videoMode → on force le multipart pour transmettre le fichier.
+      const useMultipart = refImages.length > 0 && (
+        ((videoMode === "ingredients" || videoMode === "static-images") && !kitActive)
+        || imageProvider === "flowmax"
+      );
       const endpoint = target === "queue" ? "/api/queue" : "/api/pipeline";
 
       const res = useMultipart
@@ -220,7 +226,7 @@ export default function PipelinePage() {
             if (kitActive) fd.append("styleKitSlug", kitSlug);
             if (competitorUrl.trim()) fd.append("competitorVideoUrl", competitorUrl.trim());
             if (competitorUrl.trim() && rewriteCompetitor) fd.append("rewriteCompetitorScript", "true");
-            if (pilotMode) fd.append("pilotMode", "true");
+            if (pilotMode) { fd.append("pilotMode", "true"); fd.append("pilotSampleSize", String(pilotSampleSize)); }
             if (finalScript && customHasImagePrompts) fd.append("customScriptHasImagePrompts", "true");
             fd.append("subtitlesEnabled", String(subtitlesEnabled));
             fd.append("alignWithWhisper", String(alignWithWhisper));
@@ -258,6 +264,7 @@ export default function PipelinePage() {
               competitorVideoUrl: competitorUrl.trim() || undefined,
               rewriteCompetitorScript: (competitorUrl.trim() && rewriteCompetitor) || undefined,
               pilotMode: pilotMode || undefined,
+              pilotSampleSize: pilotMode ? pilotSampleSize : undefined,
               customScriptHasImagePrompts: (finalScript && customHasImagePrompts) || undefined,
               subtitlesEnabled,
               alignWithWhisper,
@@ -775,6 +782,12 @@ export default function PipelinePage() {
                   sub: "wan-i2v · DashScope",
                   desc: "Alibaba wan-i2v via DashScope (async). 5s ou 10s par clip. Même clé que les images WAN. Fallback Veo3 pour T2V/Ingredients.",
                 },
+                {
+                  id: "seedance" as const,
+                  label: "Seedance (WaveSpeed)",
+                  sub: "seedance-v1-pro-fast",
+                  desc: "ByteDance seedance-v1-pro-fast via WaveSpeed (~5s par clip, rapide). Idéal combo FlowMax→Seedance. Nécessite wavespeedKey. Fallback Veo3 pour T2V/Ingredients.",
+                },
               ].map((p) => (
                 <button
                   key={p.id}
@@ -1193,11 +1206,13 @@ export default function PipelinePage() {
             </Section>
           )}
 
-          {(videoMode === "ingredients" || videoMode === "static-images") && !kitSlug && (
+          {((((videoMode === "ingredients" || videoMode === "static-images") && !kitSlug)) || imageProvider === "flowmax") && (
             <Section
               icon={ImageIcon}
-              title="Images de référence"
-              subtitle={videoMode === "static-images"
+              title={imageProvider === "flowmax" ? "Personnage de référence (FlowMax @)" : "Images de référence"}
+              subtitle={imageProvider === "flowmax"
+                ? "Upload le perso (le « bonhomme »). Le NOM DU FICHIER = la réf @ importée dans ton compte Flow (ex: alphonse.png → @alphonse). La 1ʳᵉ image sert d'ancre perso sur TOUTES les scènes. Universel : marche pour n'importe quelle niche."
+                : videoMode === "static-images"
                 ? "Injectées dans CHAQUE create-image — locke le style (max 5, ≤20 Mo, png/jpg/webp — limite API Veo)"
                 : "Injectées dans CHAQUE scène — utile pour garder un personnage / lieu cohérent (max 3, ≤15 Mo, png/jpg/webp — limite API Veo)"}
             >
@@ -1306,11 +1321,33 @@ export default function PipelinePage() {
             </div>
 
             <Toggle
-              label="Mode pilot (5 scènes)"
-              description="Génère 5 clips échantillonnés (1ʳᵉ, ~25%, ~50%, ~75%, dernière) pour valider le visuel avant le full run. Pas de voix off ni montage."
+              label={`Mode pilot (${pilotSampleSize} scènes)`}
+              description="Génère quelques clips échantillonnés (répartis sur tout le script) pour valider le visuel avant le full run. Pas de voix off ni montage. Idéal pour tester un perso FlowMax + l'animation Seedance à moindre coût."
               checked={pilotMode}
               onChange={setPilotMode}
             />
+
+            {pilotMode && (
+              <div className="flex items-center gap-2 mt-2">
+                <span className="mono-sm" style={{ color: "var(--text-secondary)" }}>Échantillon :</span>
+                {[3, 5, 8].map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    onClick={() => setPilotSampleSize(n)}
+                    className="px-3 py-1.5 text-[13px] font-semibold transition-all"
+                    style={{
+                      background: pilotSampleSize === n ? "var(--accent)" : "var(--bg-glass)",
+                      color: pilotSampleSize === n ? "white" : "var(--text-secondary)",
+                      border: `1.5px solid ${pilotSampleSize === n ? "var(--accent)" : "var(--border-glass)"}`,
+                      borderRadius: "var(--radius-sm)",
+                    }}
+                  >
+                    {n} scènes
+                  </button>
+                ))}
+              </div>
+            )}
 
             <button
               onClick={launch}
@@ -1326,7 +1363,7 @@ export default function PipelinePage() {
               ) : (
                 <>
                   <Rocket size={14} />
-                  {pilotMode ? "Lancer le pilot (5 scènes)" : "Lancer la génération"}
+                  {pilotMode ? `Lancer le pilot (${pilotSampleSize} scènes)` : "Lancer la génération"}
                 </>
               )}
             </button>

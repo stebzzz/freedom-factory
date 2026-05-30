@@ -65,6 +65,10 @@ export async function POST(request: NextRequest) {
         voiceoverEnabled: voiceoverEnabledRaw === undefined ? undefined : voiceoverEnabledRaw !== "false",
         muteClipAudio: muteClipAudioRaw === undefined ? undefined : muteClipAudioRaw !== "false",
         pilotMode: pickString(fd.get("pilotMode")) === "true" || undefined,
+        pilotSampleSize: (() => {
+          const v = Number(pickString(fd.get("pilotSampleSize")));
+          return Number.isFinite(v) && v > 0 ? v : undefined;
+        })(),
         customScriptHasImagePrompts: pickString(fd.get("customScriptHasImagePrompts")) === "true" || undefined,
         subtitlesEnabled: (() => {
           const v = pickString(fd.get("subtitlesEnabled"));
@@ -84,7 +88,7 @@ export async function POST(request: NextRequest) {
         })(),
         imageProvider: (() => {
           const v = pickString(fd.get("imageProvider"));
-          return v === "geminigen" || v === "genaipro" || v === "wan" ? v : undefined;
+          return v === "geminigen" || v === "genaipro" || v === "wan" || v === "flowmax" ? v : undefined;
         })(),
         geminigenModel: (() => {
           const v = pickString(fd.get("geminigenModel"));
@@ -96,7 +100,7 @@ export async function POST(request: NextRequest) {
         })(),
         animationProvider: (() => {
           const v = pickString(fd.get("animationProvider"));
-          return v === "genaipro" || v === "wan" ? v : undefined;
+          return v === "genaipro" || v === "wan" || v === "seedance" ? v : undefined;
         })(),
         wanI2VModel: (() => {
           const v = pickString(fd.get("wanI2VModel"));
