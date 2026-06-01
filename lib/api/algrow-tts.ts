@@ -35,7 +35,10 @@ export interface AlgrowTTSOptions {
   speed?: number;
 }
 
-const DEFAULT_MODEL = "eleven_multilingual_v2";
+// eleven_v3 = the model that completed reliably/fast in testing (and matches the
+// user's voice settings). eleven_multilingual_v2 was observed hanging in
+// "processing" for 40min+ on Algrow's side. Override via ALGROW_TTS_MODEL.
+const DEFAULT_MODEL = process.env.ALGROW_TTS_MODEL || "eleven_v3";
 
 interface CreateJobResponse {
   success?: boolean;
