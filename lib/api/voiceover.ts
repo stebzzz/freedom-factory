@@ -39,9 +39,17 @@ export async function generateVoiceover(
     return fishSpeechTTS(script, voix, outputPath);
   }
 
-  // Default: GenAIPro Labs TTS (ElevenLabs models hosted by GenAIPro, single API key).
-  const { generateVoiceover: genaiproTTS } = await import("./genaipro-tts");
-  return genaiproTTS(script, voix, outputPath, { model: options.genaiproTTSModel, speed });
+  if (backend === "genaipro") {
+    const { generateVoiceover: genaiproTTS } = await import("./genaipro-tts");
+    return genaiproTTS(script, voix, outputPath, { model: options.genaiproTTSModel, speed });
+  }
+
+  // Default: Algrow TTS (ElevenLabs/Stealth hosted by Algrow, single API key, async job + polling).
+  // A config-level algrowVoiceId overrides the preset label when the caller passes a generic voix.
+  const looksLikeVoiceId = /^[A-Za-z0-9]{16,32}$/.test(voix);
+  const algrowVoix = (!looksLikeVoiceId && config.algrowVoiceId) ? config.algrowVoiceId : voix;
+  const { generateVoiceover: algrowTTS } = await import("./algrow-tts");
+  return algrowTTS(script, algrowVoix, outputPath, { speed });
 }
 
 /**

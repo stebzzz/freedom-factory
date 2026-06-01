@@ -16,6 +16,8 @@ export interface AppSettings {
   wavespeedKey: string;
   elevenlabsKey: string;
   elevenlabsVoiceId: string;
+  algrowKey: string;
+  algrowVoiceId: string;
   mubertKey: string;
   sunoKey: string;
   pexelsKey: string;
@@ -23,7 +25,7 @@ export interface AppSettings {
   unsplashKey: string;
 
   // Model choices
-  voiceModel: "fishspeech" | "elevenlabs" | "genaipro";
+  voiceModel: "fishspeech" | "elevenlabs" | "genaipro" | "algrow";
   scriptModel: "claude-sonnet-4-6" | "claude-opus-4-6";
   musicService: "mubert" | "suno" | "none";
 }
@@ -44,12 +46,14 @@ const DEFAULTS: AppSettings = {
   wavespeedKey: "",
   elevenlabsKey: "",
   elevenlabsVoiceId: "",
+  algrowKey: "",
+  algrowVoiceId: "",
   mubertKey: "",
   sunoKey: "",
   pexelsKey: "",
   pixabayKey: "",
   unsplashKey: "",
-  voiceModel: "genaipro",
+  voiceModel: "algrow",
   scriptModel: "claude-sonnet-4-6",
   musicService: "none",
 };
@@ -76,6 +80,8 @@ export async function getConfig(): Promise<AppSettings> {
   loaded.dashscopeKey   = env.DASHSCOPE_API_KEY   || loaded.dashscopeKey   || "";
   loaded.elevenlabsKey  = env.ELEVENLABS_API_KEY  || loaded.elevenlabsKey  || "";
   loaded.elevenlabsVoiceId = env.ELEVENLABS_VOICE_ID || loaded.elevenlabsVoiceId || "";
+  loaded.algrowKey      = env.ALGROW_API_KEY      || loaded.algrowKey      || "";
+  loaded.algrowVoiceId  = env.ALGROW_VOICE_ID     || loaded.algrowVoiceId  || "";
   loaded.mubertKey      = env.MUBERT_API_KEY      || loaded.mubertKey      || "";
   loaded.sunoKey        = env.SUNO_API_KEY        || loaded.sunoKey        || "";
   loaded.pexelsKey      = env.PEXELS_API_KEY      || loaded.pexelsKey      || "";

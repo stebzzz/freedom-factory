@@ -13,6 +13,7 @@ export async function GET() {
     siliconflowKey: maskKey(config.siliconflowKey),
     genaiproKey:    maskKey(config.genaiproKey),
     elevenlabsKey:  maskKey(config.elevenlabsKey),
+    algrowKey:      maskKey(config.algrowKey),
     mubertKey:      maskKey(config.mubertKey),
     sunoKey:        maskKey(config.sunoKey),
     pexelsKey:      maskKey(config.pexelsKey),
@@ -26,7 +27,7 @@ export async function POST(req: NextRequest) {
 
   // Only accept known keys; strip masked placeholders (don't overwrite with "••••••••xxxx")
   const updates: Record<string, string> = {};
-  const keyFields = ["anthropicKey", "siliconflowKey", "genaiproKey", "elevenlabsKey", "elevenlabsVoiceId", "mubertKey", "sunoKey", "pexelsKey", "pixabayKey", "unsplashKey"];
+  const keyFields = ["anthropicKey", "siliconflowKey", "genaiproKey", "elevenlabsKey", "elevenlabsVoiceId", "algrowKey", "algrowVoiceId", "mubertKey", "sunoKey", "pexelsKey", "pixabayKey", "unsplashKey"];
   const modelFields = ["voiceModel", "scriptModel", "musicService"];
 
   for (const field of keyFields) {

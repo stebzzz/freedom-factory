@@ -9,6 +9,8 @@ interface Settings {
   genaiproKey: string;
   elevenlabsKey: string;
   elevenlabsVoiceId: string;
+  algrowKey: string;
+  algrowVoiceId: string;
   mubertKey: string;
   sunoKey: string;
   pexelsKey: string;
@@ -21,7 +23,8 @@ interface Settings {
 
 const MODEL_OPTIONS = {
   voiceModel: [
-    { value: "genaipro", label: "GenAIPro Labs", sub: "ElevenLabs via genaipro.io · Defaut" },
+    { value: "algrow", label: "Algrow TTS", sub: "ElevenLabs/Stealth via algrow.online · Defaut" },
+    { value: "genaipro", label: "GenAIPro Labs", sub: "ElevenLabs via genaipro.io" },
     { value: "elevenlabs", label: "ElevenLabs (direct)", sub: "Multilingual v2 · Cle ElevenLabs requise" },
     { value: "fishspeech", label: "Fish Speech 1.5", sub: "SiliconFlow · FR/EN · Naturel" },
   ],
@@ -41,6 +44,8 @@ const KEY_FIELDS: Array<{ key: keyof Settings; label: string; placeholder: strin
   { key: "genaiproKey",     label: "GenAIPro API Key",       placeholder: "eyJ...",                service: "genaipro.io · Images + Veo3 video" },
   { key: "elevenlabsKey",   label: "ElevenLabs API Key",     placeholder: "...",                  service: "elevenlabs.io · Voiceover" },
   { key: "elevenlabsVoiceId", label: "ElevenLabs Voice ID",  placeholder: "pNInz6obpgDQGcFmaJgB",  service: "optionnel · default voice" },
+  { key: "algrowKey",       label: "Algrow API Key",         placeholder: "algrow_...",            service: "algrow.online · Voiceover (defaut)" },
+  { key: "algrowVoiceId",   label: "Algrow Voice ID",        placeholder: "21m00Tcm4TlvDq8ikWAM",  service: "optionnel · default voice" },
   { key: "siliconflowKey",  label: "SiliconFlow API Key",    placeholder: "sk-...",                service: "siliconflow.cn · Fish Speech (fallback voiceover)" },
   { key: "mubertKey",       label: "Mubert API Key",         placeholder: "...",                   service: "mubert.com · Musique" },
   { key: "sunoKey",         label: "Suno API Key",           placeholder: "API non publique",      service: "suno.com · bientot" },
