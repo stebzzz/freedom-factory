@@ -33,6 +33,7 @@ const STYLE_PRESETS: Array<{ label: string; suffix: string }> = [
   { label: "Noir mystère", suffix: "dark moody atmosphere, desaturated colors, noir cinematography, deep shadows, mysterious fog, photorealistic, 8k, 16:9" },
   { label: "3D pixar-like", suffix: "stylized 3D render in the style of modern animated features, soft global illumination, rounded shapes, expressive characters, vibrant but tasteful palette, 8k, 16:9" },
   { label: "Anime ghibli", suffix: "Studio Ghibli inspired anime illustration, hand-painted backgrounds, soft cel-shading, warm nostalgic palette, 16:9" },
+  { label: "Palais chinois (vecteur)", suffix: "A detailed, clean-line 2D vector-art cartoon illustration. Symmetrical, centered composition of a high-status ancient Chinese character or group. Character features stylized, simplified faces with clear outlines, but rich, complex embroidery patterns on their silk robes (like dragons, phoenixes, or waves). The setting is a weakly-lit traditional palace hall with massive red columns, dark tiled floors, and a distant golden throne. The scene is densely filled with dozens of hanging red paper lanterns, featuring precise gold Chinese calligraphy. Distinct, massive, stylized curling wisps of incense smoke (blue-grey) must weave through the composition. Warm, ambient lantern-lit atmosphere with rich, textured colors (teals, golds, deep reds). No 3D rendering." },
 ];
 
 type VideoMode = "t2v" | "i2v" | "ingredients" | "static-images";
