@@ -10,7 +10,11 @@ import { getConfig } from "@/lib/config";
 
 const API_BASE = "https://api.algrow.online/api";
 const POLL_INTERVAL_MS = 4_000;
-const POLL_TIMEOUT_MS = 40 * 60 * 1000; // 40 min — long scripts (>10k chars) can take several minutes
+// Normal TTS completes in ~1-2 min even for 10k-char scripts. We keep the
+// per-attempt poll short (10 min) so a hung Algrow worker is abandoned fast and
+// the retry can resubmit a fresh job, instead of stalling the pipeline 40 min.
+// Override via ALGROW_POLL_TIMEOUT_MS.
+const POLL_TIMEOUT_MS = Number(process.env.ALGROW_POLL_TIMEOUT_MS) || 10 * 60 * 1000;
 const STATUS_LOG_INTERVAL_MS = 30_000;
 
 // Algrow rejects scripts shorter than this (HTTP 400 "Text must be at least 200 characters").
@@ -150,9 +154,27 @@ export async function generateVoiceover(
   // ElevenLabs caps speed to [0.7, 1.2] — clamp here so atempo carries the rest downstream.
   const speed = Math.max(0.7, Math.min(1.2, options.speed ?? 1));
 
-  console.log(`[Algrow-TTS] job submit (provider=${provider}, voice=${voiceId.slice(0, 8)}…, model=${model}, speed=${speed}, ${script.length} chars)`);
-  const jobId = await createJob(token, script, voiceId, provider, model, speed);
-  const audioUrl = await pollJob(token, jobId);
+  // Robustness: an Algrow worker can hang a job in "processing" indefinitely
+  // (observed 40min+ stuck) → a single submission is NOT safe for the pipeline.
+  // We resubmit a FRESH job on timeout/failure — a hung job is a stuck worker,
+  // and a new submission gets a different one. POLL_TIMEOUT_MS is kept short so
+  // a hang is abandoned fast instead of stalling the whole pipeline.
+  const MAX_ATTEMPTS = 3;
+  let audioUrl = "";
+  let lastErr: Error | null = null;
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      console.log(`[Algrow-TTS] job submit attempt ${attempt}/${MAX_ATTEMPTS} (provider=${provider}, voice=${voiceId.slice(0, 8)}…, model=${model}, speed=${speed}, ${script.length} chars)`);
+      const jobId = await createJob(token, script, voiceId, provider, model, speed);
+      audioUrl = await pollJob(token, jobId);
+      break;
+    } catch (err) {
+      lastErr = err as Error;
+      console.warn(`[Algrow-TTS] attempt ${attempt}/${MAX_ATTEMPTS} failed: ${lastErr.message}`);
+      if (attempt < MAX_ATTEMPTS) await new Promise((r) => setTimeout(r, 3000));
+    }
+  }
+  if (!audioUrl) throw new Error(`Algrow TTS échec après ${MAX_ATTEMPTS} tentatives: ${lastErr?.message}`);
 
   const res = await fetch(audioUrl, { redirect: "follow" });
   if (!res.ok) throw new Error(`Algrow TTS download ${res.status}: ${audioUrl}`);
