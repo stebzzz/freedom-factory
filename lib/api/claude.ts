@@ -279,6 +279,11 @@ export async function parseCustomScript(
   const modelId = PROMPT_MODEL;
   const [minDur, maxDur] = preset.script.sceneDurationRange;
   const totalDuration = durationMinutes * 60;
+  // Le style maison (medium, rendu, qualite) est ajoute par le runner via styleHint.
+  // On le passe ici en contexte pour que Claude reste COHERENT avec lui, et on lui
+  // interdit d'imposer un medium en dur ("photorealistic, 8k") : sur un preset cartoon
+  // (ex. alphonse), "photorealistic" + le suffix "NOT photorealistic" se contredisent.
+  const houseStyle = preset.visual.imageStyleSuffix?.trim() || "";
 
   const response = await callClaudeRetry(modelId, 32000, [{
     role: "user",
@@ -297,7 +302,8 @@ Decoupe ce script en scenes. Regles de decoupage :
 - Somme des durees ≈ ${totalDuration} secondes
 
 Regles VISUELLES (critiques — tu es realisateur, pas illustrateur litteral) :
-- imagePrompt EN ANGLAIS, cinematique, pour GenAIPro Veo (16:9, 8K)
+- imagePrompt EN ANGLAIS. Decris UNIQUEMENT le contenu visuel : sujet, action, composition, type de plan, lumiere, ambiance. Format 16:9.
+- N'IMPOSE PAS de medium ni de niveau de rendu (PAS de "photorealistic", "8k", "4k", "3D render", "cinematic film still", "hyperrealistic"...) : le style visuel de la chaine est ajoute automatiquement apres ta reponse. Ajouter un medium en dur le contredirait.${houseStyle ? `\n- STYLE MAISON de cette chaine (ajoute ensuite a chaque prompt — tes descriptions doivent rester COHERENTES avec lui et ne JAMAIS le contredire) : ${houseStyle}` : ""}
 - Adapte-toi a la niche "${niche}" et au ton du script ci-dessus. Identifie toi-meme les protagonistes, lieux, epoques, objets centraux de CE script.
 - Alterne 4 registres scene par scene : (a) PERSONNAGES — quand le script nomme un protagoniste, raconte une action humaine, ou utilise "il/elle/they", montre cette personne en situation concrete, (b) METAPHORES visuelles — quand le concept est abstrait, trouve une image symbolique forte propre au sujet du script (pas de texte ni chiffres a l'ecran), (c) OBJETS SYMBOLIQUES — un detail materiel charge de sens dans le contexte du script, (d) LIEUX evocateurs — un decor qui porte l'emotion du moment.
 - INTERDICTION ABSOLUE : 2 scenes consecutives sur le meme sujet visuel, la meme metaphore, ou le meme registre repete a l'identique. Scene N+1 doit changer de registre OU de sujet par rapport a scene N.
@@ -310,7 +316,7 @@ Regles VISUELLES (critiques — tu es realisateur, pas illustrateur litteral) :
 Reponds en JSON strict :
 {
   "scenes": [
-    { "index": 0, "narration": "...", "imagePrompt": "Cinematic..., 8k, 16:9", "durationSeconds": ${Math.round((minDur + maxDur) / 2)} }
+    { "index": 0, "narration": "...", "imagePrompt": "Wide shot of ..., dramatic side light, tense mood, 16:9", "durationSeconds": ${Math.round((minDur + maxDur) / 2)} }
   ]
 }`,
   }], "Claude Custom");
