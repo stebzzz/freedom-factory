@@ -30,19 +30,25 @@ export interface CallClaudeOptions {
   model?: string;
   /** Use the wider "light" concurrency lane (short arg-prompt calls — vision). */
   light?: boolean;
+  /** Current pipeline job id — forwarded to the wrapper for its logs only. */
+  jobId?: string;
+  /** Chunk index of this call within its batch — forwarded for wrapper logs only. */
+  chunkIndex?: number;
 }
 
 // ===================================================================
-// Concurrency semaphore — STRICT serial queue (MAX_CONCURRENT = 1).
-// The VPS Claude Code wrapper has a stdin race condition: when a second
-// big-prompt POST arrives while the first is still writing stdin into the
-// `claude` CLI, the CLI gives up after 3s ("no stdin data received in 3s")
-// and returns HTTP 500. The fix that actually works is serialising calls
-// on our side so the wrapper never sees more than one in-flight prompt.
+// Concurrency semaphore — bounded pool (MAX_CONCURRENT, default 4).
+// The VPS wrapper now runs a pool of isolated lanes (each its own `claude`
+// CLI process), so the old stdin race that forced strict serial (1-at-a-time)
+// is gone: it can absorb several in-flight prompts at once. We cap our side at
+// WRAPPER_CONCURRENCY (default 4) to match the wrapper's lane count — this is
+// the bottleneck that made chunked 2s-prompt gen take 12-18 min (12 chunks
+// drained one at a time). Running them 4-wide cuts that to ~1/4.
+// Tune via WRAPPER_CONCURRENCY env if the wrapper's lane count changes.
 // Wan / image gen are NOT affected and keep their own per-provider
 // concurrency (lib/api/wan.ts, concurrency=3 by default).
 // ===================================================================
-const MAX_CONCURRENT = 1;
+const MAX_CONCURRENT = Number(process.env.WRAPPER_CONCURRENCY) || 4;
 let inflight = 0;
 const waitQueue: Array<() => void> = [];
 
@@ -114,7 +120,13 @@ function messagesToPrompt(
 // ===================================================================
 // Core call
 // ===================================================================
-async function callViaWrapper(prompt: string, imagePath?: string, model?: string, light = false): Promise<string> {
+async function callViaWrapper(
+  prompt: string,
+  imagePath?: string,
+  model?: string,
+  light = false,
+  meta?: { jobId?: string; chunkIndex?: number },
+): Promise<string> {
   const config = await getConfig();
   if (!config.claudeWrapperToken) {
     throw new Error("claudeWrapperToken manquant — défini CLAUDE_WRAPPER_TOKEN ou config/settings.json");
@@ -130,6 +142,10 @@ async function callViaWrapper(prompt: string, imagePath?: string, model?: string
     // when present; older wrappers that don't read this field just ignore it.
     // Used to route bulk vision QC to a fast model (haiku) instead of the default (Opus).
     if (model) form.append("model", model);
+    // Observability fields — the wrapper uses them for its per-job/per-chunk logs.
+    // They don't affect the prompt or the response; older wrappers ignore them.
+    if (meta?.jobId) form.append("jobId", meta.jobId);
+    if (typeof meta?.chunkIndex === "number") form.append("chunkIndex", String(meta.chunkIndex));
 
     if (imagePath) {
       const buffer = await readFile(imagePath);
@@ -191,7 +207,10 @@ export async function callClaude(
 ): Promise<ClaudeMessage> {
   const prompt = messagesToPrompt(messages, options?.system);
   const wrapperModel = options?.model ?? toWrapperModel(model);
-  const text = await callViaWrapper(prompt, options?.imagePath, wrapperModel, options?.light);
+  const text = await callViaWrapper(prompt, options?.imagePath, wrapperModel, options?.light, {
+    jobId: options?.jobId,
+    chunkIndex: options?.chunkIndex,
+  });
   return { content: [{ type: "text", text }] };
 }
 

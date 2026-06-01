@@ -393,7 +393,7 @@ async function runPipeline(jobId: string, jobDir: string) {
         message: params.pilotMode
           ? `Mode pilot (${language}) — Claude génère uniquement ${pilotForSplit} imagePrompts...`
           : `Mode describe-kit (${language}) — Claude découpe ton script en scènes ~1.5s...` });
-      script = await splitScriptInto2sScenes(params.customScript!, params.duration, kitVocab, pilotForSplit);
+      script = await splitScriptInto2sScenes(params.customScript!, params.duration, kitVocab, pilotForSplit, jobId);
     } else {
       emit(jobId, { step: "script", status: "running", progress: 10,
         message: `Mode describe-kit (${language}) — Claude génère script + scènes ~1.5s...` });

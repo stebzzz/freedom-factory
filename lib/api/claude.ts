@@ -1238,6 +1238,7 @@ export async function splitScriptInto2sScenes(
   durationMinutes: number,
   kitImagePrompts: string[] = [],
   pilotSampleSize?: number,
+  jobId?: string,
 ): Promise<ScriptResult> {
   const config = await getConfig();
   const modelId = PROMPT_MODEL;
@@ -1378,7 +1379,7 @@ export async function splitScriptInto2sScenes(
     }
   };
 
-  const callChunk = async (startIdx: number, endIdx: number): Promise<void> => {
+  const callChunk = async (startIdx: number, endIdx: number, chunkIndex: number): Promise<void> => {
     const chunk = segments.slice(startIdx, endIdx);
     const chunkPrompt = buildPrompt(useRemixMode, chunk, startIdx, segments.length, kitImagePrompts, customScript, categoriesByIdx);
     try {
@@ -1387,6 +1388,7 @@ export async function splitScriptInto2sScenes(
         Math.min(32000, 200 + chunk.length * 200), // generous: ~200 tokens per prompt
         [{ role: "user", content: chunkPrompt }],
         `Claude 2s Prompts [${startIdx}-${endIdx - 1}]`,
+        { jobId, chunkIndex },
       );
       const raw = (response.content[0]?.text || "").trim();
       const r = ingestResponse(raw);
@@ -1405,8 +1407,11 @@ export async function splitScriptInto2sScenes(
   for (let i = 0; i < segments.length; i += CHUNK_SIZE) {
     chunks.push([i, Math.min(i + CHUNK_SIZE, segments.length)]);
   }
-  console.log(`[Claude 2s Prompts] ${segments.length} scènes → ${chunks.length} chunk(s) de max ${CHUNK_SIZE} (mode=${useRemixMode ? "remix" : "from-scratch"})`);
-  await Promise.all(chunks.map(([s, e]) => callChunk(s, e)));
+  console.log(`[Claude 2s Prompts] ${segments.length} scènes → ${chunks.length} chunk(s) de max ${CHUNK_SIZE} (mode=${useRemixMode ? "remix" : "from-scratch"}, concurrence wrapper=${process.env.WRAPPER_CONCURRENCY || 4})`);
+  // Parallel dispatch — the wrapper client's bounded pool (WRAPPER_CONCURRENCY,
+  // default 4) caps how many actually hit the VPS at once. Order is preserved by
+  // scene index via promptsByIdx (set by parsed `index`), NOT by arrival order.
+  await Promise.all(chunks.map(([s, e], i) => callChunk(s, e, i)));
 
   // Up to 2 retry passes targeting only the still-missing indices. After that → ABORT (no
   // fallback prompts allowed; a generic placeholder would silently degrade the video).
@@ -1419,7 +1424,7 @@ export async function splitScriptInto2sScenes(
     // an output cap, so we halve the request to give Claude more breathing room.
     const missingChunks: number[][] = [];
     for (let i = 0; i < missing.length; i += RETRY_CHUNK_SIZE) missingChunks.push(missing.slice(i, i + RETRY_CHUNK_SIZE));
-    await Promise.all(missingChunks.map(async (origIdxs) => {
+    await Promise.all(missingChunks.map(async (origIdxs, retryChunkIndex) => {
       // Re-use callChunk semantics by building a synthetic segment slice that preserves indices.
       // We pass the actual absolute index range to buildPrompt via a small inline wrapper that
       // injects only the missing scenes into a per-index map override.
@@ -1433,6 +1438,7 @@ export async function splitScriptInto2sScenes(
           Math.min(32000, 200 + slice.length * 200),
           [{ role: "user", content: retryPrompt }],
           `Claude 2s Prompts retry${retry}`,
+          { jobId, chunkIndex: retryChunkIndex },
         );
         const raw = (response.content[0]?.text || "").trim();
         const stripped = raw.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/, "").trim();
