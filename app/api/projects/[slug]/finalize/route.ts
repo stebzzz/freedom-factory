@@ -98,12 +98,23 @@ export async function POST(req: Request, { params }: { params: Promise<{ slug: s
   const imageFiles = existsSync(imagesDir)
     ? (await readdir(imagesDir)).filter((f) => /^scene_\d+\.(png|jpe?g|webp)$/i.test(f))
     : [];
-  const images = imageFiles
-    .flatMap((f): Array<{ imagePath: string; sceneIndex: number }> => {
-      const m = f.match(/scene_(\d+)/);
-      if (!m) return [];
-      return [{ imagePath: path.join(imagesDir, f), sceneIndex: parseInt(m[1], 10) }];
-    })
+  // A scene regenerated under a different extension (e.g. scene_000.jpg later
+  // re-rendered as scene_000.png) leaves BOTH files on disk. Globbing both would
+  // feed two entries for the same sceneIndex into the montage; the simple concat
+  // fallback indexes durations positionally, so the duplicates shift every later
+  // scene out of sync with the voiceover. Keep one file per scene — the newest.
+  const bySceneIndex = new Map<number, { imagePath: string; sceneIndex: number; mtime: number }>();
+  for (const f of imageFiles) {
+    const m = f.match(/scene_(\d+)/);
+    if (!m) continue;
+    const sceneIndex = parseInt(m[1], 10);
+    const imagePath = path.join(imagesDir, f);
+    const mtime = statSync(imagePath).mtimeMs;
+    const prev = bySceneIndex.get(sceneIndex);
+    if (!prev || mtime > prev.mtime) bySceneIndex.set(sceneIndex, { imagePath, sceneIndex, mtime });
+  }
+  const images = [...bySceneIndex.values()]
+    .map(({ imagePath, sceneIndex }) => ({ imagePath, sceneIndex }))
     .sort((a, b) => a.sceneIndex - b.sceneIndex);
 
   if (clips.length === 0 && images.length === 0) {

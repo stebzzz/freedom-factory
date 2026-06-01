@@ -532,7 +532,12 @@ function buildMontageSimple(
   let missing = 0;
   const concatLines: string[] = [];
   images.forEach((img, i) => {
-    const duration = scenes[i]?.durationSeconds || 5;
+    // Look up the scene by its real index, not the array position: if `images`
+    // ever holds a duplicate or skips a scene, positional indexing (`scenes[i]`)
+    // would assign the wrong duration to every following image and drift the
+    // whole slideshow out of sync with the voiceover.
+    const scene = scenes.find((s) => s.index === img.sceneIndex) ?? scenes[i];
+    const duration = scene?.durationSeconds || 5;
     let file = img.imagePath;
     if (existsSync(file)) {
       lastGood = file;
