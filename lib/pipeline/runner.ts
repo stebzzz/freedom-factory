@@ -1123,6 +1123,57 @@ async function runPipeline(jobId: string, jobDir: string) {
       }
     }
 
+    // --- Comble les images MANQUANTES avant le montage (gap-fill) ---
+    // FlowMax (et les autres providers) peut timeouter sur quelques scènes → 0
+    // fichier sur le disque. Le QC vision ci-dessus ne voit que les images
+    // existantes ; ici on regarde le DISQUE, on régénère toute scène sans fichier
+    // (2 passes — un re-submit frais retombe souvent sur un worker dispo). Sinon
+    // le montage substitue l'image précédente → trou visuel / désync.
+    if (!isPilot && imageScenes.length > 0) {
+      const presentIndices = async (): Promise<Set<number>> => {
+        const s = new Set<number>();
+        try {
+          for (const f of await readdir(imagesDir)) {
+            const m = /^scene_(\d+)\.(png|jpe?g|webp)$/i.exec(f);
+            if (m) s.add(Number(m[1]));
+          }
+        } catch { /* dir missing */ }
+        return s;
+      };
+      for (let pass = 1; pass <= 2; pass++) {
+        const present = await presentIndices();
+        const missing = imageScenes.filter((s) => !present.has(s.index));
+        if (missing.length === 0) break;
+        console.warn(`[Pipeline] ${missing.length} image(s) manquante(s) avant montage (passe ${pass}/2): ${missing.map((s) => s.index).slice(0, 20).join(",")}`);
+        emit(jobId, { step: "images", status: "running", progress: 100, message: `${missing.length} image(s) manquante(s) → regen (passe ${pass}/2)...` });
+        try {
+          const filled = await generateImagesFn(
+            missing.map((s) => ({ index: s.index, imagePrompt: `${refPrefix}${styleHint ? `${s.imagePrompt}, ${styleHint}` : s.imagePrompt}` })),
+            imagesDir,
+            () => {},
+            {
+              premiumScenes,
+              referenceImagePaths: !kitResolver && userRefs.length ? userRefs : undefined,
+              resolveRefsForScene: kitResolver,
+              ...(provider === "geminigen" ? { model: params.geminigenModel ?? "nano-banana-2" } : {}),
+              ...(provider === "wan" ? { model: params.wanModel ?? "wan2.7-image" } : {}),
+            },
+          );
+          const merged = new Map<number, ImageResult>();
+          for (const im of job.result.images ?? []) merged.set(im.sceneIndex, im);
+          for (const r of filled) merged.set(r.sceneIndex, r);
+          job.result.images = Array.from(merged.values()).sort((a, b) => a.sceneIndex - b.sceneIndex);
+        } catch (err) {
+          console.warn(`[Pipeline] gap-fill images manquantes échoué (passe ${pass}):`, (err as Error).message);
+        }
+      }
+      const finalPresent = await presentIndices();
+      const stillMissing = imageScenes.filter((s) => !finalPresent.has(s.index));
+      if (stillMissing.length > 0) {
+        console.warn(`[Pipeline] ${stillMissing.length} image(s) toujours manquante(s) après gap-fill — le montage substituera: ${stillMissing.map((s) => s.index).slice(0, 20).join(",")}`);
+      }
+    }
+
     const reusedNote = reusedImages.length > 0 ? ` (+${reusedImages.length} réutilisées)` : "";
     const pilotNote = isPilot ? ` · pilot` : "";
     emit(jobId, { step: "images", status: "completed", progress: 100,
