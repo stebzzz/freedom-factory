@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Loader2, Trash2, Play, Pause, CheckCircle2, AlertCircle, Clock, Activity, RefreshCw } from "lucide-react";
+import { Loader2, Trash2, Play, Pause, CheckCircle2, AlertCircle, Clock, Activity, RefreshCw, ChevronsUp, ArrowUp, ArrowDown } from "lucide-react";
 
 interface QueueEntry {
   id: string;
@@ -173,15 +173,22 @@ export default function QueuePage() {
           };
         });
 
-      // Merge + sort by most recent activity first (running > waiting > recent finished > older).
-      const allEntries = [...queueEntries, ...directEntries].sort((a, b) => {
-        const rank = (e: QueueEntry) => (e.status === "running" ? 0 : e.status === "waiting" ? 1 : 2);
-        const dr = rank(a) - rank(b);
-        if (dr !== 0) return dr;
-        const ta = new Date(a.startedAt ?? a.addedAt).getTime();
-        const tb = new Date(b.startedAt ?? b.addedAt).getTime();
-        return tb - ta;
-      });
+      // Merge + sort: running first, then waiting (in QUEUE ORDER = priorité), then finished (récents d'abord).
+      // Les "waiting" doivent garder l'ordre de la file pour que la priorisation soit visible — on
+      // préserve donc leur index d'origine au lieu de les trier par date.
+      const rank = (e: QueueEntry) => (e.status === "running" ? 0 : e.status === "waiting" ? 1 : 2);
+      const allEntries = [...queueEntries, ...directEntries]
+        .map((e, i) => ({ e, i }))
+        .sort((a, b) => {
+          const dr = rank(a.e) - rank(b.e);
+          if (dr !== 0) return dr;
+          if (rank(a.e) === 2) {
+            // finis : plus récent d'abord
+            return new Date(b.e.startedAt ?? b.e.addedAt).getTime() - new Date(a.e.startedAt ?? a.e.addedAt).getTime();
+          }
+          return a.i - b.i; // running / waiting : ordre de la file préservé
+        })
+        .map((x) => x.e);
 
       setState({ entries: allEntries, workerEnabled: !!qData?.workerEnabled });
 
@@ -247,6 +254,24 @@ export default function QueuePage() {
     setBusy(true);
     try {
       const r = await fetch(`/api/queue?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || `HTTP ${r.status}`);
+      refresh();
+    } catch (e) {
+      setErr((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const moveOne = async (id: string, move: "top" | "up" | "down" | "bottom") => {
+    setBusy(true);
+    try {
+      const r = await fetch("/api/queue", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, move }),
+      });
       const data = await r.json();
       if (!r.ok) throw new Error(data.error || `HTTP ${r.status}`);
       refresh();
@@ -415,15 +440,44 @@ export default function QueuePage() {
                     )}
                   </div>
                   {removable && (
-                    <button
-                      onClick={() => removeOne(e.id)}
-                      disabled={busy}
-                      className="p-1.5 rounded"
-                      style={{ color: "var(--text-tertiary)" }}
-                      title="Retirer de la queue"
-                    >
-                      <Trash2 size={14} />
-                    </button>
+                    <div className="flex items-center gap-0.5 flex-shrink-0">
+                      <button
+                        onClick={() => moveOne(e.id, "top")}
+                        disabled={busy}
+                        className="p-1.5 rounded hover:opacity-100 opacity-60"
+                        style={{ color: "var(--accent)" }}
+                        title="Prioriser (passer en tête)"
+                      >
+                        <ChevronsUp size={14} />
+                      </button>
+                      <button
+                        onClick={() => moveOne(e.id, "up")}
+                        disabled={busy}
+                        className="p-1.5 rounded hover:opacity-100 opacity-60"
+                        style={{ color: "var(--text-secondary)" }}
+                        title="Monter"
+                      >
+                        <ArrowUp size={14} />
+                      </button>
+                      <button
+                        onClick={() => moveOne(e.id, "down")}
+                        disabled={busy}
+                        className="p-1.5 rounded hover:opacity-100 opacity-60"
+                        style={{ color: "var(--text-secondary)" }}
+                        title="Descendre"
+                      >
+                        <ArrowDown size={14} />
+                      </button>
+                      <button
+                        onClick={() => removeOne(e.id)}
+                        disabled={busy}
+                        className="p-1.5 rounded"
+                        style={{ color: "var(--text-tertiary)" }}
+                        title="Retirer de la queue"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
                   )}
                 </div>
 

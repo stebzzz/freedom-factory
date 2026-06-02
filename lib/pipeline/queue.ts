@@ -95,6 +95,41 @@ export async function removeFromQueue(id: string): Promise<boolean> {
   return true;
 }
 
+// Réordonne une entrée "waiting" dans la file. Le worker prend toujours le
+// premier "waiting" du tableau → remonter une entrée = la prioriser. On ne
+// déplace que parmi les autres "waiting" (les running/finished gardent leur place).
+export async function moveQueueEntry(
+  id: string,
+  dir: "top" | "up" | "down" | "bottom",
+): Promise<boolean> {
+  const idx = state.entries.findIndex((e) => e.id === id);
+  if (idx < 0 || state.entries[idx].status !== "waiting") return false;
+  const entry = state.entries[idx];
+  const waitingIdx = state.entries
+    .map((e, i) => (e.status === "waiting" ? i : -1))
+    .filter((i) => i >= 0);
+  const pos = waitingIdx.indexOf(idx);
+
+  if (dir === "up" || dir === "down") {
+    const target = dir === "up" ? pos - 1 : pos + 1;
+    if (target < 0 || target >= waitingIdx.length) return false; // déjà au bord
+    const j = waitingIdx[target];
+    [state.entries[idx], state.entries[j]] = [state.entries[j], state.entries[idx]];
+  } else {
+    state.entries.splice(idx, 1);
+    const w = state.entries
+      .map((e, i) => (e.status === "waiting" ? i : -1))
+      .filter((i) => i >= 0);
+    const insertAt =
+      dir === "top"
+        ? (w.length ? w[0] : state.entries.length)
+        : (w.length ? w[w.length - 1] + 1 : state.entries.length);
+    state.entries.splice(insertAt, 0, entry);
+  }
+  await persist();
+  return true;
+}
+
 export async function clearFinishedFromQueue(): Promise<number> {
   const before = state.entries.length;
   state.entries = state.entries.filter((e) => e.status !== "completed" && e.status !== "failed");

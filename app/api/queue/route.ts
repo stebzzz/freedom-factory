@@ -10,6 +10,7 @@ import {
   startQueueWorker,
   runQueueEntryNow,
   updateQueueEntryParams,
+  moveQueueEntry,
 } from "@/lib/pipeline/queue";
 import type { PipelineJobParams } from "@/lib/pipeline/types";
 
@@ -158,7 +159,15 @@ export async function PATCH(request: NextRequest) {
       id?: string;
       params?: Partial<PipelineJobParams>;
       run?: boolean;
+      move?: "top" | "up" | "down" | "bottom";
     };
+
+    // Réordonner / prioriser une entrée en attente
+    if (body.id && body.move) {
+      const ok = await moveQueueEntry(body.id, body.move);
+      if (!ok) return NextResponse.json({ error: "Déplacement impossible (entrée déjà lancée ou au bord)." }, { status: 400 });
+      return NextResponse.json(getQueueSnapshot());
+    }
 
     // Lancer une entrée : démarre tout de suite si rien ne tourne, sinon la
     // laisse en file (le worker l'enchaîne automatiquement) — jamais d'erreur "déjà en cours".
