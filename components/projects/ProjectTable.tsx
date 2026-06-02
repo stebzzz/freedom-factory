@@ -26,6 +26,10 @@ function Ratio({ have, total }: { have: number; total: number }) {
 }
 
 export function ProjectTable({ projects }: { projects: Row[] }) {
+  // Most images first, descending. Tie-break on scenes done then label.
+  const sorted = [...projects].sort(
+    (a, b) => b.imagesCount - a.imagesCount || b.doneCount - a.doneCount || a.label.localeCompare(b.label),
+  );
   return (
     <div className="glass-static overflow-hidden" style={{ padding: 0 }}>
       {/* Header */}
@@ -48,7 +52,7 @@ export function ProjectTable({ projects }: { projects: Row[] }) {
       </div>
 
       {/* Rows */}
-      {projects.map((p) => {
+      {sorted.map((p) => {
         const total = p.totalScenes;
         return (
           <Link
