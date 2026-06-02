@@ -48,7 +48,12 @@ export interface CallClaudeOptions {
 // Wan / image gen are NOT affected and keep their own per-provider
 // concurrency (lib/api/wan.ts, concurrency=3 by default).
 // ===================================================================
-const MAX_CONCURRENT = Number(process.env.WRAPPER_CONCURRENCY) || 4;
+// Default 1 (strict serial). The VPS wrapper runs the `claude` CLI on a single
+// CPU-bound host: 4 concurrent heavy prompts each ran ~4x slower and blew past
+// the 300s request timeout (100/227 chunks failed on a 227-scene job). No real
+// parallel speedup, just timeout-retry thrash. Serial is the proven-stable value.
+// Bump via WRAPPER_CONCURRENCY only if the wrapper gets real isolated compute.
+const MAX_CONCURRENT = Number(process.env.WRAPPER_CONCURRENCY) || 1;
 let inflight = 0;
 const waitQueue: Array<() => void> = [];
 
