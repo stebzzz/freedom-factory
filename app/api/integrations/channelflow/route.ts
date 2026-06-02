@@ -67,7 +67,6 @@ interface CFPayload {
 
 // Providers acceptés (sinon → défaut). Réglés par chaîne côté ChannelFlow.
 const ALLOWED_IMAGE_PROVIDERS = new Set(["flowmax", "wan", "geminigen", "genaipro"]);
-const ALLOWED_VOICE_MODELS = new Set(["elevenlabs", "genaipro", "fishspeech"]);
 
 export async function OPTIONS(request: NextRequest) {
   return new NextResponse(null, { status: 204, headers: corsHeaders(request.headers.get("origin")) });
@@ -133,9 +132,10 @@ export async function POST(request: NextRequest) {
   const imageProvider = (body.imageProvider && ALLOWED_IMAGE_PROVIDERS.has(body.imageProvider.trim())
     ? body.imageProvider.trim()
     : "wan") as PipelineJobParams["imageProvider"];
-  const voiceModel = (body.voiceModel && ALLOWED_VOICE_MODELS.has(body.voiceModel.trim())
-    ? body.voiceModel.trim()
-    : "elevenlabs") as PipelineJobParams["voiceModel"];
+  // Voix : Algrow UNIQUEMENT pour toutes les vidéos ChannelFlow (provider TTS unique).
+  // On ignore volontairement body.voiceModel — la chaîne ne choisit plus le moteur voix.
+  // La voix précise (body.voix, ID ElevenLabs/Stealth) est transmise telle quelle à Algrow.
+  const voiceModel = "algrow" as PipelineJobParams["voiceModel"];
 
   const params: PipelineJobParams = {
     title,
