@@ -126,6 +126,10 @@ export async function fetchTranscript(url: string, opts: FetchOpts = {}): Promis
     "json3/vtt/best",
     "--skip-download",
     "--no-warnings",
+    // Solve YouTube's "n" JS challenge. Without the EJS solver, recent yt-dlp
+    // only gets storyboards back → "Requested format is not available". This
+    // downloads + caches the official solver from GitHub.
+    "--remote-components", "ejs:github",
     "--extractor-args", BGUTIL_EXTRACTOR_ARG,
     "-o",
     path.join(workDir, "%(id)s.%(ext)s"),
@@ -252,6 +256,10 @@ export async function fetchVideoKeyframes(
     "bestvideo[height<=360][ext=mp4]/bestvideo[height<=360]/best[height<=360]",
     "--no-playlist",
     "--no-warnings",
+    // Solve YouTube's "n" JS challenge. Without the EJS solver, recent yt-dlp
+    // only gets storyboards back → "Requested format is not available". This
+    // downloads + caches the official solver from GitHub.
+    "--remote-components", "ejs:github",
     "--extractor-args", BGUTIL_EXTRACTOR_ARG,
     "-o",
     videoTemplate,
