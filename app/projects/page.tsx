@@ -1,7 +1,7 @@
 "use client";
 
 import { useProjects } from "@/components/projects/useProjectState";
-import { ProjectCard } from "@/components/projects/ProjectCard";
+import { ProjectTable } from "@/components/projects/ProjectTable";
 import type { ProjectSummary, RunInfo } from "@/lib/projects/types";
 
 interface Row extends ProjectSummary {
@@ -36,23 +36,22 @@ export default function ProjectsListPage() {
       )}
 
       {live.length > 0 && (
-        <section className="space-y-4">
-          <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))" }}>
-            {live.map((p) => (
-              <ProjectCard key={p.slug} project={p} />
-            ))}
+        <section className="space-y-3">
+          <div className="flex items-baseline justify-between">
+            <h2 className="heading-md">Projets actifs</h2>
+            <span className="mono-sm" style={{ color: "var(--text-tertiary)" }}>{live.length}</span>
           </div>
+          <ProjectTable projects={live} />
         </section>
       )}
 
       {inactive.length > 0 && (
         <section className="space-y-3">
-          <h2 className="heading-md">Autres dossiers détectés</h2>
-          <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))" }}>
-            {inactive.map((p) => (
-              <ProjectCard key={p.slug} project={p} />
-            ))}
+          <div className="flex items-baseline justify-between">
+            <h2 className="heading-md">Autres dossiers détectés</h2>
+            <span className="mono-sm" style={{ color: "var(--text-tertiary)" }}>{inactive.length}</span>
           </div>
+          <ProjectTable projects={inactive} />
         </section>
       )}
     </div>
