@@ -1407,11 +1407,11 @@ export async function splitScriptInto2sScenes(
   for (let i = 0; i < segments.length; i += CHUNK_SIZE) {
     chunks.push([i, Math.min(i + CHUNK_SIZE, segments.length)]);
   }
-  console.log(`[Claude 2s Prompts] ${segments.length} scènes → ${chunks.length} chunk(s) de max ${CHUNK_SIZE} (mode=${useRemixMode ? "remix" : "from-scratch"}, concurrence wrapper=${process.env.WRAPPER_CONCURRENCY || 4})`);
-  // Parallel dispatch — the wrapper client's bounded pool (WRAPPER_CONCURRENCY,
-  // default 4) caps how many actually hit the VPS at once. Order is preserved by
-  // scene index via promptsByIdx (set by parsed `index`), NOT by arrival order.
-  await Promise.all(chunks.map(([s, e], i) => callChunk(s, e, i)));
+  console.log(`[Claude 2s Prompts] ${segments.length} scènes → ${chunks.length} chunk(s) de max ${CHUNK_SIZE} (mode=${useRemixMode ? "remix" : "from-scratch"}, série)`);
+  // Série stricte — wrapper VPS CPU-bound sur un seul process. Parallel = fetch failed en boucle.
+  for (let i = 0; i < chunks.length; i++) {
+    await callChunk(chunks[i][0], chunks[i][1], i);
+  }
 
   // Up to 2 retry passes targeting only the still-missing indices. After that → ABORT (no
   // fallback prompts allowed; a generic placeholder would silently degrade the video).

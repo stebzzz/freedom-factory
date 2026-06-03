@@ -421,13 +421,20 @@ async function runPipeline(jobId: string, jobDir: string) {
         );
       }
     } else {
-      script = await parseCustomScript(
-        params.customScript!,
-        params.title,
-        params.niche,
-        params.duration,
-        params.presetId,
-      );
+      let kitVocab: string[] = [];
+      if (legacySlugTop) {
+        try {
+          const meta = await getKit(legacySlugTop);
+          kitVocab = [...(meta?.character ?? []), ...(meta?.style ?? [])]
+            .map((i) => i.imagePrompt?.trim())
+            .filter((p): p is string => !!p && p.length > 20);
+        } catch (err) {
+          console.warn(`[Pipeline] kit vocab load failed:`, (err as Error).message);
+        }
+      }
+      const pilotForSplit = params.pilotMode ? (params.pilotSampleSize ?? 5) : undefined;
+      emit(jobId, { step: "script", status: "running", progress: 10, message: "Découpe + imagePrompts série..." });
+      script = await splitScriptInto2sScenes(params.customScript!, params.duration, kitVocab, pilotForSplit, jobId);
     }
   } else {
     emit(jobId, { step: "script", status: "running", progress: 10, message: `Script ${preset.label}...` });
