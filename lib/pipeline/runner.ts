@@ -1,7 +1,7 @@
 import { mkdir, writeFile, cp, readFile, readdir, stat, unlink } from "fs/promises";
 import path from "path";
 import { PipelineJob, PipelineJobParams, PipelineStepName, PipelineStepEvent, AnimationResult, ImageResult, ScriptScene } from "./types";
-import { generateScript, extractCustomScriptWithPrompts, generateStickyPrompts, parseImagePromptsTxt, splitScriptInto2sScenes, generateScript2sScenes } from "@/lib/api/claude";
+import { generateScript, parseCustomScript, extractCustomScriptWithPrompts, generateStickyPrompts, parseImagePromptsTxt, splitScriptInto2sScenes, generateScript2sScenes } from "@/lib/api/claude";
 import { generateVoiceover, applyAudioSpeed, removeSilences } from "@/lib/api/voiceover";
 import { findImageIssues } from "@/lib/api/claude-vision";
 import { generateImages as generateImagesGenAIPro, generateThumbnail } from "@/lib/api/genaipro";
@@ -421,31 +421,13 @@ async function runPipeline(jobId: string, jobDir: string) {
         );
       }
     } else {
-      // Script custom SANS image-prompts inline. On N'utilise PLUS parseCustomScript :
-      // il envoyait tout le script en UN seul appel à Claude qui dépassait le timeout
-      // de 5 min du wrapper VPS sur les longs scripts (→ "ÉCHEC après 3 tentatives:
-      // operation aborted due to timeout", reproduit sur les jobs animal le 02/06).
-      // splitScriptInto2sScenes découpe la narration en JS PUR (verbatim garanti, avec
-      // une garde qui throw si la narration diverge ne serait-ce que d'un caractère) et
-      // ne demande à Claude QUE les imagePrompts, par batches de 20 → plus de timeout,
-      // script jamais modifié.
-      let kitVocab: string[] = [];
-      if (legacySlugTop) {
-        try {
-          const meta = await getKit(legacySlugTop);
-          kitVocab = [...(meta?.character ?? []), ...(meta?.style ?? [])]
-            .map((i) => i.imagePrompt?.trim())
-            .filter((p): p is string => !!p && p.length > 20);
-        } catch (err) {
-          console.warn(`[Pipeline] kit vocab load failed (non-blocking):`, (err as Error).message);
-        }
-      }
-      const pilotForSplit = params.pilotMode ? (params.pilotSampleSize ?? 5) : undefined;
-      emit(jobId, { step: "script", status: "running", progress: 10,
-        message: pilotForSplit
-          ? `Mode pilot — Claude génère ${pilotForSplit} imagePrompts (script verbatim)...`
-          : "Découpe JS verbatim + imagePrompts par batches (script intact)..." });
-      script = await splitScriptInto2sScenes(params.customScript!, params.duration, kitVocab, pilotForSplit, jobId);
+      script = await parseCustomScript(
+        params.customScript!,
+        params.title,
+        params.niche,
+        params.duration,
+        params.presetId,
+      );
     }
   } else {
     emit(jobId, { step: "script", status: "running", progress: 10, message: `Script ${preset.label}...` });
