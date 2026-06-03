@@ -1089,9 +1089,12 @@ async function runPipeline(jobId: string, jobDir: string) {
 
     // --- Contrôle qualité (vision) + regen auto des images "bad" (1 passe) ---
     // Toujours actif (hors pilote, qui est lui-même une QA visuelle manuelle).
+    // Wrapped dans un try/catch global : si le wrapper Claude timeout sur les 244 appels,
+    // le QC est skippé (non-bloquant) et le montage démarre quand même.
     if (!isPilot && job.result.images.length > 0) {
       emit(jobId, { step: "images", status: "running", progress: 100, message: "Contrôle qualité (vision)..." });
-      const bad: ImageResult[] = [];
+      let bad: ImageResult[] = [];
+      try {
       const CONC = 3;
       const list = job.result.images;
       for (let i = 0; i < list.length; i += CONC) {
@@ -1102,6 +1105,10 @@ async function runPipeline(jobId: string, jobDir: string) {
           }),
         );
         for (const v of verdicts) if (v.sev === "bad") bad.push(v.img);
+      }
+      } catch (err) {
+        console.warn("[Pipeline] QC vision échoué (non-bloquant), skip vers montage:", (err as Error).message);
+        bad = [];
       }
       if (bad.length > 0) {
         emit(jobId, { step: "images", status: "running", progress: 100, message: `${bad.length} image(s) ratée(s) → regen...` });

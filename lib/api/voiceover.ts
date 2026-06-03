@@ -103,8 +103,8 @@ export async function applyAudioSpeed(audioPath: string, factor: number): Promis
 export async function removeSilences(audioPath: string): Promise<number> {
   const tmpPath = `${audioPath}.desilence${path.extname(audioPath) || ".wav"}`;
   const filter =
-    "silenceremove=start_periods=1:start_duration=0.1:start_threshold=-38dB:" +
-    "stop_periods=-1:stop_duration=0.6:stop_threshold=-38dB:stop_silence=0.25";
+    "silenceremove=start_periods=1:start_duration=0.1:start_threshold=-45dB:" +
+    "stop_periods=-1:stop_duration=1.5:stop_threshold=-45dB:stop_silence=0.8";
   await new Promise<void>((resolve, reject) => {
     const proc = spawn("ffmpeg", [
       "-y", "-hide_banner", "-loglevel", "error",
