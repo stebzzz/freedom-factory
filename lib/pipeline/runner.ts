@@ -2,7 +2,7 @@ import { mkdir, writeFile, cp, readFile, readdir, stat, unlink } from "fs/promis
 import path from "path";
 import { PipelineJob, PipelineJobParams, PipelineStepName, PipelineStepEvent, AnimationResult, ImageResult, ScriptScene } from "./types";
 import { generateScript, parseCustomScript, extractCustomScriptWithPrompts, generateStickyPrompts, parseImagePromptsTxt, splitScriptInto2sScenes, generateScript2sScenes } from "@/lib/api/claude";
-import { generateVoiceover, applyAudioSpeed, removeSilences } from "@/lib/api/voiceover";
+import { generateVoiceover, applyAudioSpeed } from "@/lib/api/voiceover";
 import { findImageIssues } from "@/lib/api/claude-vision";
 import { generateImages as generateImagesGenAIPro, generateThumbnail } from "@/lib/api/genaipro";
 import { animateImages as animateImagesGenAIPro, generateT2VClip, generateIngredientsClip } from "@/lib/api/genaipro";
@@ -702,20 +702,12 @@ async function runPipeline(jobId: string, jobDir: string) {
           }
         }
 
-        // Suppression des silences (toujours actif) AVANT l'alignement Whisper,
-        // pour que les durées de scènes soient calées sur l'audio nettoyé.
-        try {
-          emit(jobId, { step: "voiceover", status: "running", progress: 97, message: "Suppression des silences..." });
-          const dur = await removeSilences(voiceover.audioPath);
-          voiceover.durationSeconds = Math.round(dur);
-        } catch (err) {
-          console.warn(`[Pipeline] désilence échouée, audio inchangé:`, (err as Error).message);
-        }
-
         emit(jobId, { step: "voiceover", status: "completed", progress: 100, message: `Audio ${voiceover.durationSeconds}s genere` });
 
         // --- Whisper alignment: align scene durations on the real voiceover timing ---
-        if (params.alignWithWhisper !== false) {
+        // Désactivé : whisper-cli absent du conteneur (WHISPER_CLI_PATH pointe vers un binaire manquant)
+        // et pas d'OPENAI_API_KEY → échoue systématiquement à 0% match sans rien corriger.
+        if (false && params.alignWithWhisper !== false) {
           try {
             emit(jobId, { step: "voiceover", status: "running", progress: 100, message: "Alignement Whisper..." });
             const aligned = await alignScenesWithWhisper(script.scenes, voiceover.audioPath, {
