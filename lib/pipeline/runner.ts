@@ -705,9 +705,7 @@ async function runPipeline(jobId: string, jobDir: string) {
         emit(jobId, { step: "voiceover", status: "completed", progress: 100, message: `Audio ${voiceover.durationSeconds}s genere` });
 
         // --- Whisper alignment: align scene durations on the real voiceover timing ---
-        // Désactivé : whisper-cli absent du conteneur (WHISPER_CLI_PATH pointe vers un binaire manquant)
-        // et pas d'OPENAI_API_KEY → échoue systématiquement à 0% match sans rien corriger.
-        if (false && params.alignWithWhisper !== false) {
+        if (params.alignWithWhisper !== false) {
           try {
             emit(jobId, { step: "voiceover", status: "running", progress: 100, message: "Alignement Whisper..." });
             const aligned = await alignScenesWithWhisper(script.scenes, voiceover.audioPath, {
