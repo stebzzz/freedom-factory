@@ -211,12 +211,12 @@ export function listProjects(): ProjectSummary[] {
   }
 
   return summaries.sort((a, b) => {
-    const aScore = a.totalScenes > 0 ? a.doneCount / Math.max(1, a.totalScenes) : 0;
-    const bScore = b.totalScenes > 0 ? b.doneCount / Math.max(1, b.totalScenes) : 0;
-    if (a.kind === "full-job" && b.kind !== "full-job") return 1;
-    if (b.kind === "full-job" && a.kind !== "full-job") return -1;
-    if (bScore !== aScore) return bScore - aScore;
-    return a.slug.localeCompare(b.slug);
+    // Plus récent en premier : masterUpdatedAt (date vidéo finale) puis imagesCount puis slug
+    const aTime = a.masterUpdatedAt ?? 0;
+    const bTime = b.masterUpdatedAt ?? 0;
+    if (bTime !== aTime) return bTime - aTime;
+    if (b.imagesCount !== a.imagesCount) return b.imagesCount - a.imagesCount;
+    return b.slug.localeCompare(a.slug);
   });
 }
 
