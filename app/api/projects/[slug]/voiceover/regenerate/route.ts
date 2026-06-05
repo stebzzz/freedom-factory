@@ -123,11 +123,15 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
   const scenes = data.scenes ?? [];
   if (scenes.length === 0) return NextResponse.json({ error: "aucune scène dans le script" }, { status: 400 });
 
-  const body = (await req.json().catch(() => ({}))) as { voix?: string; align?: boolean; cleanSilences?: boolean; alignOnly?: boolean };
+  const body = (await req.json().catch(() => ({}))) as { voix?: string; voiceModel?: "algrow" | "elevenlabs" | "genaipro" | "fishspeech"; align?: boolean; cleanSilences?: boolean; alignOnly?: boolean };
   const config = await getConfig();
-  // ChannelFlow voix = Algrow uniquement (provider TTS unique des chaînes). On régénère
-  // donc avec Algrow, pas ElevenLabs, pour rester cohérent avec la voix publiée.
-  const voix = body.voix || config.algrowVoiceId || config.elevenlabsVoiceId || "male-en";
+  // Provider TTS : Algrow par défaut (provider unique des chaînes ChannelFlow), mais
+  // surchargeable via body.voiceModel — utile quand le plan Algrow est indispo et qu'on
+  // doit retomber sur ElevenLabs (eleven_v3) / GenAIPro pour régénérer.
+  const voiceModel = body.voiceModel || "algrow";
+  const voix = body.voix
+    || (voiceModel === "elevenlabs" ? config.elevenlabsVoiceId : config.algrowVoiceId)
+    || config.elevenlabsVoiceId || "male-en";
   // alignOnly = re-sync scene durations to the EXISTING voiceover.wav (no new TTS,
   // no silence pass). Fixes projects whose script.json durations never matched the
   // real audio (uploaded jobs aligned with the old code, or a stale alignment).
@@ -158,8 +162,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
     const tmpMp3 = path.join(tmpdir(), `regen-vo-${slug}-${Date.now()}.mp3`);
     try {
       if (!alignOnly) {
-        // 1) TTS — Algrow (provider unique des chaînes ChannelFlow)
-        await generateVoiceover(fullScript, voix, tmpMp3, { voiceModel: "algrow" });
+        // 1) TTS — Algrow par défaut, ou le provider passé en body (fallback ElevenLabs v3)
+        await generateVoiceover(fullScript, voix, tmpMp3, { voiceModel });
         if (!existsSync(tmpMp3)) throw new Error("TTS n'a produit aucun fichier");
 
         // 2) backup + transcode to wav
