@@ -46,10 +46,21 @@ export async function generateVoiceover(
 
   // Default: Algrow TTS (ElevenLabs/Stealth hosted by Algrow, single API key, async job + polling).
   // A config-level algrowVoiceId overrides the preset label when the caller passes a generic voix.
+  // Fallback automatique ElevenLabs (eleven_v3) si Algrow est indispo (ex. plan 403) :
+  // le pipeline ne doit pas planter sur l'étape voix quand le compte Algrow est limité.
   const looksLikeVoiceId = /^[A-Za-z0-9]{16,32}$/.test(voix);
   const algrowVoix = (!looksLikeVoiceId && config.algrowVoiceId) ? config.algrowVoiceId : voix;
-  const { generateVoiceover: algrowTTS } = await import("./algrow-tts");
-  return algrowTTS(script, algrowVoix, outputPath, { speed });
+  try {
+    const { generateVoiceover: algrowTTS } = await import("./algrow-tts");
+    return await algrowTTS(script, algrowVoix, outputPath, { speed });
+  } catch (err) {
+    // La voix Algrow (souvent un id GenAIPro type "g14...") n'est pas un voiceId ElevenLabs
+    // valide → on retombe sur la voix ElevenLabs configurée par défaut.
+    const evVoix = config.elevenlabsVoiceId || "male-en";
+    console.warn(`[Voiceover] Algrow indisponible (${(err as Error).message}) → fallback ElevenLabs eleven_v3 (voix ${evVoix})`);
+    const { generateVoiceover: elevenlabsTTS } = await import("./elevenlabs");
+    return elevenlabsTTS(script, evVoix, outputPath, { speed });
+  }
 }
 
 /**
