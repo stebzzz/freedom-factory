@@ -1,7 +1,8 @@
-// Regenerate the project's voiceover from its script via ElevenLabs (eleven_v3,
-// native base speed — no atempo), auto-remove silences, then re-align scene
-// durations to the new audio with Whisper so the montage stays in sync. The
-// previous voiceover.wav is backed up to voiceover.prev-<ts>.wav.
+// Regenerate the project's voiceover from its script via Algrow (the single TTS
+// provider used by ChannelFlow channels), native base speed — no atempo and NO
+// silence removal (it butchered the audio), then re-align scene durations to the
+// new audio with Whisper so the montage stays in sync. The previous voiceover.wav
+// is backed up to voiceover.prev-<ts>.wav.
 //
 // Runs as a DETACHED background job: the whole pipeline takes minutes and the
 // proxy cuts the HTTP connection at ~60s. POST starts it (409 if one is already
@@ -124,13 +125,18 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
 
   const body = (await req.json().catch(() => ({}))) as { voix?: string; align?: boolean; cleanSilences?: boolean; alignOnly?: boolean };
   const config = await getConfig();
-  const voix = body.voix || config.elevenlabsVoiceId || "male-en";
+  // ChannelFlow voix = Algrow uniquement (provider TTS unique des chaînes). On régénère
+  // donc avec Algrow, pas ElevenLabs, pour rester cohérent avec la voix publiée.
+  const voix = body.voix || config.algrowVoiceId || config.elevenlabsVoiceId || "male-en";
   // alignOnly = re-sync scene durations to the EXISTING voiceover.wav (no new TTS,
   // no silence pass). Fixes projects whose script.json durations never matched the
   // real audio (uploaded jobs aligned with the old code, or a stale alignment).
   const alignOnly = body.alignOnly === true;
   const doAlign = alignOnly ? true : body.align !== false;
-  const doClean = alignOnly ? false : body.cleanSilences !== false;
+  // Silence removal DÉSACTIVÉ par défaut : il charcutait l'audio (coupures brusques,
+  // sauts). On garde la voix off Algrow originale telle quelle, alignée par Whisper.
+  // Opt-in explicite seulement (cleanSilences:true) — ne JAMAIS le remettre par défaut.
+  const doClean = !alignOnly && body.cleanSilences === true;
 
   if (alignOnly && !existsSync(path.join(project.outDir, "voiceover.wav"))) {
     return NextResponse.json({ error: "voiceover.wav absent — rien à resynchroniser" }, { status: 400 });
@@ -152,8 +158,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
     const tmpMp3 = path.join(tmpdir(), `regen-vo-${slug}-${Date.now()}.mp3`);
     try {
       if (!alignOnly) {
-        // 1) TTS
-        await generateVoiceover(fullScript, voix, tmpMp3, { voiceModel: "elevenlabs" });
+        // 1) TTS — Algrow (provider unique des chaînes ChannelFlow)
+        await generateVoiceover(fullScript, voix, tmpMp3, { voiceModel: "algrow" });
         if (!existsSync(tmpMp3)) throw new Error("TTS n'a produit aucun fichier");
 
         // 2) backup + transcode to wav
