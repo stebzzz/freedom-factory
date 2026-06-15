@@ -1246,8 +1246,30 @@ export async function splitScriptInto2sScenes(
   const totalDurS = Math.max(60, Math.round(durationMinutes * 60));
 
   // Step 1: deterministic JS segmentation — narration is VERBATIM, Claude cannot touch it.
-  const segments = segmentScriptVerbatim(customScript);
+  let segments = segmentScriptVerbatim(customScript);
   if (segments.length === 0) throw new Error("splitScriptInto2sScenes: aucun segment trouvé après découpage JS");
+
+  // Hard cap on scene count. A 2s-per-scene split of a long script explodes to 600+ scenes,
+  // which is unusable for a client (hundreds of image gens + a slideshow that drags). Cap at
+  // MAX_SCENES by merging adjacent segments into balanced groups: narration is concatenated
+  // VERBATIM (joined with " ", matching the divergence guard below) and durations summed — the
+  // script itself is never rewritten, scenes just become a bit longer (~4-5s each).
+  const MAX_SCENES = 275;
+  if (segments.length > MAX_SCENES) {
+    const total = segments.length;
+    const merged: Array<{ narration: string; durationSeconds: number }> = [];
+    for (let g = 0; g < MAX_SCENES; g++) {
+      const start = Math.floor((g * total) / MAX_SCENES);
+      const end = Math.max(Math.floor(((g + 1) * total) / MAX_SCENES), start + 1);
+      const group = segments.slice(start, end);
+      merged.push({
+        narration: group.map((s) => s.narration).join(" "),
+        durationSeconds: group.reduce((a, s) => a + s.durationSeconds, 0),
+      });
+    }
+    console.log(`[Claude 2s Prompts] cap scènes: ${total} → ${merged.length} (max ${MAX_SCENES}, fusion segments adjacents, verbatim préservé)`);
+    segments = merged;
+  }
 
   // PILOT MODE: only generate imagePrompts for a spread-out subset of indices.
   // Non-pilot scenes get an empty imagePrompt — the pipeline's pilot filter drops them
