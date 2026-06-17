@@ -80,6 +80,11 @@ export async function POST(request: NextRequest) {
           if (v === undefined) return undefined;
           return v !== "false";
         })(),
+        removeSilences: (() => {
+          const v = pickString(fd.get("removeSilences"));
+          if (v === undefined) return undefined;
+          return v === "true";
+        })(),
         competitorVideoUrl: pickString(fd.get("competitorVideoUrl")),
         rewriteCompetitorScript: pickString(fd.get("rewriteCompetitorScript")) === "true" || undefined,
         describeKitScriptSource: (() => {
@@ -152,6 +157,7 @@ export async function POST(request: NextRequest) {
         customScriptHasImagePrompts: body.customScriptHasImagePrompts,
         subtitlesEnabled: body.subtitlesEnabled,
         alignWithWhisper: body.alignWithWhisper,
+        removeSilences: body.removeSilences,
         competitorVideoUrl: body.competitorVideoUrl,
         rewriteCompetitorScript: body.rewriteCompetitorScript,
         describeKitScriptSource: body.describeKitScriptSource,

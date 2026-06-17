@@ -45,18 +45,26 @@ export async function generateVoiceover(
   }
 
   // Default: Algrow TTS (ElevenLabs/Stealth hosted by Algrow, single API key, async job + polling).
-  // A config-level algrowVoiceId overrides the preset label when the caller passes a generic voix.
+  // config.algrowVoiceId est seulement un FALLBACK : il ne s'applique que si l'appelant
+  // n'a PAS fourni de voix précise (voix vide ou label générique male-fr/…). Une voix
+  // explicite (ex. ID transmis par chaîne depuis ChannelFlow) gagne TOUJOURS — sinon le
+  // réglage de la chaîne était silencieusement écrasé par la voix globale.
   // Fallback automatique ElevenLabs (eleven_v3) si Algrow est indispo (ex. plan 403) :
   // le pipeline ne doit pas planter sur l'étape voix quand le compte Algrow est limité.
-  const looksLikeVoiceId = /^[A-Za-z0-9]{16,32}$/.test(voix);
-  const algrowVoix = (!looksLikeVoiceId && config.algrowVoiceId) ? config.algrowVoiceId : voix;
+  const GENERIC_VOICE_LABELS = new Set(["male-fr", "female-fr", "male-en", "female-en"]);
+  const voixIsGenericOrEmpty = !voix || GENERIC_VOICE_LABELS.has(voix);
+  const algrowVoix = (voixIsGenericOrEmpty && config.algrowVoiceId) ? config.algrowVoiceId : voix;
+  console.log(`[Voiceover] Algrow voix résolue="${algrowVoix || "∅"}" (job voix="${voix || "∅"}", global algrowVoiceId=${config.algrowVoiceId ? "set" : "∅"}, source=${voixIsGenericOrEmpty && config.algrowVoiceId ? "global" : "job"})`);
   try {
     const { generateVoiceover: algrowTTS } = await import("./algrow-tts");
     return await algrowTTS(script, algrowVoix, outputPath, { speed });
   } catch (err) {
-    // La voix Algrow (souvent un id GenAIPro type "g14...") n'est pas un voiceId ElevenLabs
-    // valide → on retombe sur la voix ElevenLabs configurée par défaut.
-    const evVoix = config.elevenlabsVoiceId || "male-en";
+    // Algrow indispo (ex. abonnement suspendu / plan 403) → fallback ElevenLabs.
+    // On REPREND la voix résolue (algrowVoix) au lieu d'imposer config.elevenlabsVoiceId :
+    // les voix Algrow sont en fait des IDs ElevenLabs (provider=elevenlabs côté Algrow),
+    // donc la voix demandée (ChannelFlow / algrowVoiceId) reste valide ici. Sinon on
+    // retombait silencieusement sur la voix EL globale et la voix choisie était ignorée.
+    const evVoix = algrowVoix || config.elevenlabsVoiceId || "male-en";
     console.warn(`[Voiceover] Algrow indisponible (${(err as Error).message}) → fallback ElevenLabs eleven_v3 (voix ${evVoix})`);
     const { generateVoiceover: elevenlabsTTS } = await import("./elevenlabs");
     return elevenlabsTTS(script, evVoix, outputPath, { speed });
@@ -134,6 +142,40 @@ export async function removeSilences(audioPath: string): Promise<number> {
   await rename(tmpPath, audioPath);
   const dur = await probeDuration(audioPath);
   console.log(`[Voiceover] silences retirés → ${audioPath} (${dur.toFixed(2)}s)`);
+  return dur;
+}
+
+// Nettoyage DOUX des silences via scripts/remove-silences-clean.mjs (2-pass :
+// silencedetect → atrim + micro-fade 20ms + breath padding 80ms, bitrate préservé).
+// Contrairement au filtre brut `silenceremove` (removeSilences ci-dessus) qui coupait
+// au ras du seuil et charcutait la voix (clics, sauts, mots tronqués), celui-ci garde
+// une respiration autour de chaque segment de parole → pas de bug de voix.
+// À lancer AVANT l'alignement Whisper pour que les durées de scènes se recalent sur
+// l'audio nettoyé. Retourne la nouvelle durée (secondes). No-op si le script manque.
+export async function cleanSilences(audioPath: string): Promise<number> {
+  const scriptPath = path.join(process.cwd(), "scripts", "remove-silences-clean.mjs");
+  const { existsSync } = await import("fs");
+  if (!existsSync(scriptPath)) {
+    console.warn(`[Voiceover] cleanSilences: ${scriptPath} introuvable — skip`);
+    return await probeDuration(audioPath);
+  }
+  const tmpOut = `${audioPath}.clean${path.extname(audioPath) || ".wav"}`;
+  await new Promise<void>((resolve, reject) => {
+    const proc = spawn(process.execPath, [
+      scriptPath, audioPath, tmpOut,
+      "--threshold=-35dB", "--min=0.4", "--pad=0.08", "--fade=0.02",
+    ], { stdio: ["ignore", "ignore", "pipe"] });
+    let err = "";
+    proc.stderr.on("data", (c) => { err += c.toString(); });
+    proc.on("error", reject);
+    proc.on("exit", (code) => code === 0
+      ? resolve()
+      : reject(new Error(`remove-silences-clean exit ${code}: ${err.slice(-400)}`)));
+  });
+  await unlink(audioPath).catch(() => {});
+  await rename(tmpOut, audioPath);
+  const dur = await probeDuration(audioPath);
+  console.log(`[Voiceover] silences nettoyés (2-pass doux) → ${audioPath} (${dur.toFixed(2)}s)`);
   return dur;
 }
 

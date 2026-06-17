@@ -61,6 +61,7 @@ interface CFPayload {
   voiceModel?: string;
   pilotMode?: boolean;
   pilotSampleSize?: number;
+  removeSilences?: boolean;
   channelflowVideoId?: string;
   channelflowChannelId?: string;
 }
@@ -151,6 +152,10 @@ export async function POST(request: NextRequest) {
     // --- Paramètres de production (intégration ChannelFlow) ---
     // imageProvider / voiceModel réglables par chaîne ; le reste figé.
     voiceModel,
+    // Nettoyage doux des silences activé pour les jobs ChannelFlow (2-pass : micro-fade
+    // + breath padding, recalé Whisper ensuite) — resserre les blancs de la voix Algrow
+    // sans charcuter. Désactivable par chaîne via body.removeSilences:false.
+    removeSilences: body.removeSilences !== false,
     videoMode: "static-images",
     imageProvider,
     ...(imageProvider === "wan" ? { wanModel: "wan2.7-image" as const } : {}),

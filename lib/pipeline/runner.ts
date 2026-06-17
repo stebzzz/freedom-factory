@@ -2,7 +2,7 @@ import { mkdir, writeFile, cp, readFile, readdir, stat, unlink } from "fs/promis
 import path from "path";
 import { PipelineJob, PipelineJobParams, PipelineStepName, PipelineStepEvent, AnimationResult, ImageResult, ScriptScene } from "./types";
 import { generateScript, parseCustomScript, extractCustomScriptWithPrompts, generateStickyPrompts, parseImagePromptsTxt, splitScriptInto2sScenes, generateScript2sScenes } from "@/lib/api/claude";
-import { generateVoiceover, applyAudioSpeed } from "@/lib/api/voiceover";
+import { generateVoiceover, applyAudioSpeed, cleanSilences } from "@/lib/api/voiceover";
 import { findImageIssues } from "@/lib/api/claude-vision";
 import { generateImages as generateImagesGenAIPro, generateThumbnail } from "@/lib/api/genaipro";
 import { animateImages as animateImagesGenAIPro, generateT2VClip, generateIngredientsClip } from "@/lib/api/genaipro";
@@ -16,7 +16,7 @@ import { resolveRefsForScene as resolveKitRefs, resolveSplitRefsForScene, resolv
 import { fetchTranscript, fetchThumbnail, detectLanguageFromText } from "@/lib/api/youtube";
 import { rewriteCompetitorScript } from "@/lib/api/claude";
 import { fetchArchivesForScenes } from "@/lib/api/archives";
-import { alignScenesWithWhisper } from "@/lib/api/whisper";
+import { alignScenesWithWhisper, detectScriptLanguage } from "@/lib/api/whisper";
 import { getConfig } from "@/lib/config";
 import { getPresetOrDefault } from "@/lib/presets/channel-presets";
 import { syncJobToChannelFlow, markChannelFlowFailed, reportChannelFlowProgress, markChannelFlowPilotDone, writeChannelFlowMarker } from "@/lib/integrations/channelflow-sync";
@@ -689,6 +689,19 @@ async function runPipeline(jobId: string, jobDir: string) {
         }
         job.result.voiceover = voiceover;
 
+        // Nettoyage DOUX des silences (opt-in) — AVANT atempo + Whisper pour que les
+        // durées de scènes se recalent sur l'audio nettoyé. Script 2-pass (micro-fade +
+        // breath padding) → pas de charcutage. Best-effort : on garde l'audio brut si échec.
+        if (params.removeSilences) {
+          try {
+            emit(jobId, { step: "voiceover", status: "running", progress: 92, message: "Nettoyage des silences..." });
+            const newDur = await cleanSilences(voiceover.audioPath);
+            voiceover.durationSeconds = Math.round(newDur);
+          } catch (err) {
+            console.warn(`[Pipeline] nettoyage silences échoué, audio inchangé:`, (err as Error).message);
+          }
+        }
+
         // Post-TTS time-stretch (ffmpeg atempo) — runs BEFORE Whisper alignment so scene
         // durations stay coherent with the final audio file.
         if (params.audioSpeed && Math.abs(params.audioSpeed - 1) > 0.01) {
@@ -708,8 +721,14 @@ async function runPipeline(jobId: string, jobDir: string) {
         if (params.alignWithWhisper !== false) {
           try {
             emit(jobId, { step: "voiceover", status: "running", progress: 100, message: "Alignement Whisper..." });
+            // La langue du preset est souvent fausse pour un customScript ChannelFlow
+            // (preset EN par défaut alors que le script est FR, ou inverse). Transcrire
+            // dans la mauvaise langue fait chuter le taux de match → grille de secours →
+            // dérive voix/visuel. On détecte la vraie langue depuis la narration.
+            const alignLang = detectScriptLanguage(script.scenes.map((s) => s.narration));
+            console.log(`[Pipeline] Whisper alignement langue=${alignLang} (preset=${preset.language})`);
             const aligned = await alignScenesWithWhisper(script.scenes, voiceover.audioPath, {
-              language: preset.language,
+              language: alignLang,
             });
             // Persist the aligned script.json so the montage and downstream consumers see the updated durations.
             await writeFile(

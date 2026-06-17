@@ -103,6 +103,7 @@ export default function PipelinePage() {
   const [customHasImagePrompts, setCustomHasImagePrompts] = useState(false);
   const [subtitlesEnabled, setSubtitlesEnabled] = useState(false);
   const [alignWithWhisper, setAlignWithWhisper] = useState(true);
+  const [removeSilences, setRemoveSilences] = useState(false);
   const [voiceoverGate, setVoiceoverGate] = useState(false);
   const [competitorUrl, setCompetitorUrl] = useState("");
   const [rewriteCompetitor, setRewriteCompetitor] = useState(false);
@@ -231,6 +232,7 @@ export default function PipelinePage() {
             if (finalScript && customHasImagePrompts) fd.append("customScriptHasImagePrompts", "true");
             fd.append("subtitlesEnabled", String(subtitlesEnabled));
             fd.append("alignWithWhisper", String(alignWithWhisper));
+            fd.append("removeSilences", String(removeSilences));
             if (kitActive && kits.find((k) => k.slug === kitSlug)?.mode === "describe") {
               fd.append("describeKitScriptSource", describeKitScriptSource);
             }
@@ -269,6 +271,7 @@ export default function PipelinePage() {
               customScriptHasImagePrompts: (finalScript && customHasImagePrompts) || undefined,
               subtitlesEnabled,
               alignWithWhisper,
+              removeSilences,
               describeKitScriptSource:
                 kitActive && kits.find((k) => k.slug === kitSlug)?.mode === "describe"
                   ? describeKitScriptSource
@@ -1057,6 +1060,12 @@ export default function PipelinePage() {
                 description="Transcrit le voiceover via whisper-cli local (large-v3-turbo) et cale chaque clip sur la durée réelle de sa narration. Évite les clips qui finissent avant ou après la voix."
                 checked={alignWithWhisper}
                 onChange={setAlignWithWhisper}
+              />
+              <Toggle
+                label="Nettoyer les silences (doux)"
+                description="Resserre les blancs trop longs de la voix off (2-pass : micro-fade + respiration conservée, recalé Whisper ensuite). Conçu pour ne pas charcuter la voix. OFF par défaut."
+                checked={removeSilences}
+                onChange={setRemoveSilences}
               />
               <Toggle
                 label="Valider la voix off avant images"

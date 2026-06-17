@@ -37,6 +37,9 @@ export interface PipelineJobParams {
   resumeFromPilotId?: string; // reuse images + clips from a finished pilot job; skip those scenes in the new full run
   subtitlesEnabled?: boolean; // explicit OFF skips burned-in ASS subtitles in the montage
   alignWithWhisper?: boolean; // run whisper-cli on the voiceover to align scene durations with real audio (default true)
+  /** When true, strip over-long silences from the voiceover (gentle 2-pass clean, runs BEFORE Whisper so
+   *  scene durations re-align to the trimmed audio). Default OFF (the crude old pass butchered the voice). */
+  removeSilences?: boolean;
   competitorVideoUrl?: string; // YouTube URL of a video to replicate (transcript + thumbnail). Optional.
   rewriteCompetitorScript?: boolean; // when true and competitorVideoUrl is set, fetch the transcript, rewrite ~20% via Claude, use as customScript.
   /** When a describe-mode style kit is selected, controls the 2s-scenes script source.

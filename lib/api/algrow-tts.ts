@@ -143,11 +143,14 @@ export async function generateVoiceover(
     throw new Error(`Algrow TTS exige au moins ${MIN_SCRIPT_CHARS} caractères (script: ${script.length}). Allonge le texte ou bascule de provider pour ce segment.`);
   }
 
-  // Voice ID resolution: raw ElevenLabs ID (16-32 alnum) → preset map → fallback male-fr.
-  const looksLikeVoiceId = /^[A-Za-z0-9]{16,32}$/.test(voix);
-  const voiceId = looksLikeVoiceId
-    ? voix
-    : DEFAULT_VOICE_MAP[voix] || DEFAULT_VOICE_MAP["male-fr"];
+  // Voice ID resolution: seuls les 4 labels génériques (male-fr/…) sont mappés ;
+  // toute autre valeur est traitée comme un voice ID brut et passée VERBATIM.
+  // La regex stricte précédente (/^[A-Za-z0-9]{16,32}$/) rejetait silencieusement
+  // tout ID au format non-ElevenLabs (Stealth, ID plus long…) et le remplaçait par
+  // Adam (male-fr) — donc la voix choisie côté ChannelFlow n'était pas respectée.
+  const voiceId = voix
+    ? (DEFAULT_VOICE_MAP[voix] ?? voix)
+    : DEFAULT_VOICE_MAP["male-fr"];
 
   const provider = options.provider ?? "elevenlabs";
   const model = options.model ?? DEFAULT_MODEL;
