@@ -40,6 +40,9 @@ export interface PipelineJobParams {
   /** When true, strip over-long silences from the voiceover (gentle 2-pass clean, runs BEFORE Whisper so
    *  scene durations re-align to the trimmed audio). Default OFF (the crude old pass butchered the voice). */
   removeSilences?: boolean;
+  /** When true, lève le cap de 275 scènes du découpage 2s → images illimitées (vidéos Sticky
+   *  plus dynamiques). Défaut OFF en interne ; ON par défaut pour les jobs ChannelFlow. */
+  imagesUnlimited?: boolean;
   competitorVideoUrl?: string; // YouTube URL of a video to replicate (transcript + thumbnail). Optional.
   rewriteCompetitorScript?: boolean; // when true and competitorVideoUrl is set, fetch the transcript, rewrite ~20% via Claude, use as customScript.
   /** When a describe-mode style kit is selected, controls the 2s-scenes script source.

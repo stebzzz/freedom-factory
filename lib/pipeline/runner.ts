@@ -393,7 +393,7 @@ async function runPipeline(jobId: string, jobDir: string) {
         message: params.pilotMode
           ? `Mode pilot (${language}) — Claude génère uniquement ${pilotForSplit} imagePrompts...`
           : `Mode describe-kit (${language}) — Claude découpe ton script en scènes ~1.5s...` });
-      script = await splitScriptInto2sScenes(params.customScript!, params.duration, kitVocab, pilotForSplit, jobId);
+      script = await splitScriptInto2sScenes(params.customScript!, params.duration, kitVocab, pilotForSplit, jobId, params.imagesUnlimited);
     } else {
       emit(jobId, { step: "script", status: "running", progress: 10,
         message: `Mode describe-kit (${language}) — Claude génère script + scènes ~1.5s...` });
@@ -434,7 +434,7 @@ async function runPipeline(jobId: string, jobDir: string) {
       }
       const pilotForSplit = params.pilotMode ? (params.pilotSampleSize ?? 5) : undefined;
       emit(jobId, { step: "script", status: "running", progress: 10, message: "Découpe + imagePrompts série..." });
-      script = await splitScriptInto2sScenes(params.customScript!, params.duration, kitVocab, pilotForSplit, jobId);
+      script = await splitScriptInto2sScenes(params.customScript!, params.duration, kitVocab, pilotForSplit, jobId, params.imagesUnlimited);
     }
   } else {
     emit(jobId, { step: "script", status: "running", progress: 10, message: `Script ${preset.label}...` });

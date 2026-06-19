@@ -62,6 +62,7 @@ interface CFPayload {
   pilotMode?: boolean;
   pilotSampleSize?: number;
   removeSilences?: boolean;
+  imagesUnlimited?: boolean;
   channelflowVideoId?: string;
   channelflowChannelId?: string;
 }
@@ -156,6 +157,10 @@ export async function POST(request: NextRequest) {
     // + breath padding, recalé Whisper ensuite) — resserre les blancs de la voix Algrow
     // sans charcuter. Désactivable par chaîne via body.removeSilences:false.
     removeSilences: body.removeSilences !== false,
+    // Pas de limite d'images pour les chaînes ChannelFlow (toutes admin) : on lève le cap
+    // de 275 scènes du découpage 2s → vidéos Sticky plus dynamiques. ON par défaut,
+    // désactivable par chaîne via body.imagesUnlimited:false.
+    imagesUnlimited: body.imagesUnlimited !== false,
     videoMode: "static-images",
     imageProvider,
     ...(imageProvider === "wan" ? { wanModel: "wan2.7-image" as const } : {}),

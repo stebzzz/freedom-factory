@@ -1239,6 +1239,7 @@ export async function splitScriptInto2sScenes(
   kitImagePrompts: string[] = [],
   pilotSampleSize?: number,
   jobId?: string,
+  imagesUnlimited?: boolean,
 ): Promise<ScriptResult> {
   const config = await getConfig();
   const modelId = PROMPT_MODEL;
@@ -1254,7 +1255,7 @@ export async function splitScriptInto2sScenes(
   // MAX_SCENES by merging adjacent segments into balanced groups: narration is concatenated
   // VERBATIM (joined with " ", matching the divergence guard below) and durations summed — the
   // script itself is never rewritten, scenes just become a bit longer (~4-5s each).
-  const MAX_SCENES = 275;
+  const MAX_SCENES = imagesUnlimited ? Number.POSITIVE_INFINITY : 275;
   if (segments.length > MAX_SCENES) {
     const total = segments.length;
     const merged: Array<{ narration: string; durationSeconds: number }> = [];
