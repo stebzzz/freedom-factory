@@ -195,6 +195,32 @@ async function generateOneRetry(
   throw lastErr ?? new Error("WAN: exhausted retries");
 }
 
+// ===================================================================
+// Global WAN rate gate — shared across ALL pipeline jobs in this process.
+// Quand plusieurs jobs tournent en parallèle (queue concurrente), leurs étapes
+// d'images partagent ce plafond → le total en vol vers DashScope reste borné,
+// peu importe le nombre de jobs. Pool CONTINU (zéro temps mort) : jusqu'à
+// WAN_GLOBAL_MAX requêtes en vol, ré-alimenté dès qu'une finit.
+// Remplace l'ancien "batch de 3 → attendre → dormir 15s" qui passait ~40% du
+// temps à dormir (3 images / ~40s ≈ 4,5/min). En continu à 6 en vol ≈ 12/min
+// (le rythme VOULU à l'origine), soit ~2,5-3× plus rapide. Réglable via env.
+// ===================================================================
+const WAN_GLOBAL_MAX = Number(process.env.FF_WAN_GLOBAL_INFLIGHT) || 6;
+const wanGate = globalThis as unknown as { __ff_wan_inflight?: number; __ff_wan_waiters?: Array<() => void> };
+wanGate.__ff_wan_inflight ??= 0;
+wanGate.__ff_wan_waiters ??= [];
+async function wanAcquire(): Promise<void> {
+  while ((wanGate.__ff_wan_inflight ?? 0) >= WAN_GLOBAL_MAX) {
+    await new Promise<void>((resolve) => wanGate.__ff_wan_waiters!.push(resolve));
+  }
+  wanGate.__ff_wan_inflight = (wanGate.__ff_wan_inflight ?? 0) + 1;
+}
+function wanRelease(): void {
+  wanGate.__ff_wan_inflight = Math.max(0, (wanGate.__ff_wan_inflight ?? 1) - 1);
+  const next = wanGate.__ff_wan_waiters!.shift();
+  if (next) next();
+}
+
 /** Drop-in replacement for GenAIPro / Geminigen `generateImages`. Same signature. */
 export async function generateImages(
   scenes: Array<{ index: number; imagePrompt: string }>,
@@ -226,44 +252,43 @@ export async function generateImages(
     }));
   }
 
-  // Conservative throttle: 3 in-flight + 15s between batches (= 12 req/min) — same rhythm as
-  // Geminigen since DashScope rate limits aren't publicly documented and we don't want to surprise
-  // anyone with bursts. Each call is sync (no polling), so latency dominates anyway.
+  // Pool CONTINU borné par le plafond GLOBAL (wanAcquire/wanRelease) — plus de
+  // "batch de 3 → dormir 15s" (qui gâchait ~40% du temps). On lance toutes les
+  // scènes ; chacune attend poliment un créneau global avant de partir. Le 429/
+  // throttling reste géré par generateOneRetry (backoff). options.concurrency est
+  // ignoré : c'est le plafond global FF_WAN_GLOBAL_INFLIGHT qui gouverne (et borne
+  // aussi le total quand plusieurs jobs tournent en parallèle).
   const hasRefs = !!resolver || refPaths.length > 0;
-  const concurrency = options.concurrency ?? 3;
-  const BATCH_SLEEP_MS = 15_000;
-  console.log(`[WAN] ${scenes.length} images (model=${model}, concurrency=${concurrency}, refs=${hasRefs ? "yes" : "no"}, sleep=${BATCH_SLEEP_MS}ms between batches)`);
+  console.log(`[WAN] ${scenes.length} images (model=${model}, refs=${hasRefs ? "yes" : "no"}, plafond global=${WAN_GLOBAL_MAX} en vol, continu)`);
 
   const out: ImageResult[] = [];
   let done = 0;
 
-  for (let i = 0; i < scenes.length; i += concurrency) {
-    const batch = scenes.slice(i, i + concurrency);
-    await Promise.all(
-      batch.map(async (scene) => {
-        const sceneRefs = resolver ? (await resolver(scene.index, scene.imagePrompt)).slice(0, 9) : refPaths;
-        const ext = "png";
-        const imagePath = `${outputDir}/scene_${String(scene.index).padStart(3, "0")}.${ext}`;
-        try {
-          const url = await generateOneRetry(key, model, scene.imagePrompt, sceneRefs, scene.index);
-          await downloadToFile(url, imagePath);
-          const result: ImageResult = { sceneIndex: scene.index, imagePath, prompt: scene.imagePrompt };
-          out.push(result);
-          options.onImageReady?.(result);
-        } catch (err) {
-          const msg = (err as Error).message;
-          console.warn(`[WAN] scene ${scene.index} failed: ${msg}`);
-          out.push({ sceneIndex: scene.index, imagePath, prompt: scene.imagePrompt });
-          options.onImageFailed?.(scene.index, msg);
-        }
-        done += 1;
-        onProgress(done, scenes.length);
-      }),
-    );
-    if (i + concurrency < scenes.length) {
-      await new Promise((r) => setTimeout(r, BATCH_SLEEP_MS));
+  const processScene = async (scene: { index: number; imagePrompt: string }): Promise<void> => {
+    await wanAcquire();
+    try {
+      const sceneRefs = resolver ? (await resolver(scene.index, scene.imagePrompt)).slice(0, 9) : refPaths;
+      const imagePath = `${outputDir}/scene_${String(scene.index).padStart(3, "0")}.png`;
+      try {
+        const url = await generateOneRetry(key, model, scene.imagePrompt, sceneRefs, scene.index);
+        await downloadToFile(url, imagePath);
+        const result: ImageResult = { sceneIndex: scene.index, imagePath, prompt: scene.imagePrompt };
+        out.push(result);
+        options.onImageReady?.(result);
+      } catch (err) {
+        const msg = (err as Error).message;
+        console.warn(`[WAN] scene ${scene.index} failed: ${msg}`);
+        out.push({ sceneIndex: scene.index, imagePath, prompt: scene.imagePrompt });
+        options.onImageFailed?.(scene.index, msg);
+      }
+      done += 1;
+      onProgress(done, scenes.length);
+    } finally {
+      wanRelease();
     }
-  }
+  };
+
+  await Promise.all(scenes.map((scene) => processScene(scene)));
 
   return out.sort((a, b) => a.sceneIndex - b.sceneIndex);
 }

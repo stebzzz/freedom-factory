@@ -23,13 +23,20 @@ interface QueueState {
 
 const QUEUE_FILE = path.join(process.cwd(), "config", "pipeline-queue.json");
 
+// Combien de jobs pipeline tournent EN PARALLÈLE (défaut 2). Le serveur est large
+// (24 Go libres, ~4% CPU), WAN est borné GLOBALEMENT (lib/api/wan.ts) et Claude
+// reste à 1 (claude-wrapper-client) → des jobs concurrents recouvrent les étapes
+// non-WAN (montage, whisper) sans saturer le provider d'images ni le wrapper.
+// Réglable via FF_MAX_CONCURRENT_JOBS.
+const MAX_CONCURRENT_JOBS = Number(process.env.FF_MAX_CONCURRENT_JOBS) || 2;
+
 declare global {
   // eslint-disable-next-line no-var
   var __ff_queue_state: QueueState | undefined;
   // eslint-disable-next-line no-var
   var __ff_queue_started: boolean | undefined;
   // eslint-disable-next-line no-var
-  var __ff_queue_running: boolean | undefined;
+  var __ff_queue_active: number | undefined;
 }
 
 function defaultState(): QueueState {
@@ -148,12 +155,13 @@ export async function setWorkerEnabled(enabled: boolean): Promise<void> {
 // Lance une entrée (réservée à un seul job concurrent via __ff_queue_running) et
 // suit le job jusqu'à sa fin. Utilisé par le worker ET par runQueueEntryNow.
 async function runEntry(next: QueueEntry): Promise<void> {
-  if (global.__ff_queue_running) return;
-  global.__ff_queue_running = true;
+  // Le compteur + status="running" sont posés SYNCHRONEMENT avant le 1er await,
+  // pour que workerTick (boucle de remplissage) ne re-sélectionne pas cette entrée.
+  global.__ff_queue_active = (global.__ff_queue_active ?? 0) + 1;
   next.status = "running";
   next.startedAt = new Date().toISOString();
   await persist();
-  console.log(`[Queue] Start ${next.id}: "${next.params.title}"`);
+  console.log(`[Queue] Start ${next.id}: "${next.params.title}" (${global.__ff_queue_active}/${MAX_CONCURRENT_JOBS} actifs)`);
 
   try {
     const jobId = await startPipeline(next.params);
@@ -184,16 +192,19 @@ async function runEntry(next: QueueEntry): Promise<void> {
     await persist();
     console.error(`[Queue] Error ${next.id}: ${next.error}`);
   } finally {
-    global.__ff_queue_running = false;
+    global.__ff_queue_active = Math.max(0, (global.__ff_queue_active ?? 1) - 1);
   }
 }
 
 async function workerTick(): Promise<void> {
-  if (global.__ff_queue_running) return;
   if (!state.workerEnabled) return;
-  const next = state.entries.find((e) => e.status === "waiting");
-  if (!next) return;
-  await runEntry(next);
+  // Remplit jusqu'à MAX_CONCURRENT_JOBS. runEntry marque l'entrée "running" de façon
+  // synchrone (avant son 1er await) → la boucle ne re-prend jamais la même entrée.
+  while ((global.__ff_queue_active ?? 0) < MAX_CONCURRENT_JOBS) {
+    const next = state.entries.find((e) => e.status === "waiting");
+    if (!next) break;
+    void runEntry(next).catch((e) => console.error("[Queue] runEntry", e));
+  }
 }
 
 // Met à jour les params d'une entrée encore en attente (édition depuis l'UI).
@@ -221,8 +232,8 @@ export async function runQueueEntryNow(id: string): Promise<{ ok: boolean; queue
     state.workerEnabled = true;
     await persist();
   }
-  // Un job tourne déjà → on laisse l'entrée en file ; workerTick la prendra ensuite.
-  if (global.__ff_queue_running) return { ok: true, queued: true };
+  // Capacité parallèle pleine → on laisse l'entrée en file ; workerTick l'enchaînera.
+  if ((global.__ff_queue_active ?? 0) >= MAX_CONCURRENT_JOBS) return { ok: true, queued: true };
   void runEntry(entry).catch((e) => console.error("[Queue] runEntryNow", e));
   return { ok: true };
 }
