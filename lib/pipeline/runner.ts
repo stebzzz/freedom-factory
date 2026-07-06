@@ -342,8 +342,12 @@ async function runPipeline(jobId: string, jobDir: string) {
       params.duration,
     );
     console.log(`[Pipeline] Sticky: ${script.scenes.length} images générées via Claude + style brief`);
-  } else if (describeKitActive) {
+  } else if (describeKitActive && params.customScriptHasImagePrompts !== true) {
     // Describe-kit flow: scenes adaptive ~1.5s, leveraging the kit's image prompts as visual vocabulary.
+    // SKIP when the customScript ALREADY carries image prompts (extract-mode) — otherwise this branch
+    // would re-run splitScriptInto2sScenes over the prompt-laden text (thousands of bogus scenes +
+    // Claude timeouts). Extract-mode falls through to parseImagePromptsTxt below; the kit refs are
+    // still attached in the images step (gated on styleKitSlug + mode:describe, not on this branch).
     // Narration language follows the SOURCE video of the kit (not the `voix` param) — a kit built
     // from an English YouTube video produces English narration even with a male-fr voice.
     let kitVocab: string[] = [];
