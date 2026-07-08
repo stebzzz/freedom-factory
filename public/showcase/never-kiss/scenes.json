@@ -1,0 +1,1361 @@
+[
+  {
+    "imageTime": 1.97,
+    "voStart": 0.07,
+    "voEnd": 3.78,
+    "sentences": [
+      "You're lying next to someone you love.",
+      "It's dark.",
+      "The fire's almost out."
+    ],
+    "index": 0,
+    "text": "You're lying next to someone you love. It's dark. The fire's almost out.",
+    "imageFile": "frame_000.jpg",
+    "sceneEnd": 3.97
+  },
+  {
+    "imageTime": 3.97,
+    "voStart": 3.78,
+    "voEnd": 10.48,
+    "sentences": [
+      "You turn your head, they turn theirs, and without a single word, you lean in and press your lips against theirs."
+    ],
+    "index": 1,
+    "text": "You turn your head, they turn theirs, and without a single word, you lean in and press your lips against theirs.",
+    "imageFile": "frame_001.jpg",
+    "sceneEnd": 7.97
+  },
+  {
+    "imageTime": 7.97,
+    "voStart": 10.48,
+    "voEnd": 15.2,
+    "sentences": [
+      "It feels like the most natural thing in the world, like it's written into your bones."
+    ],
+    "index": 2,
+    "text": "It feels like the most natural thing in the world, like it's written into your bones.",
+    "imageFile": "frame_002.jpg",
+    "sceneEnd": 17.97
+  },
+  {
+    "imageTime": 17.97,
+    "voStart": 15.2,
+    "voEnd": 24.36,
+    "sentences": [
+      "Like humans have always done this.",
+      "Forever.",
+      "All the way back to the very first people who ever loved each other under a very old sky."
+    ],
+    "index": 3,
+    "text": "Like humans have always done this. Forever. All the way back to the very first people who ever loved each other under a very old sky.",
+    "imageFile": "frame_003.jpg",
+    "sceneEnd": 21.97
+  },
+  {
+    "imageTime": 21.97,
+    "voStart": 24.36,
+    "voEnd": 32.54,
+    "sentences": [
+      "But here's the thing nobody tells you.",
+      "For most of human history, that moment probably never happened.",
+      "Not like that.",
+      "Not the way you're imagining it."
+    ],
+    "index": 4,
+    "text": "But here's the thing nobody tells you. For most of human history, that moment probably never happened. Not like that. Not the way you're imagining it.",
+    "imageFile": "frame_004.jpg",
+    "sceneEnd": 39.97
+  },
+  {
+    "imageTime": 39.97,
+    "voStart": 32.54,
+    "voEnd": 41.22,
+    "sentences": [
+      "Because kissing, romantic, mouth to mouth, lean in and close your eyes kissing, is not some universal human instinct baked into our dina."
+    ],
+    "index": 5,
+    "text": "Because kissing, romantic, mouth to mouth, lean in and close your eyes kissing, is not some universal human instinct baked into our dina.",
+    "imageFile": "frame_005.jpg",
+    "sceneEnd": 41.97
+  },
+  {
+    "imageTime": 41.97,
+    "voStart": 41.22,
+    "voEnd": 43.4,
+    "sentences": [
+      "It's not ancient in the way you think."
+    ],
+    "index": 6,
+    "text": "It's not ancient in the way you think.",
+    "imageFile": "frame_006.jpg",
+    "sceneEnd": 43.97
+  },
+  {
+    "imageTime": 43.97,
+    "voStart": 43.4,
+    "voEnd": 57.62,
+    "sentences": [
+      "And across huge stretches of time and enormous chunks of the human family tree, the honest answer to when did people kiss is a very uncomfortable, very quiet, they didn't.",
+      "So this is the story of why ancient humans never kissed."
+    ],
+    "index": 7,
+    "text": "And across huge stretches of time and enormous chunks of the human family tree, the honest answer to when did people kiss is a very uncomfortable, very quiet, they didn't. So this is the story of why ancient humans never kissed.",
+    "imageFile": "frame_007.jpg",
+    "sceneEnd": 67.97
+  },
+  {
+    "imageTime": 67.97,
+    "voStart": 57.62,
+    "voEnd": 70.94,
+    "sentences": [
+      "Or at least why most of them didn't.",
+      "Why the thing you think of as the oldest, most instinctive gesture of love might actually be a weird, learned, surprisingly recent cultural habit that a lot of humans looked at and went no thanks."
+    ],
+    "index": 8,
+    "text": "Or at least why most of them didn't. Why the thing you think of as the oldest, most instinctive gesture of love might actually be a weird, learned, surprisingly recent cultural habit that a lot of humans looked at and went no thanks.",
+    "imageFile": "frame_008.jpg",
+    "sceneEnd": 69.97
+  },
+  {
+    "imageTime": 69.97,
+    "voStart": 70.94,
+    "voEnd": 82.36,
+    "sentences": [
+      "And why when scientists actually went digging through clay tablets and anthropology archives and the bacteria living inside your mouth, the picture they found was so much stranger than boy meets girl."
+    ],
+    "index": 9,
+    "text": "And why when scientists actually went digging through clay tablets and anthropology archives and the bacteria living inside your mouth, the picture they found was so much stranger than boy meets girl.",
+    "imageFile": "frame_009.jpg",
+    "sceneEnd": 83.97
+  },
+  {
+    "imageTime": 83.97,
+    "voStart": 82.36,
+    "voEnd": 84.8,
+    "sentences": [
+      "Boy kisses girl, the end."
+    ],
+    "index": 10,
+    "text": "Boy kisses girl, the end.",
+    "imageFile": "frame_010.jpg",
+    "sceneEnd": 85.97
+  },
+  {
+    "imageTime": 85.97,
+    "voStart": 85.02,
+    "voEnd": 99.9,
+    "sentences": [
+      "Because here's the question that should be sitting in the back of your mind already.",
+      "If kissing feels this natural, this obvious, this hardwired, how is it possible that entire civilizations, millions of people across thousands of years never did it at all?"
+    ],
+    "index": 11,
+    "text": "Because here's the question that should be sitting in the back of your mind already. If kissing feels this natural, this obvious, this hardwired, how is it possible that entire civilizations, millions of people across thousands of years never did it at all?",
+    "imageFile": "frame_011.jpg",
+    "sceneEnd": 105.97
+  },
+  {
+    "imageTime": 105.97,
+    "voStart": 99.9,
+    "voEnd": 108.38,
+    "sentences": [
+      "Let's start with what a kiss even is.",
+      "Because we're actually talking about two completely different things.",
+      "And if you blur them together, the whole story collapses."
+    ],
+    "index": 12,
+    "text": "Let's start with what a kiss even is. Because we're actually talking about two completely different things. And if you blur them together, the whole story collapses.",
+    "imageFile": "frame_012.jpg",
+    "sceneEnd": 107.97
+  },
+  {
+    "imageTime": 107.97,
+    "voStart": 108.38,
+    "voEnd": 110.66,
+    "sentences": [
+      "The first kind is the parental kiss."
+    ],
+    "index": 13,
+    "text": "The first kind is the parental kiss.",
+    "imageFile": "frame_013.jpg",
+    "sceneEnd": 111.97
+  },
+  {
+    "imageTime": 111.97,
+    "voStart": 110.66,
+    "voEnd": 113.38,
+    "sentences": [
+      "The friendly kiss.",
+      "The peck on a baby's forehead."
+    ],
+    "index": 14,
+    "text": "The friendly kiss. The peck on a baby's forehead.",
+    "imageFile": "frame_014.jpg",
+    "sceneEnd": 113.97
+  },
+  {
+    "imageTime": 113.97,
+    "voStart": 113.38,
+    "voEnd": 121.08,
+    "sentences": [
+      "The affectionate press of lips that a mother gives a child.",
+      "Anthropologists sometimes call this the platonic or affiliative kiss."
+    ],
+    "index": 15,
+    "text": "The affectionate press of lips that a mother gives a child. Anthropologists sometimes call this the platonic or affiliative kiss.",
+    "imageFile": "frame_015.jpg",
+    "sceneEnd": 123.97
+  },
+  {
+    "imageTime": 123.97,
+    "voStart": 121.08,
+    "voEnd": 129.12,
+    "sentences": [
+      "And that one?",
+      "That one seems to be pretty much everywhere.",
+      "It shows up across cultures, across continents, and honestly, it shows up in animals too."
+    ],
+    "index": 16,
+    "text": "And that one? That one seems to be pretty much everywhere. It shows up across cultures, across continents, and honestly, it shows up in animals too.",
+    "imageFile": "frame_016.jpg",
+    "sceneEnd": 125.97
+  },
+  {
+    "imageTime": 125.97,
+    "voStart": 129.39,
+    "voEnd": 130.0,
+    "sentences": [
+      "It's soft."
+    ],
+    "index": 17,
+    "text": "It's soft.",
+    "imageFile": "frame_017.jpg",
+    "sceneEnd": 133.97
+  },
+  {
+    "imageTime": 133.97,
+    "voStart": 130.0,
+    "voEnd": 135.12,
+    "sentences": [
+      "It's warm.",
+      "It's about comfort and bonding.",
+      "The second kind is the romantic sexual kiss."
+    ],
+    "index": 18,
+    "text": "It's warm. It's about comfort and bonding. The second kind is the romantic sexual kiss.",
+    "imageFile": "frame_018.jpg",
+    "sceneEnd": 135.97
+  },
+  {
+    "imageTime": 135.97,
+    "voStart": 135.12,
+    "voEnd": 137.38,
+    "sentences": [
+      "Mouth to mouth.",
+      "Deliberate."
+    ],
+    "index": 19,
+    "text": "Mouth to mouth. Deliberate.",
+    "imageFile": "frame_019.jpg",
+    "sceneEnd": 137.97
+  },
+  {
+    "imageTime": 137.97,
+    "voStart": 137.38,
+    "voEnd": 144.62,
+    "sentences": [
+      "The kind that shows up in every movie poster you've ever seen.",
+      "And that one, it turns out, is a completely different animal."
+    ],
+    "index": 20,
+    "text": "The kind that shows up in every movie poster you've ever seen. And that one, it turns out, is a completely different animal.",
+    "imageFile": "frame_020.jpg",
+    "sceneEnd": 147.97
+  },
+  {
+    "imageTime": 147.97,
+    "voStart": 144.62,
+    "voEnd": 151.26,
+    "sentences": [
+      "Because that one is not everywhere.",
+      "That one is not universal.",
+      "That one is the diva of human behavior."
+    ],
+    "index": 21,
+    "text": "Because that one is not everywhere. That one is not universal. That one is the diva of human behavior.",
+    "imageFile": "frame_021.jpg",
+    "sceneEnd": 149.97
+  },
+  {
+    "imageTime": 149.97,
+    "voStart": 151.26,
+    "voEnd": 154.0,
+    "sentences": [
+      "And it only performs in select cities."
+    ],
+    "index": 22,
+    "text": "And it only performs in select cities.",
+    "imageFile": "frame_022.jpg",
+    "sceneEnd": 155.97
+  },
+  {
+    "imageTime": 155.97,
+    "voStart": 154.0,
+    "voEnd": 164.2,
+    "sentences": [
+      "Now here's where it gets interesting.",
+      "In 2015, an anthropologist named William Jankowiak at the University of Nevada, Las Vegas, decided to actually check."
+    ],
+    "index": 23,
+    "text": "Now here's where it gets interesting. In 2015, an anthropologist named William Jankowiak at the University of Nevada, Las Vegas, decided to actually check.",
+    "imageFile": "frame_023.jpg",
+    "sceneEnd": 165.97
+  },
+  {
+    "imageTime": 165.97,
+    "voStart": 164.2,
+    "voEnd": 172.96,
+    "sentences": [
+      "Not assume.",
+      "Check.",
+      "He and his colleagues published a study in the journal American Anthropologist with a title that sounds almost sarcastic when you read it."
+    ],
+    "index": 24,
+    "text": "Not assume. Check. He and his colleagues published a study in the journal American Anthropologist with a title that sounds almost sarcastic when you read it.",
+    "imageFile": "frame_024.jpg",
+    "sceneEnd": 169.97
+  },
+  {
+    "imageTime": 169.97,
+    "voStart": 172.96,
+    "voEnd": 181.38,
+    "sentences": [
+      "Is the Romantic Sexual Kiss a Near Human Universal?",
+      "And they looked at a sample of 168 cultures from all around the world."
+    ],
+    "index": 25,
+    "text": "Is the Romantic Sexual Kiss a Near Human Universal? And they looked at a sample of 168 cultures from all around the world.",
+    "imageFile": "frame_025.jpg",
+    "sceneEnd": 187.97
+  },
+  {
+    "imageTime": 187.97,
+    "voStart": 181.38,
+    "voEnd": 193.46,
+    "sentences": [
+      "Different continents.",
+      "Different climates.",
+      "Different everything.",
+      "And the result was a slap in the face to everything you assumed.",
+      "The romantic sexual kiss showed up in only 46% of those cultures."
+    ],
+    "index": 26,
+    "text": "Different continents. Different climates. Different everything. And the result was a slap in the face to everything you assumed. The romantic sexual kiss showed up in only 46% of those cultures.",
+    "imageFile": "frame_026.jpg",
+    "sceneEnd": 189.97
+  },
+  {
+    "imageTime": 189.97,
+    "voStart": 193.46,
+    "voEnd": 195.22,
+    "sentences": [
+      "Less than half.",
+      "Read that again."
+    ],
+    "index": 27,
+    "text": "Less than half. Read that again.",
+    "imageFile": "frame_027.jpg",
+    "sceneEnd": 199.97
+  },
+  {
+    "imageTime": 199.97,
+    "voStart": 195.22,
+    "voEnd": 201.64,
+    "sentences": [
+      "In the majority of human cultures they surveyed, people did not romantically kiss.",
+      "It wasn't that they were shy about it."
+    ],
+    "index": 28,
+    "text": "In the majority of human cultures they surveyed, people did not romantically kiss. It wasn't that they were shy about it.",
+    "imageFile": "frame_028.jpg",
+    "sceneEnd": 201.97
+  },
+  {
+    "imageTime": 201.97,
+    "voStart": 201.64,
+    "voEnd": 204.08,
+    "sentences": [
+      "It wasn't that the researchers just couldn't find it."
+    ],
+    "index": 29,
+    "text": "It wasn't that the researchers just couldn't find it.",
+    "imageFile": "frame_029.jpg",
+    "sceneEnd": 203.97
+  },
+  {
+    "imageTime": 203.97,
+    "voStart": 204.08,
+    "voEnd": 213.6,
+    "sentences": [
+      "In many of these societies, people found the whole idea of pressing your mouth against someone else's mouth to be, at best, pointless, and at worst, genuinely gross."
+    ],
+    "index": 30,
+    "text": "In many of these societies, people found the whole idea of pressing your mouth against someone else's mouth to be, at best, pointless, and at worst, genuinely gross.",
+    "imageFile": "frame_030.jpg",
+    "sceneEnd": 209.97
+  },
+  {
+    "imageTime": 209.97,
+    "voStart": 213.67,
+    "voEnd": 220.56,
+    "sentences": [
+      "Some accounts describe people learning about mouth kissing from outsiders and reacting with something between confusion and disgust."
+    ],
+    "index": 31,
+    "text": "Some accounts describe people learning about mouth kissing from outsiders and reacting with something between confusion and disgust.",
+    "imageFile": "frame_031.jpg",
+    "sceneEnd": 227.97
+  },
+  {
+    "imageTime": 227.97,
+    "voStart": 220.56,
+    "voEnd": 235.7,
+    "sentences": [
+      "Like, you put your what where.",
+      "Why?",
+      "Think about that for a second.",
+      "You've spent your entire life assuming a kiss is the universal language of love.",
+      "And here's actual data telling you that more often than not, across the human species, it just isn't."
+    ],
+    "index": 32,
+    "text": "Like, you put your what where. Why? Think about that for a second. You've spent your entire life assuming a kiss is the universal language of love. And here's actual data telling you that more often than not, across the human species, it just isn't.",
+    "imageFile": "frame_032.jpg",
+    "sceneEnd": 237.97
+  },
+  {
+    "imageTime": 237.97,
+    "voStart": 235.97,
+    "voEnd": 243.28,
+    "sentences": [
+      "So if it's not universal, then it's not instinctive.",
+      "And if it's not instinctive, then somebody, somewhere, had to invent it."
+    ],
+    "index": 33,
+    "text": "So if it's not universal, then it's not instinctive. And if it's not instinctive, then somebody, somewhere, had to invent it.",
+    "imageFile": "frame_033.jpg",
+    "sceneEnd": 243.97
+  },
+  {
+    "imageTime": 243.97,
+    "voStart": 243.35,
+    "voEnd": 245.2,
+    "sentences": [
+      "Which means there's a moment in history."
+    ],
+    "index": 34,
+    "text": "Which means there's a moment in history.",
+    "imageFile": "frame_034.jpg",
+    "sceneEnd": 245.97
+  },
+  {
+    "imageTime": 245.97,
+    "voStart": 245.2,
+    "voEnd": 247.18,
+    "sentences": [
+      "A real moment.",
+      "A first time."
+    ],
+    "index": 35,
+    "text": "A real moment. A first time.",
+    "imageFile": "frame_035.jpg",
+    "sceneEnd": 247.97
+  },
+  {
+    "imageTime": 247.97,
+    "voStart": 247.18,
+    "voEnd": 252.3,
+    "sentences": [
+      "So where's the tape?",
+      "Where's the receipt?",
+      "Where's the oldest kiss we can actually point to?"
+    ],
+    "index": 36,
+    "text": "So where's the tape? Where's the receipt? Where's the oldest kiss we can actually point to?",
+    "imageFile": "frame_036.jpg",
+    "sceneEnd": 255.97
+  },
+  {
+    "imageTime": 255.97,
+    "voStart": 252.3,
+    "voEnd": 266.66,
+    "sentences": [
+      "Let's talk about clay.",
+      "For a long time, the going story among historians was that the earliest hard evidence of romantic kissing came from South Asia, from Bronze Age texts in the Indian subcontinent dating to around 1500 BC."
+    ],
+    "index": 37,
+    "text": "Let's talk about clay. For a long time, the going story among historians was that the earliest hard evidence of romantic kissing came from South Asia, from Bronze Age texts in the Indian subcontinent dating to around 1500 BC.",
+    "imageFile": "frame_037.jpg",
+    "sceneEnd": 263.97
+  },
+  {
+    "imageTime": 263.97,
+    "voStart": 266.66,
+    "voEnd": 275.34,
+    "sentences": [
+      "In some of the oldest Sanskrit writings, you find references to affection expressed through the mouth, to lovers, quote, drinking the moisture of the lips."
+    ],
+    "index": 38,
+    "text": "In some of the oldest Sanskrit writings, you find references to affection expressed through the mouth, to lovers, quote, drinking the moisture of the lips.",
+    "imageFile": "frame_038.jpg",
+    "sceneEnd": 277.97
+  },
+  {
+    "imageTime": 277.97,
+    "voStart": 275.34,
+    "voEnd": 286.24,
+    "sentences": [
+      "And later, much later, you get the Kama Sutra, roughly the third century say, which famously dedicates an entire loving, detailed chapter to the art of kissing."
+    ],
+    "index": 39,
+    "text": "And later, much later, you get the Kama Sutra, roughly the third century say, which famously dedicates an entire loving, detailed chapter to the art of kissing.",
+    "imageFile": "frame_039.jpg",
+    "sceneEnd": 283.97
+  },
+  {
+    "imageTime": 283.97,
+    "voStart": 286.24,
+    "voEnd": 292.42,
+    "sentences": [
+      "So the tidy version of history said, kissing was born in India around 30, 500 years ago."
+    ],
+    "index": 40,
+    "text": "So the tidy version of history said, kissing was born in India around 30, 500 years ago.",
+    "imageFile": "frame_040.jpg",
+    "sceneEnd": 295.97
+  },
+  {
+    "imageTime": 295.97,
+    "voStart": 292.49,
+    "voEnd": 297.18,
+    "sentences": [
+      "And then it spread out from there across the world, like a really good idea that caught on."
+    ],
+    "index": 41,
+    "text": "And then it spread out from there across the world, like a really good idea that caught on.",
+    "imageFile": "frame_041.jpg",
+    "sceneEnd": 297.97
+  },
+  {
+    "imageTime": 297.97,
+    "voStart": 297.18,
+    "voEnd": 299.92,
+    "sentences": [
+      "And there was even a theory for how it spread."
+    ],
+    "index": 42,
+    "text": "And there was even a theory for how it spread.",
+    "imageFile": "frame_042.jpg",
+    "sceneEnd": 299.97
+  },
+  {
+    "imageTime": 299.97,
+    "voStart": 299.92,
+    "voEnd": 316.64,
+    "sentences": [
+      "The anthropologist Vaughn Bryant at Texas A&M University, who spent a big chunk of his career studying the history of kissing, argued that the practice may have traveled westward out of India after Alexander the Great and his armies pushed into the region around 326 BCE."
+    ],
+    "index": 43,
+    "text": "The anthropologist Vaughn Bryant at Texas A&M University, who spent a big chunk of his career studying the history of kissing, argued that the practice may have traveled westward out of India after Alexander the Great and his armies pushed into the region around 326 BCE.",
+    "imageFile": "frame_043.jpg",
+    "sceneEnd": 315.97
+  },
+  {
+    "imageTime": 315.97,
+    "voStart": 316.64,
+    "voEnd": 322.08,
+    "sentences": [
+      "The soldiers, the story goes, encountered kissing and carried the habit back with them."
+    ],
+    "index": 44,
+    "text": "The soldiers, the story goes, encountered kissing and carried the habit back with them.",
+    "imageFile": "frame_044.jpg",
+    "sceneEnd": 321.97
+  },
+  {
+    "imageTime": 321.97,
+    "voStart": 322.22,
+    "voEnd": 326.42,
+    "sentences": [
+      "A conquering army, going out for war and coming home with a make-out technique."
+    ],
+    "index": 45,
+    "text": "A conquering army, going out for war and coming home with a make-out technique.",
+    "imageFile": "frame_045.jpg",
+    "sceneEnd": 323.97
+  },
+  {
+    "imageTime": 323.97,
+    "voStart": 326.42,
+    "voEnd": 334.92,
+    "sentences": [
+      "History is ridiculous, and I love it.",
+      "But here's the wild part.",
+      "In 2023, that whole timeline got yanked back by more than a thousand years."
+    ],
+    "index": 46,
+    "text": "History is ridiculous, and I love it. But here's the wild part. In 2023, that whole timeline got yanked back by more than a thousand years.",
+    "imageFile": "frame_046.jpg",
+    "sceneEnd": 337.97
+  },
+  {
+    "imageTime": 337.97,
+    "voStart": 334.92,
+    "voEnd": 345.22,
+    "sentences": [
+      "Two researchers, Trolls Pank Arbol from the University of Copenhagen and Sophus Hel from the University of Oxford, published a short, devastating little piece in the journal Science."
+    ],
+    "index": 47,
+    "text": "Two researchers, Trolls Pank Arbol from the University of Copenhagen and Sophus Hel from the University of Oxford, published a short, devastating little piece in the journal Science.",
+    "imageFile": "frame_047.jpg",
+    "sceneEnd": 345.97
+  },
+  {
+    "imageTime": 345.97,
+    "voStart": 345.63,
+    "voEnd": 355.72,
+    "sentences": [
+      "And what they did was go back to ancient Mesopotamia, to the cuneiform clay tablets of the people living between the Tigris and the Euphrates in what's now Iraq and Syria."
+    ],
+    "index": 48,
+    "text": "And what they did was go back to ancient Mesopotamia, to the cuneiform clay tablets of the people living between the Tigris and the Euphrates in what's now Iraq and Syria.",
+    "imageFile": "frame_048.jpg",
+    "sceneEnd": 357.97
+  },
+  {
+    "imageTime": 357.97,
+    "voStart": 355.79,
+    "voEnd": 362.1,
+    "sentences": [
+      "And buried in that writing, in that pressed mud handwriting from the cradle of civilization, they found it."
+    ],
+    "index": 49,
+    "text": "And buried in that writing, in that pressed mud handwriting from the cradle of civilization, they found it.",
+    "imageFile": "frame_049.jpg",
+    "sceneEnd": 361.97
+  },
+  {
+    "imageTime": 361.97,
+    "voStart": 362.1,
+    "voEnd": 363.6,
+    "sentences": [
+      "Descriptions of kissing."
+    ],
+    "index": 50,
+    "text": "Descriptions of kissing.",
+    "imageFile": "frame_050.jpg",
+    "sceneEnd": 363.97
+  },
+  {
+    "imageTime": 363.97,
+    "voStart": 363.6,
+    "voEnd": 366.12,
+    "sentences": [
+      "Romantic kissing.",
+      "As part of intimacy."
+    ],
+    "index": 51,
+    "text": "Romantic kissing. As part of intimacy.",
+    "imageFile": "frame_051.jpg",
+    "sceneEnd": 365.97
+  },
+  {
+    "imageTime": 365.97,
+    "voStart": 366.12,
+    "voEnd": 369.98,
+    "sentences": [
+      "As part of love.",
+      "As part of ordinary human relationships."
+    ],
+    "index": 52,
+    "text": "As part of love. As part of ordinary human relationships.",
+    "imageFile": "frame_052.jpg",
+    "sceneEnd": 369.97
+  },
+  {
+    "imageTime": 369.97,
+    "voStart": 370.06,
+    "voEnd": 371.94,
+    "sentences": [
+      "And the dating on this?"
+    ],
+    "index": 53,
+    "text": "And the dating on this?",
+    "imageFile": "frame_053.jpg",
+    "sceneEnd": 371.97
+  },
+  {
+    "imageTime": 371.97,
+    "voStart": 371.94,
+    "voEnd": 374.0,
+    "sentences": [
+      "Around 2500 BC."
+    ],
+    "index": 54,
+    "text": "Around 2500 BC.",
+    "imageFile": "frame_054.jpg",
+    "sceneEnd": 375.97
+  },
+  {
+    "imageTime": 375.97,
+    "voStart": 374.0,
+    "voEnd": 377.58,
+    "sentences": [
+      "2500 years before the Common Era."
+    ],
+    "index": 55,
+    "text": "2500 years before the Common Era.",
+    "imageFile": "frame_055.jpg",
+    "sceneEnd": 377.97
+  },
+  {
+    "imageTime": 377.97,
+    "voStart": 377.58,
+    "voEnd": 383.26,
+    "sentences": [
+      "Which means people were leaning in and locking lips at least 40, 500 years ago."
+    ],
+    "index": 56,
+    "text": "Which means people were leaning in and locking lips at least 40, 500 years ago.",
+    "imageFile": "frame_056.jpg",
+    "sceneEnd": 383.97
+  },
+  {
+    "imageTime": 383.97,
+    "voStart": 383.26,
+    "voEnd": 389.2,
+    "sentences": [
+      "And probably longer.",
+      "Because if it's already casually showing up in the writing, it was already just."
+    ],
+    "index": 57,
+    "text": "And probably longer. Because if it's already casually showing up in the writing, it was already just.",
+    "imageFile": "frame_057.jpg",
+    "sceneEnd": 387.97
+  },
+  {
+    "imageTime": 387.97,
+    "voStart": 389.2,
+    "voEnd": 393.56,
+    "sentences": [
+      "A thing people did.",
+      "You don't write down the obvious until it's been obvious for a while."
+    ],
+    "index": 58,
+    "text": "A thing people did. You don't write down the obvious until it's been obvious for a while.",
+    "imageFile": "frame_058.jpg",
+    "sceneEnd": 397.97
+  },
+  {
+    "imageTime": 397.97,
+    "voStart": 393.56,
+    "voEnd": 412.88,
+    "sentences": [
+      "So, the kiss is old.",
+      "Older than we thought.",
+      "But, and this is the twist.",
+      "Being able to find it in Mesopotamia and India doesn't make it universal.",
+      "It makes it local.",
+      "It makes it one custom, born in one corner of the world, that some cultures embraced.",
+      "And enormous swaths of humanity never picked up at all."
+    ],
+    "index": 59,
+    "text": "So, the kiss is old. Older than we thought. But, and this is the twist. Being able to find it in Mesopotamia and India doesn't make it universal. It makes it local. It makes it one custom, born in one corner of the world, that some cultures embraced. And enormous swaths of humanity never picked up at all.",
+    "imageFile": "frame_059.jpg",
+    "sceneEnd": 421.97
+  },
+  {
+    "imageTime": 421.97,
+    "voStart": 412.88,
+    "voEnd": 427.1,
+    "sentences": [
+      "So now we've got two facts sitting next to each other.",
+      "And they're rubbing each other the wrong way.",
+      "Fact one.",
+      "Kissing is at least 40, 500 years old.",
+      "Fact two.",
+      "Even after all that time, less than half of human cultures ever adopted it."
+    ],
+    "index": 60,
+    "text": "So now we've got two facts sitting next to each other. And they're rubbing each other the wrong way. Fact one. Kissing is at least 40, 500 years old. Fact two. Even after all that time, less than half of human cultures ever adopted it.",
+    "imageFile": "frame_060.jpg",
+    "sceneEnd": 427.97
+  },
+  {
+    "imageTime": 427.97,
+    "voStart": 427.1,
+    "voEnd": 429.74,
+    "sentences": [
+      "Which brings us right back to the haunting question.",
+      "Why not?"
+    ],
+    "index": 61,
+    "text": "Which brings us right back to the haunting question. Why not?",
+    "imageFile": "frame_061.jpg",
+    "sceneEnd": 429.97
+  },
+  {
+    "imageTime": 429.97,
+    "voStart": 429.74,
+    "voEnd": 436.32,
+    "sentences": [
+      "Why would so many humans, given thousands of years and endless opportunity, look at kissing and say no?"
+    ],
+    "index": 62,
+    "text": "Why would so many humans, given thousands of years and endless opportunity, look at kissing and say no?",
+    "imageFile": "frame_062.jpg",
+    "sceneEnd": 437.97
+  },
+  {
+    "imageTime": 437.97,
+    "voStart": 436.32,
+    "voEnd": 439.5,
+    "sentences": [
+      "Let's talk about your face.",
+      "And I mean that in the nicest way."
+    ],
+    "index": 63,
+    "text": "Let's talk about your face. And I mean that in the nicest way.",
+    "imageFile": "frame_063.jpg",
+    "sceneEnd": 439.97
+  },
+  {
+    "imageTime": 439.97,
+    "voStart": 439.5,
+    "voEnd": 443.42,
+    "sentences": [
+      "Here's a possibility that's equal parts fascinating and disgusting."
+    ],
+    "index": 64,
+    "text": "Here's a possibility that's equal parts fascinating and disgusting.",
+    "imageFile": "frame_064.jpg",
+    "sceneEnd": 445.97
+  },
+  {
+    "imageTime": 445.97,
+    "voStart": 443.42,
+    "voEnd": 451.52,
+    "sentences": [
+      "Some researchers have pointed out that when you actually think about what a kiss is on a biological level, it's a bizarre thing to do."
+    ],
+    "index": 65,
+    "text": "Some researchers have pointed out that when you actually think about what a kiss is on a biological level, it's a bizarre thing to do.",
+    "imageFile": "frame_065.jpg",
+    "sceneEnd": 451.97
+  },
+  {
+    "imageTime": 451.97,
+    "voStart": 451.52,
+    "voEnd": 459.94,
+    "sentences": [
+      "You are taking the opening of your digestive tract, an environment absolutely packed with bacteria, and you are voluntarily connecting it to someone else's."
+    ],
+    "index": 66,
+    "text": "You are taking the opening of your digestive tract, an environment absolutely packed with bacteria, and you are voluntarily connecting it to someone else's.",
+    "imageFile": "frame_066.jpg",
+    "sceneEnd": 461.97
+  },
+  {
+    "imageTime": 461.97,
+    "voStart": 459.94,
+    "voEnd": 465.58,
+    "sentences": [
+      "A team led by Remco Court at the research organization Tino in the Netherlands actually measured this."
+    ],
+    "index": 67,
+    "text": "A team led by Remco Court at the research organization Tino in the Netherlands actually measured this.",
+    "imageFile": "frame_067.jpg",
+    "sceneEnd": 465.97
+  },
+  {
+    "imageTime": 465.97,
+    "voStart": 465.65,
+    "voEnd": 477.06,
+    "sentences": [
+      "In 2014, they published a study in the journal Microbiome, and they estimated that a single passionate 10-second kiss can transfer around 80 million bacteria between two people."
+    ],
+    "index": 68,
+    "text": "In 2014, they published a study in the journal Microbiome, and they estimated that a single passionate 10-second kiss can transfer around 80 million bacteria between two people.",
+    "imageFile": "frame_068.jpg",
+    "sceneEnd": 477.97
+  },
+  {
+    "imageTime": 477.97,
+    "voStart": 477.06,
+    "voEnd": 479.52,
+    "sentences": [
+      "80 million in 10 seconds."
+    ],
+    "index": 69,
+    "text": "80 million in 10 seconds.",
+    "imageFile": "frame_069.jpg",
+    "sceneEnd": 479.97
+  },
+  {
+    "imageTime": 479.97,
+    "voStart": 479.52,
+    "voEnd": 482.46,
+    "sentences": [
+      "That is not a kiss.",
+      "That is a hostile migration."
+    ],
+    "index": 70,
+    "text": "That is not a kiss. That is a hostile migration.",
+    "imageFile": "frame_070.jpg",
+    "sceneEnd": 481.97
+  },
+  {
+    "imageTime": 481.97,
+    "voStart": 482.89,
+    "voEnd": 490.86,
+    "sentences": [
+      "So from a cold evolutionary don't-get-sick point of view, kissing looks less like romance and more like biological Russian roulette."
+    ],
+    "index": 71,
+    "text": "So from a cold evolutionary don't-get-sick point of view, kissing looks less like romance and more like biological Russian roulette.",
+    "imageFile": "frame_071.jpg",
+    "sceneEnd": 485.97
+  },
+  {
+    "imageTime": 485.97,
+    "voStart": 490.86,
+    "voEnd": 496.24,
+    "sentences": [
+      "And there's real weight to this because kissing is one of the ways certain viruses spread."
+    ],
+    "index": 72,
+    "text": "And there's real weight to this because kissing is one of the ways certain viruses spread.",
+    "imageFile": "frame_072.jpg",
+    "sceneEnd": 497.97
+  },
+  {
+    "imageTime": 497.97,
+    "voStart": 496.55,
+    "voEnd": 513.64,
+    "sentences": [
+      "The Copenhagen and Oxford researchers in that same 2023 work even raised the idea that ancient kissing could have played a role in transmitting diseases like herpes simplex virus 1, the same virus behind cold sores, which humans have carried for an extraordinarily long time."
+    ],
+    "index": 73,
+    "text": "The Copenhagen and Oxford researchers in that same 2023 work even raised the idea that ancient kissing could have played a role in transmitting diseases like herpes simplex virus 1, the same virus behind cold sores, which humans have carried for an extraordinarily long time.",
+    "imageFile": "frame_073.jpg",
+    "sceneEnd": 513.97
+  },
+  {
+    "imageTime": 513.97,
+    "voStart": 513.64,
+    "voEnd": 522.64,
+    "sentences": [
+      "So there's a genuine, grim logic to why some cultures might have looked at mouth-to-mouth and gone, absolutely not, that's how you catch death."
+    ],
+    "index": 74,
+    "text": "So there's a genuine, grim logic to why some cultures might have looked at mouth-to-mouth and gone, absolutely not, that's how you catch death.",
+    "imageFile": "frame_074.jpg",
+    "sceneEnd": 521.97
+  },
+  {
+    "imageTime": 521.97,
+    "voStart": 522.64,
+    "voEnd": 524.68,
+    "sentences": [
+      "But that can't be the whole story either."
+    ],
+    "index": 75,
+    "text": "But that can't be the whole story either.",
+    "imageFile": "frame_075.jpg",
+    "sceneEnd": 523.97
+  },
+  {
+    "imageTime": 523.97,
+    "voStart": 524.68,
+    "voEnd": 537.42,
+    "sentences": [
+      "Because if kissing were purely a disease spreading liability with no upside, evolution and culture would have stamped it out everywhere, not kept it alive in half the world for thousands of years."
+    ],
+    "index": 76,
+    "text": "Because if kissing were purely a disease spreading liability with no upside, evolution and culture would have stamped it out everywhere, not kept it alive in half the world for thousands of years.",
+    "imageFile": "frame_076.jpg",
+    "sceneEnd": 537.97
+  },
+  {
+    "imageTime": 537.97,
+    "voStart": 537.42,
+    "voEnd": 542.04,
+    "sentences": [
+      "So there has to be an upside.",
+      "There has to be a reason the kiss earns its keep."
+    ],
+    "index": 77,
+    "text": "So there has to be an upside. There has to be a reason the kiss earns its keep.",
+    "imageFile": "frame_077.jpg",
+    "sceneEnd": 541.97
+  },
+  {
+    "imageTime": 541.97,
+    "voStart": 542.04,
+    "voEnd": 544.36,
+    "sentences": [
+      "And this is where it gets genuinely beautiful."
+    ],
+    "index": 78,
+    "text": "And this is where it gets genuinely beautiful.",
+    "imageFile": "frame_078.jpg",
+    "sceneEnd": 543.97
+  },
+  {
+    "imageTime": 543.97,
+    "voStart": 544.44,
+    "voEnd": 549.26,
+    "sentences": [
+      "Because when you kiss someone, you are not just swapping 80 million uninvited guests."
+    ],
+    "index": 79,
+    "text": "Because when you kiss someone, you are not just swapping 80 million uninvited guests.",
+    "imageFile": "frame_079.jpg",
+    "sceneEnd": 549.97
+  },
+  {
+    "imageTime": 549.97,
+    "voStart": 549.26,
+    "voEnd": 550.98,
+    "sentences": [
+      "You are running a test."
+    ],
+    "index": 80,
+    "text": "You are running a test.",
+    "imageFile": "frame_080.jpg",
+    "sceneEnd": 551.97
+  },
+  {
+    "imageTime": 551.97,
+    "voStart": 550.98,
+    "voEnd": 559.92,
+    "sentences": [
+      "An incredibly sophisticated, completely subconscious, high-bandwidth chemical test.",
+      "When your faces get that close, you are flooded with information."
+    ],
+    "index": 81,
+    "text": "An incredibly sophisticated, completely subconscious, high-bandwidth chemical test. When your faces get that close, you are flooded with information.",
+    "imageFile": "frame_081.jpg",
+    "sceneEnd": 561.97
+  },
+  {
+    "imageTime": 561.97,
+    "voStart": 559.92,
+    "voEnd": 565.54,
+    "sentences": [
+      "You're picking up scent, taste, the microscopic chemistry of another person's skin and breath."
+    ],
+    "index": 82,
+    "text": "You're picking up scent, taste, the microscopic chemistry of another person's skin and breath.",
+    "imageFile": "frame_082.jpg",
+    "sceneEnd": 565.97
+  },
+  {
+    "imageTime": 565.97,
+    "voStart": 565.54,
+    "voEnd": 578.42,
+    "sentences": [
+      "Some researchers have argued that this close-range sampling might help us subconsciously assess a partner's health, their compatibility even, some have suggested, immune system differences that could matter for having healthy children."
+    ],
+    "index": 83,
+    "text": "Some researchers have argued that this close-range sampling might help us subconsciously assess a partner's health, their compatibility even, some have suggested, immune system differences that could matter for having healthy children.",
+    "imageFile": "frame_083.jpg",
+    "sceneEnd": 585.97
+  },
+  {
+    "imageTime": 585.97,
+    "voStart": 578.42,
+    "voEnd": 588.06,
+    "sentences": [
+      "The idea is that a kiss is a way of getting an enormous amount of biological data about someone in a single, socially acceptable moment of closeness."
+    ],
+    "index": 84,
+    "text": "The idea is that a kiss is a way of getting an enormous amount of biological data about someone in a single, socially acceptable moment of closeness.",
+    "imageFile": "frame_084.jpg",
+    "sceneEnd": 587.97
+  },
+  {
+    "imageTime": 587.97,
+    "voStart": 588.06,
+    "voEnd": 595.44,
+    "sentences": [
+      "In other words, a kiss might be your ancient animal brain running a background scan and going, yeah, this one, this one's good."
+    ],
+    "index": 85,
+    "text": "In other words, a kiss might be your ancient animal brain running a background scan and going, yeah, this one, this one's good.",
+    "imageFile": "frame_085.jpg",
+    "sceneEnd": 591.97
+  },
+  {
+    "imageTime": 591.97,
+    "voStart": 595.44,
+    "voEnd": 600.18,
+    "sentences": [
+      "And that reframes everything.",
+      "Because suddenly, the kiss isn't just a cultural accident."
+    ],
+    "index": 86,
+    "text": "And that reframes everything. Because suddenly, the kiss isn't just a cultural accident.",
+    "imageFile": "frame_086.jpg",
+    "sceneEnd": 607.97
+  },
+  {
+    "imageTime": 607.97,
+    "voStart": 600.18,
+    "voEnd": 609.9,
+    "sentences": [
+      "It's a tool.",
+      "A tool for a very specific job, in a very specific kind of society.",
+      "Which starts to explain why some cultures picked it up and others didn't."
+    ],
+    "index": 87,
+    "text": "It's a tool. A tool for a very specific job, in a very specific kind of society. Which starts to explain why some cultures picked it up and others didn't.",
+    "imageFile": "frame_087.jpg",
+    "sceneEnd": 609.97
+  },
+  {
+    "imageTime": 609.97,
+    "voStart": 609.9,
+    "voEnd": 612.84,
+    "sentences": [
+      "Maybe it's not that half of humanity was missing something."
+    ],
+    "index": 88,
+    "text": "Maybe it's not that half of humanity was missing something.",
+    "imageFile": "frame_088.jpg",
+    "sceneEnd": 611.97
+  },
+  {
+    "imageTime": 611.97,
+    "voStart": 612.84,
+    "voEnd": 621.14,
+    "sentences": [
+      "Maybe it's that kissing solves a problem that only some societies had, in the particular way they lived and loved and chose partners."
+    ],
+    "index": 89,
+    "text": "Maybe it's that kissing solves a problem that only some societies had, in the particular way they lived and loved and chose partners.",
+    "imageFile": "frame_089.jpg",
+    "sceneEnd": 623.97
+  },
+  {
+    "imageTime": 623.97,
+    "voStart": 621.14,
+    "voEnd": 626.14,
+    "sentences": [
+      "But hold on, because we've been talking about humans this whole time, as if we're the only ones in the room."
+    ],
+    "index": 90,
+    "text": "But hold on, because we've been talking about humans this whole time, as if we're the only ones in the room.",
+    "imageFile": "frame_090.jpg",
+    "sceneEnd": 625.97
+  },
+  {
+    "imageTime": 625.97,
+    "voStart": 626.21,
+    "voEnd": 634.48,
+    "sentences": [
+      "And here's the thing that should be sitting in the back of your mind by now.",
+      "If kissing is this weird, learned, cultural habit, why do our closest relatives do it too?"
+    ],
+    "index": 91,
+    "text": "And here's the thing that should be sitting in the back of your mind by now. If kissing is this weird, learned, cultural habit, why do our closest relatives do it too?",
+    "imageFile": "frame_091.jpg",
+    "sceneEnd": 637.97
+  },
+  {
+    "imageTime": 637.97,
+    "voStart": 634.48,
+    "voEnd": 640.38,
+    "sentences": [
+      "Let's talk about the apes.",
+      "Because bonobos, our closest living relatives along with chimpanzees, kiss."
+    ],
+    "index": 92,
+    "text": "Let's talk about the apes. Because bonobos, our closest living relatives along with chimpanzees, kiss.",
+    "imageFile": "frame_092.jpg",
+    "sceneEnd": 639.97
+  },
+  {
+    "imageTime": 639.97,
+    "voStart": 640.38,
+    "voEnd": 641.54,
+    "sentences": [
+      "And they don't just peck."
+    ],
+    "index": 93,
+    "text": "And they don't just peck.",
+    "imageFile": "frame_093.jpg",
+    "sceneEnd": 641.97
+  },
+  {
+    "imageTime": 641.97,
+    "voStart": 641.54,
+    "voEnd": 651.52,
+    "sentences": [
+      "Bonobos have been observed engaging in mouth-to-mouth contact, tongue and all, in ways that primatologists have described as strikingly, almost uncomfortably familiar."
+    ],
+    "index": 94,
+    "text": "Bonobos have been observed engaging in mouth-to-mouth contact, tongue and all, in ways that primatologists have described as strikingly, almost uncomfortably familiar.",
+    "imageFile": "frame_094.jpg",
+    "sceneEnd": 651.97
+  },
+  {
+    "imageTime": 651.97,
+    "voStart": 652.01,
+    "voEnd": 655.24,
+    "sentences": [
+      "Chimpanzees kiss too, often to reconcile after a conflict."
+    ],
+    "index": 95,
+    "text": "Chimpanzees kiss too, often to reconcile after a conflict.",
+    "imageFile": "frame_095.jpg",
+    "sceneEnd": 655.97
+  },
+  {
+    "imageTime": 655.97,
+    "voStart": 655.24,
+    "voEnd": 667.36,
+    "sentences": [
+      "A little press of the lips to say the fight is over, we're okay, we're still a group.",
+      "Franz de Waal, the primatologist who spent decades studying these animals, documented this kind of reconciliation behavior extensively."
+    ],
+    "index": 96,
+    "text": "A little press of the lips to say the fight is over, we're okay, we're still a group. Franz de Waal, the primatologist who spent decades studying these animals, documented this kind of reconciliation behavior extensively.",
+    "imageFile": "frame_096.jpg",
+    "sceneEnd": 667.97
+  },
+  {
+    "imageTime": 667.97,
+    "voStart": 667.36,
+    "voEnd": 670.04,
+    "sentences": [
+      "So now, the picture gets really tangled."
+    ],
+    "index": 97,
+    "text": "So now, the picture gets really tangled.",
+    "imageFile": "frame_097.jpg",
+    "sceneEnd": 669.97
+  },
+  {
+    "imageTime": 669.97,
+    "voStart": 670.04,
+    "voEnd": 679.48,
+    "sentences": [
+      "If our ape cousins are out here kissing, doesn't that suggest kissing is ancient, instinctive, buried deep in our shared evolutionary past after all?"
+    ],
+    "index": 98,
+    "text": "If our ape cousins are out here kissing, doesn't that suggest kissing is ancient, instinctive, buried deep in our shared evolutionary past after all?",
+    "imageFile": "frame_098.jpg",
+    "sceneEnd": 679.97
+  },
+  {
+    "imageTime": 679.97,
+    "voStart": 679.88,
+    "voEnd": 692.04,
+    "sentences": [
+      "Doesn't that contradict the whole, it's a recent cultural invention story?",
+      "And the answer is, this is exactly where the mystery lives.",
+      "Because you've got two sets of evidence that seem to point in opposite directions."
+    ],
+    "index": 99,
+    "text": "Doesn't that contradict the whole, it's a recent cultural invention story? And the answer is, this is exactly where the mystery lives. Because you've got two sets of evidence that seem to point in opposite directions.",
+    "imageFile": "frame_099.jpg",
+    "sceneEnd": 701.97
+  },
+  {
+    "imageTime": 701.97,
+    "voStart": 692.04,
+    "voEnd": 705.96,
+    "sentences": [
+      "On one side, the anthropology says romantic kissing is not universal among humans.",
+      "That it's a custom.",
+      "That most cultures didn't do it.",
+      "On the other side, the primatology says something kiss like shows up in the animals closest to us."
+    ],
+    "index": 100,
+    "text": "On one side, the anthropology says romantic kissing is not universal among humans. That it's a custom. That most cultures didn't do it. On the other side, the primatology says something kiss like shows up in the animals closest to us.",
+    "imageFile": "frame_100.jpg",
+    "sceneEnd": 705.97
+  },
+  {
+    "imageTime": 705.97,
+    "voStart": 706.04,
+    "voEnd": 708.66,
+    "sentences": [
+      "Which hints at deep evolutionary roots."
+    ],
+    "index": 101,
+    "text": "Which hints at deep evolutionary roots.",
+    "imageFile": "frame_101.jpg",
+    "sceneEnd": 707.97
+  },
+  {
+    "imageTime": 707.97,
+    "voStart": 708.66,
+    "voEnd": 712.3,
+    "sentences": [
+      "How do both of those things get to be true at the same time?"
+    ],
+    "index": 102,
+    "text": "How do both of those things get to be true at the same time?",
+    "imageFile": "frame_102.jpg",
+    "sceneEnd": 711.97
+  },
+  {
+    "imageTime": 711.97,
+    "voStart": 712.3,
+    "voEnd": 715.94,
+    "sentences": [
+      "Here's the theory that tries to hold it all together.",
+      "And it's elegant."
+    ],
+    "index": 103,
+    "text": "Here's the theory that tries to hold it all together. And it's elegant.",
+    "imageFile": "frame_103.jpg",
+    "sceneEnd": 717.97
+  },
+  {
+    "imageTime": 717.97,
+    "voStart": 715.94,
+    "voEnd": 722.56,
+    "sentences": [
+      "What if the raw ingredient of kissing is ancient, but the specific human romantic kiss is not?"
+    ],
+    "index": 104,
+    "text": "What if the raw ingredient of kissing is ancient, but the specific human romantic kiss is not?",
+    "imageFile": "frame_104.jpg",
+    "sceneEnd": 721.97
+  },
+  {
+    "imageTime": 721.97,
+    "voStart": 722.56,
+    "voEnd": 729.92,
+    "sentences": [
+      "What if what we inherited from our deep ancestors isn't kissing as we know it, but something more basic underneath it?"
+    ],
+    "index": 105,
+    "text": "What if what we inherited from our deep ancestors isn't kissing as we know it, but something more basic underneath it?",
+    "imageFile": "frame_105.jpg",
+    "sceneEnd": 727.97
+  },
+  {
+    "imageTime": 727.97,
+    "voStart": 729.92,
+    "voEnd": 732.02,
+    "sentences": [
+      "Think about how mothers in many species..."
+    ],
+    "index": 106,
+    "text": "Think about how mothers in many species...",
+    "imageFile": "frame_106.jpg",
+    "sceneEnd": 733.52
+  }
+]

@@ -1,6 +1,8 @@
 import type { ComponentType } from "react";
 import { Composition } from "remotion";
 import { MontageComposition } from "./MontageComposition";
+import { ShowcaseComposition } from "./ShowcaseComposition";
+import type { ShowcaseCompositionProps } from "./ShowcaseComposition";
 import type { MontageCompositionProps } from "./types";
 import { FPS, WIDTH, HEIGHT } from "./types";
 
@@ -37,6 +39,21 @@ export const RemotionRoot = () => {
         fps={FPS}
         width={WIDTH}
         height={HEIGHT}
+      />
+      <Composition
+        id="NeverKissShowcase"
+        component={ShowcaseComposition as unknown as ComponentType<Record<string, unknown>>}
+        defaultProps={{ scenes: [], framesDir: "", audioUrl: "", fps: 30 } as unknown as Record<string, unknown>}
+        calculateMetadata={async ({ props }) => {
+          const p = props as unknown as ShowcaseCompositionProps;
+          const last = p.scenes[p.scenes.length - 1];
+          const total = last ? Math.round(last.sceneEnd * p.fps) : 1;
+          return { durationInFrames: Math.max(1, total) };
+        }}
+        durationInFrames={1}
+        fps={30}
+        width={1920}
+        height={1080}
       />
     </>
   );
