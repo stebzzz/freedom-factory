@@ -55,6 +55,18 @@ export async function generateVoiceover(
   const voixIsGenericOrEmpty = !voix || GENERIC_VOICE_LABELS.has(voix);
   const algrowVoix = (voixIsGenericOrEmpty && config.algrowVoiceId) ? config.algrowVoiceId : voix;
   console.log(`[Voiceover] Algrow voix résolue="${algrowVoix || "∅"}" (job voix="${voix || "∅"}", global algrowVoiceId=${config.algrowVoiceId ? "set" : "∅"}, source=${voixIsGenericOrEmpty && config.algrowVoiceId ? "global" : "job"})`);
+  // 2026-07-08: api.algrow.online (algrow-tts) ET la clé ElevenLabs directe sont
+  // mortes (401 invalid_api_key) — confirmé en prod, elles produisaient un audio
+  // vide/mock qui passait inaperçu jusqu'au montage. AlgrowFlow CDP (voice.ytaa.fr,
+  // Chrome loggé, pas de clé API à expirer) est désormais le SEUL backend fiable
+  // et passe donc en premier. algrow-tts / ElevenLabs restent en secours si jamais
+  // AlgrowFlow CDP est down à son tour.
+  try {
+    const { generateVoiceover: algrowflowCdpTTS } = await import("./algrowflow-cdp");
+    return await algrowflowCdpTTS(script, algrowVoix, outputPath, { speed });
+  } catch (cdpErr) {
+    console.warn(`[Voiceover] AlgrowFlow CDP indisponible (${(cdpErr as Error).message}) → fallback algrow-tts`);
+  }
   try {
     const { generateVoiceover: algrowTTS } = await import("./algrow-tts");
     return await algrowTTS(script, algrowVoix, outputPath, { speed });

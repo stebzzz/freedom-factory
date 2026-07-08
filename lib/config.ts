@@ -18,6 +18,7 @@ export interface AppSettings {
   elevenlabsVoiceId: string;
   algrowKey: string;
   algrowVoiceId: string;
+  algrowflowCdpToken: string;
   mubertKey: string;
   sunoKey: string;
   pexelsKey: string;
@@ -48,6 +49,7 @@ const DEFAULTS: AppSettings = {
   elevenlabsVoiceId: "",
   algrowKey: "",
   algrowVoiceId: "",
+  algrowflowCdpToken: "",
   mubertKey: "",
   sunoKey: "",
   pexelsKey: "",
@@ -82,6 +84,7 @@ export async function getConfig(): Promise<AppSettings> {
   loaded.elevenlabsVoiceId = env.ELEVENLABS_VOICE_ID || loaded.elevenlabsVoiceId || "";
   loaded.algrowKey      = env.ALGROW_API_KEY      || loaded.algrowKey      || "";
   loaded.algrowVoiceId  = env.ALGROW_VOICE_ID     || loaded.algrowVoiceId  || "";
+  loaded.algrowflowCdpToken = env.ALGROWFLOW_CDP_TOKEN || loaded.algrowflowCdpToken || "";
   loaded.mubertKey      = env.MUBERT_API_KEY      || loaded.mubertKey      || "";
   loaded.sunoKey        = env.SUNO_API_KEY        || loaded.sunoKey        || "";
   loaded.pexelsKey      = env.PEXELS_API_KEY      || loaded.pexelsKey      || "";
