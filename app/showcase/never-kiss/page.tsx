@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ComponentType } from "react";
 import dynamic from "next/dynamic";
 import type { PlayerRef } from "@remotion/player";
 import { ShowcaseComposition } from "@/remotion/ShowcaseComposition";
 import type { ShowcaseScene } from "@/remotion/ShowcaseComposition";
+
+const ShowcaseCompositionUntyped = ShowcaseComposition as unknown as ComponentType<Record<string, unknown>>;
 
 const Player = dynamic(() => import("@remotion/player").then((m) => m.Player), {
   ssr: false,
@@ -129,7 +131,7 @@ export default function NeverKissShowcasePage() {
           <div className="w-72 shrink-0 rounded-lg overflow-hidden border border-neutral-800 bg-black shadow-2xl">
             <Player
               ref={playerRef}
-              component={ShowcaseComposition}
+              component={ShowcaseCompositionUntyped}
               inputProps={{
                 scenes,
                 framesDir: FRAMES_DIR,
